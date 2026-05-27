@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:\\\\Users\\\\Utente\\\\Desktop\\\\Claude1\\\\Te de Liper\" status)",
+      "Bash(git -C \"C:\\\\Users\\\\Utente\\\\Desktop\\\\Claude1\\\\Te de Liper\" log --oneline -5)"
+    ]
+  }
+}
