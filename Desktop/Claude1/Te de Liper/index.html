@@ -113,6 +113,14 @@
     .nav__links a:hover { color: var(--cl-terra-2); }
     .nav__links a:hover::after { right: 0; }
 
+    /* Navbar trasparente (hero in vista) — link bianchi leggibili */
+    .nav:not(.scrolled) .nav__links a {
+      color: rgba(253,249,244,.92);
+      text-shadow: 0 1px 4px rgba(0,0,0,.45);
+    }
+    .nav:not(.scrolled) .nav__links a:hover { color: var(--cl-white); }
+    .nav:not(.scrolled) .nav__links a::after { background: var(--cl-white); }
+
     /* Language switcher */
     .lang {
       display: flex; gap: .25rem; margin-left: 1rem;
@@ -126,6 +134,14 @@
     .lang__btn.active, .lang__btn:hover {
       color: var(--cl-terra-2); border-color: var(--cl-terra-2);
     }
+    .nav:not(.scrolled) .lang__btn {
+      color: rgba(253,249,244,.65);
+      text-shadow: 0 1px 3px rgba(0,0,0,.4);
+    }
+    .nav:not(.scrolled) .lang__btn.active,
+    .nav:not(.scrolled) .lang__btn:hover {
+      color: var(--cl-white); border-color: rgba(253,249,244,.6);
+    }
 
     /* Hamburger */
     .hamburger {
@@ -136,6 +152,8 @@
       display: block; width: 22px; height: 2px;
       background: var(--cl-ink-0); border-radius: 2px; transition: all var(--tr);
     }
+    /* Hamburger bianco su hero */
+    .nav:not(.scrolled) .hamburger span { background: var(--cl-white); }
     .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
     .hamburger.open span:nth-child(2) { opacity: 0; }
     .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
@@ -187,12 +205,15 @@
       font-size: .72rem; font-weight: 700; letter-spacing: .3em;
       text-transform: uppercase; color: rgba(253,249,244,.75); margin-bottom: 1.5rem;
     }
-    .hero__title {
-      font-size: clamp(2.8rem, 9vw, 6.5rem); font-weight: 700;
-      color: var(--cl-white); text-shadow: 0 2px 24px rgba(46,31,20,.45);
-      margin-bottom: 1.5rem; line-height: 1.05;
+    /* Logo nel hero — si adatta da mobile a desktop */
+    .hero__logo {
+      display: block;
+      width: min(420px, 72vw);   /* max 420 px, mai oltre il 72% viewport */
+      height: auto;
+      margin: 0 auto 2rem;
+      /* drop-shadow funziona su PNG trasparente, non schiaccia tutto il box */
+      filter: drop-shadow(0 3px 18px rgba(0,0,0,.45));
     }
-    .hero__title em { font-style: italic; color: var(--cl-beige-2); }
     .hero__sub {
       font-size: clamp(.95rem, 2.2vw, 1.2rem); font-weight: 300;
       color: rgba(253,249,244,.82); max-width: 460px; margin: 0 auto 2.5rem;
@@ -206,20 +227,6 @@
     }
     .hero__cta:hover {
       background: var(--cl-white); color: var(--cl-ink-0); border-color: var(--cl-white);
-    }
-    .hero__scroll {
-      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-      color: rgba(253,249,244,.5); font-size: .65rem; letter-spacing: .25em;
-      text-transform: uppercase; display: flex; flex-direction: column; align-items: center;
-      gap: .4rem; animation: bob 2.2s ease-in-out infinite;
-    }
-    .hero__scroll::after {
-      content: ''; display: block; width: 1px; height: 36px;
-      background: rgba(253,249,244,.35);
-    }
-    @keyframes bob {
-      0%,100% { transform: translateX(-50%) translateY(0); }
-      50%      { transform: translateX(-50%) translateY(7px); }
     }
 
     /* ================================================
@@ -516,11 +523,10 @@
   <div class="hero__overlay"></div>
   <div class="hero__content">
     <p class="hero__eyebrow" data-i18n="hero_eyebrow"></p>
-    <h1 class="hero__title">El Rincón<br><em>de Liper</em></h1>
+    <img src="Images/logo.png" alt="El Rincón de Liper" class="hero__logo" />
     <p class="hero__sub" data-i18n="hero_sub"></p>
     <a href="#menu" class="hero__cta" data-i18n="hero_cta"></a>
   </div>
-  <span class="hero__scroll" aria-hidden="true">scroll</span>
 </section>
 
 <!-- ================================================
