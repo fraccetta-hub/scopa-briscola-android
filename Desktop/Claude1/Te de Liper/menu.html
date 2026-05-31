@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menú — El Rincón de Liper · Salón de Té</title>
+  <meta name="description" content="Menú del Salón de Té El Rincón de Liper. Tés especiales, bebidas frías, tradición paraguaya y dulces artesanales en Recoleta, Asunción." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cl-beige-0:#fdf9f4; --cl-beige-1:#f5ece0; --cl-beige-2:#e8d5ba; --cl-beige-3:#d4b896;
+      --cl-sage-1:#b8c9a8;  --cl-sage-2:#8a9e7a;  --cl-sage-3:#667a54;
+      --cl-terra-1:#dda07c; --cl-terra-2:#c4714e; --cl-terra-3:#9e5536;
+      --cl-ink-0:#2e1f14;   --cl-ink-1:#5c4030;   --cl-ink-2:#8a7060;   --cl-ink-3:#b09880;
+      --cl-white:#ffffff;
+      --sh-sm:0 2px 8px rgba(46,31,20,.08); --sh-md:0 4px 16px rgba(46,31,20,.12); --sh-lg:0 8px 40px rgba(46,31,20,.22);
+      --r-sm:8px; --r-md:16px; --r-lg:24px; --r-pill:100px;
+      --tr:.3s ease;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;font-size:16px;}
+    body{font-family:'Lato',sans-serif;background:var(--cl-beige-0);color:var(--cl-ink-0);line-height:1.7;overflow-x:hidden;}
+    h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.25;}
+    a{color:inherit;text-decoration:none;}
+    ul{list-style:none;}
+    button{cursor:pointer;font-family:inherit;}
+    img{display:block;max-width:100%;}
+
+    /* ── Navbar ── */
+    .nav{position:fixed;inset-block-start:0;inset-inline:0;z-index:900;padding:.9rem 0;transition:background var(--tr),box-shadow var(--tr);}
+    .nav.scrolled{background:rgba(253,249,244,.96);backdrop-filter:blur(10px);box-shadow:var(--sh-sm);}
+    .nav__inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+    .nav__logo img{height:44px;width:auto;display:block;}
+    .nav__right{display:flex;align-items:center;gap:1.5rem;}
+    .nav__link{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cl-ink-1);transition:color var(--tr);}
+    .nav__link:hover{color:var(--cl-terra-2);}
+    .nav:not(.scrolled) .nav__link{color:rgba(253,249,244,.92);text-shadow:0 1px 4px rgba(0,0,0,.4);}
+    .nav:not(.scrolled) .nav__link:hover{color:var(--cl-white);}
+    .lang{display:flex;gap:.2rem;}
+    .lang__btn{background:none;border:1px solid transparent;padding:.18rem .45rem;border-radius:var(--r-sm);font-size:.7rem;font-weight:700;letter-spacing:.05em;color:var(--cl-ink-3);transition:all var(--tr);}
+    .lang__btn.active,.lang__btn:hover{color:var(--cl-terra-2);border-color:var(--cl-terra-2);}
+    .nav:not(.scrolled) .lang__btn{color:rgba(253,249,244,.65);}
+    .nav:not(.scrolled) .lang__btn.active,.nav:not(.scrolled) .lang__btn:hover{color:var(--cl-white);border-color:rgba(253,249,244,.6);}
+    .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:4px;}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--cl-ink-0);border-radius:2px;transition:all var(--tr);}
+    .nav:not(.scrolled) .hamburger span{background:var(--cl-white);}
+    .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+    .hamburger.open span:nth-child(2){opacity:0;}
+    .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+    .mobile-drawer{display:none;flex-direction:column;gap:1rem;padding:.75rem 1.5rem 1.5rem;background:rgba(253,249,244,.97);backdrop-filter:blur(10px);}
+    .mobile-drawer.open{display:flex;}
+    .mobile-drawer .nav__link{font-size:.88rem;}
+
+    /* ── Page Header ── */
+    .page-header{position:relative;min-height:38vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+    .page-header__bg{position:absolute;inset:0;background-color:#7a5538;background-image:url('Images/img2.png');background-size:cover;background-position:center top;}
+    .page-header__overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(46,31,20,.45) 0%,rgba(46,31,20,.65) 100%);}
+    .page-header__content{position:relative;z-index:1;padding:7rem 1.5rem 3rem;}
+    .page-header__eyebrow{display:block;font-size:.72rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:rgba(253,249,244,.7);margin-bottom:1rem;}
+    .page-header__logo{display:block;width:min(260px,55vw);height:auto;margin:0 auto 1.25rem;filter:drop-shadow(0 2px 12px rgba(0,0,0,.4));}
+    .page-header__sub{font-size:.9rem;font-weight:300;color:rgba(253,249,244,.75);letter-spacing:.08em;}
+    .print-link{position:absolute;bottom:1.25rem;right:1.5rem;z-index:2;display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .9rem;border:1px solid rgba(253,249,244,.45);border-radius:var(--r-pill);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(253,249,244,.7);transition:all var(--tr);}
+    .print-link:hover{background:rgba(253,249,244,.15);color:var(--cl-white);}
+    .print-link svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+    /* ── Menu Section ── */
+    .menu-section{padding:3rem 0 6rem;}
+    .container{width:100%;max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+
+    /* ── Category Tabs ── */
+    .cat-tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:.5rem;margin-bottom:2.75rem;padding-bottom:.25rem;scrollbar-width:none;}
+    .cat-tabs::-webkit-scrollbar{display:none;}
+    .cat-tab{flex-shrink:0;padding:.48rem 1.2rem;background:none;border:1.5px solid var(--cl-beige-3);border-radius:var(--r-pill);font-size:.76rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--cl-ink-2);transition:all var(--tr);white-space:nowrap;}
+    .cat-tab:hover,.cat-tab.active{background:var(--cl-terra-2);border-color:var(--cl-terra-2);color:var(--cl-white);}
+
+    /* ── Items Grid ── */
+    .items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.25rem;}
+    .cat-section{display:none;}
+    .cat-section.active{display:block;animation:fadeUp .3s ease both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    .cat-title{font-size:1.45rem;color:var(--cl-ink-0);margin-bottom:.3rem;}
+    .cat-desc{font-size:.86rem;color:var(--cl-ink-2);font-weight:300;margin-bottom:1.75rem;}
+
+    /* ── Item Card ── */
+    .item-card{background:var(--cl-white);border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-sm);cursor:pointer;transition:box-shadow var(--tr),transform var(--tr);}
+    .item-card:hover{box-shadow:var(--sh-md);transform:translateY(-4px);}
+    .item-card__visual{height:150px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden;}
+    .item-card__visual::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.08));}
+    .item-card__body{padding:1.1rem 1.2rem 1.2rem;}
+    .item-card__name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--cl-ink-0);margin-bottom:.3rem;}
+    .item-card__desc{font-size:.8rem;color:var(--cl-ink-2);font-weight:300;line-height:1.55;margin-bottom:.8rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .item-card__footer{display:flex;align-items:center;justify-content:space-between;}
+    .item-card__price{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:600;color:var(--cl-terra-2);}
+    .item-card__btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--cl-beige-1);border:none;color:var(--cl-ink-1);font-size:1.2rem;transition:all var(--tr);}
+    .item-card__btn:hover{background:var(--cl-terra-2);color:var(--cl-white);}
+
+    /* Category gradient colors */
+    .grad-hot    {background:linear-gradient(135deg,#c4714e 0%,#9e5536 100%);}
+    .grad-iced   {background:linear-gradient(135deg,#8a9e7a 0%,#5a7a4a 100%);}
+    .grad-py     {background:linear-gradient(135deg,#667a54 0%,#4a5e3a 100%);}
+    .grad-coffee {background:linear-gradient(135deg,#6b4226 0%,#3e2010 100%);}
+    .grad-bottles{background:linear-gradient(135deg,#8a9e7a 0%,#c4714e 100%);}
+    .grad-pancakes{background:linear-gradient(135deg,#dda07c 0%,#c4714e 100%);}
+    .grad-sweets {background:linear-gradient(135deg,#d4a0b0 0%,#c4714e 100%);}
+
+    /* ── Item Modal ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(46,31,20,.55);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity var(--tr);}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:var(--cl-white);border-radius:var(--r-lg);max-width:520px;width:100%;max-height:90vh;overflow-y:auto;transform:translateY(20px) scale(.97);transition:transform var(--tr);scrollbar-width:thin;}
+    .modal-overlay.open .modal{transform:translateY(0) scale(1);}
+    .modal__visual{height:200px;display:flex;align-items:center;justify-content:center;font-size:4.5rem;border-radius:var(--r-lg) var(--r-lg) 0 0;position:relative;}
+    .modal__close{position:absolute;top:1rem;right:1rem;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.85);border:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center;color:var(--cl-ink-0);transition:all var(--tr);}
+    .modal__close:hover{background:var(--cl-white);box-shadow:var(--sh-sm);}
+    .modal__body{padding:1.5rem 1.75rem 2rem;}
+    .modal__name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:600;color:var(--cl-ink-0);margin-bottom:.5rem;}
+    .modal__desc{font-size:.92rem;color:var(--cl-ink-1);font-weight:300;line-height:1.75;margin-bottom:1rem;}
+    .modal__detail{font-size:.85rem;color:var(--cl-ink-2);font-weight:300;line-height:1.7;margin-bottom:1.2rem;padding:1rem;background:var(--cl-beige-0);border-radius:var(--r-sm);}
+    .modal__tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.5rem;}
+    .modal__tag{padding:.22rem .75rem;background:var(--cl-beige-1);border-radius:var(--r-pill);font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--cl-ink-1);}
+    .modal__tag--green{background:#e8f2e0;color:#4a7a3a;}
+    .modal__tag--orange{background:#faeee7;color:var(--cl-terra-3);}
+    .modal__footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+    .modal__price{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:600;color:var(--cl-terra-2);}
+    .modal__qty{display:flex;align-items:center;gap:.6rem;}
+    .qty-btn{width:32px;height:32px;border-radius:50%;background:var(--cl-beige-1);border:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center;color:var(--cl-ink-0);transition:all var(--tr);}
+    .qty-btn:hover{background:var(--cl-beige-2);}
+    .qty-val{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;min-width:24px;text-align:center;}
+    .modal__add{flex:1;min-width:160px;padding:.85rem 1.5rem;background:var(--cl-terra-2);color:var(--cl-white);border:none;border-radius:var(--r-pill);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:all var(--tr);}
+    .modal__add:hover{background:var(--cl-terra-3);transform:translateY(-1px);box-shadow:0 4px 14px rgba(196,113,78,.38);}
+    .modal__added{display:none;background:var(--cl-sage-2);color:var(--cl-white);}
+
+    /* ── Cart FAB ── */
+    .cart-fab{position:fixed;bottom:2rem;right:2rem;z-index:800;display:flex;align-items:center;gap:.6rem;padding:.75rem 1.4rem;background:var(--cl-terra-2);color:var(--cl-white);border:none;border-radius:var(--r-pill);font-size:.88rem;font-weight:700;letter-spacing:.05em;box-shadow:0 4px 20px rgba(196,113,78,.45);transition:all var(--tr);}
+    .cart-fab:hover{background:var(--cl-terra-3);transform:translateY(-2px);box-shadow:0 6px 24px rgba(196,113,78,.5);}
+    .cart-fab__count{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--cl-white);color:var(--cl-terra-2);border-radius:50%;font-size:.75rem;font-weight:700;}
+    .cart-fab.hidden{opacity:0;pointer-events:none;transform:translateY(10px);}
+
+    /* ── Cart Panel ── */
+    .cart-overlay{position:fixed;inset:0;background:rgba(46,31,20,.4);z-index:1100;opacity:0;pointer-events:none;transition:opacity var(--tr);}
+    .cart-overlay.open{opacity:1;pointer-events:all;}
+    .cart-panel{position:fixed;inset-block:0;inset-inline-end:0;width:min(420px,100vw);background:var(--cl-white);z-index:1200;display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(46,31,20,.18);transform:translateX(100%);transition:transform var(--tr);}
+    .cart-panel.open{transform:translateX(0);}
+    .cart-panel__head{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--cl-beige-1);}
+    .cart-panel__title{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:600;color:var(--cl-ink-0);}
+    .cart-close{background:none;border:none;font-size:1.3rem;color:var(--cl-ink-2);padding:.25rem;}
+    .cart-close:hover{color:var(--cl-ink-0);}
+    .cart-items{flex:1;overflow-y:auto;padding:1rem 1.5rem;display:flex;flex-direction:column;gap:.75rem;}
+    .cart-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--cl-ink-3);font-size:.9rem;gap:.75rem;padding:2rem;}
+    .cart-empty__icon{font-size:3rem;opacity:.4;}
+    .cart-item{display:flex;align-items:center;gap.75rem;padding:.9rem;background:var(--cl-beige-0);border-radius:var(--r-md);}
+    .cart-item{display:flex;align-items:center;gap:.75rem;padding:.85rem;background:var(--cl-beige-0);border-radius:var(--r-md);}
+    .cart-item__icon{font-size:1.6rem;flex-shrink:0;width:38px;text-align:center;}
+    .cart-item__info{flex:1;min-width:0;}
+    .cart-item__name{font-size:.88rem;font-weight:700;color:var(--cl-ink-0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .cart-item__price{font-size:.8rem;color:var(--cl-terra-2);font-family:'Playfair Display',serif;font-weight:600;}
+    .cart-item__qty{display:flex;align-items:center;gap:.4rem;flex-shrink:0;}
+    .cqty-btn{width:26px;height:26px;border-radius:50%;background:var(--cl-beige-2);border:none;font-size:.95rem;display:flex;align-items:center;justify-content:center;color:var(--cl-ink-0);transition:all var(--tr);}
+    .cqty-btn:hover{background:var(--cl-beige-3);}
+    .cqty-val{font-size:.88rem;font-weight:700;min-width:18px;text-align:center;}
+    .cart-remove{background:none;border:none;color:var(--cl-ink-3);font-size:1rem;padding:.2rem;transition:color var(--tr);}
+    .cart-remove:hover{color:#c43030;}
+    .cart-footer{padding:1.25rem 1.5rem;border-top:1px solid var(--cl-beige-1);}
+    .cart-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;}
+    .cart-total__label{font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cl-ink-2);}
+    .cart-total__val{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:600;color:var(--cl-ink-0);}
+    .cart-btns{display:flex;flex-direction:column;gap:.65rem;}
+    .btn-counter{width:100%;padding:.9rem;background:var(--cl-terra-2);color:var(--cl-white);border:none;border-radius:var(--r-pill);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:all var(--tr);}
+    .btn-counter:hover{background:var(--cl-terra-3);}
+    .btn-online{width:100%;padding:.9rem;background:none;color:var(--cl-terra-2);border:1.5px solid var(--cl-terra-2);border-radius:var(--r-pill);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:all var(--tr);}
+    .btn-online:hover{background:var(--cl-terra-2);color:var(--cl-white);}
+
+    /* ── Order Success Modal ── */
+    .order-modal{position:fixed;inset:0;background:rgba(46,31,20,.55);backdrop-filter:blur(4px);z-index:1300;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity var(--tr);}
+    .order-modal.open{opacity:1;pointer-events:all;}
+    .order-modal__box{background:var(--cl-white);border-radius:var(--r-lg);max-width:400px;width:100%;padding:2.5rem 2rem;text-align:center;transform:scale(.95);transition:transform var(--tr);}
+    .order-modal.open .order-modal__box{transform:scale(1);}
+    .order-modal__icon{font-size:3.5rem;margin-bottom:1rem;}
+    .order-modal__title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:600;color:var(--cl-ink-0);margin-bottom:.6rem;}
+    .order-modal__sub{font-size:.9rem;color:var(--cl-ink-2);font-weight:300;line-height:1.7;margin-bottom:1.75rem;}
+    .order-modal__ok{padding:.8rem 2.5rem;background:var(--cl-terra-2);color:var(--cl-white);border:none;border-radius:var(--r-pill);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:all var(--tr);}
+    .order-modal__ok:hover{background:var(--cl-terra-3);}
+
+    /* ── Footer ── */
+    footer{background:var(--cl-ink-0);color:rgba(253,249,244,.55);text-align:center;padding:2.25rem 1rem;font-size:.8rem;font-weight:300;letter-spacing:.04em;line-height:1.9;}
+    footer strong{font-family:'Playfair Display',serif;color:rgba(253,249,244,.9);}
+
+    /* ── Responsive ── */
+    @media(max-width:880px){
+      .nav__right .nav__link{display:none;}
+      .hamburger{display:flex;}
+    }
+    @media(max-width:600px){
+      .items-grid{grid-template-columns:1fr 1fr;}
+      .item-card__visual{height:120px;font-size:2.4rem;}
+      .cart-panel{width:100vw;}
+      .cart-fab{bottom:1.25rem;right:1.25rem;}
+    }
+    @media(max-width:400px){
+      .items-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav" id="navbar">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="Images/logo.png" alt="El Rincón de Liper" id="navLogo" />
+    </a>
+    <div class="nav__right" id="desktopRight">
+      <a href="index.html" class="nav__link" data-i18n="nav_home"></a>
+      <a href="index.html#chi-siamo" class="nav__link" data-i18n="nav_about"></a>
+      <a href="index.html#contatti" class="nav__link" data-i18n="nav_contact"></a>
+      <div class="lang" id="langSwitcher">
+        <button class="lang__btn" data-lang="es">ES</button>
+        <button class="lang__btn" data-lang="en">EN</button>
+        <button class="lang__btn" data-lang="fr">FR</button>
+        <button class="lang__btn" data-lang="de">DE</button>
+        <button class="lang__btn" data-lang="it">IT</button>
+      </div>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-drawer" id="drawer">
+    <a href="index.html" class="nav__link" data-i18n="nav_home"></a>
+    <a href="index.html#chi-siamo" class="nav__link" data-i18n="nav_about"></a>
+    <a href="index.html#contatti" class="nav__link" data-i18n="nav_contact"></a>
+    <div class="lang">
+      <button class="lang__btn" data-lang="es">ES</button>
+      <button class="lang__btn" data-lang="en">EN</button>
+      <button class="lang__btn" data-lang="fr">FR</button>
+      <button class="lang__btn" data-lang="de">DE</button>
+      <button class="lang__btn" data-lang="it">IT</button>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<header class="page-header">
+  <div class="page-header__bg"></div>
+  <div class="page-header__overlay"></div>
+  <div class="page-header__content">
+    <span class="page-header__eyebrow" data-i18n="header_eyebrow"></span>
+    <img src="Images/logow.png" alt="El Rincón de Liper" class="page-header__logo" />
+    <span class="page-header__sub" data-i18n="header_sub"></span>
+  </div>
+  <a href="menu-print.html" target="_blank" class="print-link" data-i18n="print_link">
+    <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    <span data-i18n="print_link"></span>
+  </a>
+</header>
+
+<!-- MENU -->
+<section class="menu-section">
+  <div class="container">
+    <div class="cat-tabs" id="catTabs"></div>
+    <div id="menuContent"></div>
+  </div>
+</section>
+
+<!-- ITEM MODAL -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
+  <div class="modal" id="modal">
+    <div class="modal__visual" id="modalVisual">
+      <button class="modal__close" id="modalClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal__body">
+      <h2 class="modal__name" id="modalName"></h2>
+      <p class="modal__desc" id="modalDesc"></p>
+      <p class="modal__detail" id="modalDetail"></p>
+      <div class="modal__tags" id="modalTags"></div>
+      <div class="modal__footer">
+        <span class="modal__price" id="modalPrice"></span>
+        <div class="modal__qty">
+          <button class="qty-btn" id="qtyMinus">−</button>
+          <span class="qty-val" id="qtyVal">1</span>
+          <button class="qty-btn" id="qtyPlus">+</button>
+        </div>
+        <button class="modal__add" id="modalAddBtn" data-i18n="add_cart"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CART OVERLAY -->
+<div class="cart-overlay" id="cartOverlay"></div>
+
+<!-- CART PANEL -->
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-panel__head">
+    <span class="cart-panel__title" data-i18n="cart_title"></span>
+    <button class="cart-close" id="cartClose">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <span class="cart-total__label" data-i18n="cart_total"></span>
+      <span class="cart-total__val" id="cartTotal"></span>
+    </div>
+    <div class="cart-btns">
+      <button class="btn-counter" id="btnCounter" data-i18n="pay_counter"></button>
+      <button class="btn-online"  id="btnOnline"  data-i18n="pay_online"></button>
+    </div>
+  </div>
+</div>
+
+<!-- CART FAB -->
+<button class="cart-fab hidden" id="cartFab">
+  🛒 <span class="cart-fab__count" id="cartFabCount">0</span>
+</button>
+
+<!-- ORDER MODAL -->
+<div class="order-modal" id="orderModal">
+  <div class="order-modal__box">
+    <div class="order-modal__icon" id="orderIcon"></div>
+    <h3 class="order-modal__title" id="orderTitle"></h3>
+    <p class="order-modal__sub" id="orderSub"></p>
+    <button class="order-modal__ok" id="orderOk" data-i18n="ok_btn"></button>
+  </div>
+</div>
+
+<footer>
+  <p><strong>El Rincón de Liper</strong></p>
+  <p data-i18n="footer_sub"></p>
+</footer>
+
+<script>
+/* ================================================================
+   TRANSLATIONS  (ES / EN / FR / DE / IT)
+================================================================ */
+const TR = {
+  es: {
+    nav_home:"Inicio", nav_about:"Quiénes somos", nav_contact:"Contacto",
+    header_eyebrow:"Salón de Té · Recoleta, Asunción",
+    header_sub:"Selecciona, descubre, saborea",
+    print_link:"Versión imprimible",
+    add_cart:"Agregar al carrito",
+    cart_title:"Mi pedido",
+    cart_total:"Total",
+    cart_empty:"Tu carrito está vacío",
+    pay_counter:"Confirmar y pagar en caja",
+    pay_online:"Confirmar y pagar online",
+    ok_btn:"Entendido",
+    order_counter_title:"¡Pedido listo!",
+    order_counter_sub:"Acércate a la caja para pagar y retirar tu pedido. ¡Gracias por venir!",
+    order_online_title:"Redirigiendo al pago…",
+    order_online_sub:"En un momento serás dirigido a nuestra plataforma de pago segura. Conserva tu número de orden.",
+    footer_sub:"Salón de Té · Recoleta, Asunción, Paraguay · 2026",
+    qty_label:"Cantidad",
+    cat_hot:"Tés Calientes", cat_iced:"Tés Fríos", cat_py:"Tradición Paraguaya",
+    cat_coffee:"Cafés Fríos", cat_bottles:"Take Away", cat_pancakes:"Pancakes", cat_sweets:"Dulces"
+  },
+  en: {
+    nav_home:"Home", nav_about:"About", nav_contact:"Contact",
+    header_eyebrow:"Tea Salon · Recoleta, Asunción",
+    header_sub:"Select, discover, savour",
+    print_link:"Printable menu",
+    add_cart:"Add to order",
+    cart_title:"My order",
+    cart_total:"Total",
+    cart_empty:"Your cart is empty",
+    pay_counter:"Confirm & pay at counter",
+    pay_online:"Confirm & pay online",
+    ok_btn:"Got it",
+    order_counter_title:"Order placed!",
+    order_counter_sub:"Please approach the counter to pay and collect your order. Thank you for visiting!",
+    order_online_title:"Redirecting to payment…",
+    order_online_sub:"You will be directed to our secure payment platform. Keep your order number.",
+    footer_sub:"Tea Salon · Recoleta, Asunción, Paraguay · 2026",
+    qty_label:"Quantity",
+    cat_hot:"Hot Teas", cat_iced:"Iced Teas", cat_py:"Paraguayan Tradition",
+    cat_coffee:"Cold Coffees", cat_bottles:"Take Away", cat_pancakes:"Pancakes", cat_sweets:"Sweets"
+  },
+  fr: {
+    nav_home:"Accueil", nav_about:"À propos", nav_contact:"Contact",
+    header_eyebrow:"Salon de Thé · Recoleta, Asunción",
+    header_sub:"Choisissez, découvrez, savourez",
+    print_link:"Menu imprimable",
+    add_cart:"Ajouter à la commande",
+    cart_title:"Ma commande",
+    cart_total:"Total",
+    cart_empty:"Votre panier est vide",
+    pay_counter:"Confirmer et payer à la caisse",
+    pay_online:"Confirmer et payer en ligne",
+    ok_btn:"Compris",
+    order_counter_title:"Commande enregistrée !",
+    order_counter_sub:"Veuillez vous approcher de la caisse pour régler et récupérer votre commande. Merci de votre visite !",
+    order_online_title:"Redirection vers le paiement…",
+    order_online_sub:"Vous allez être redirigé vers notre plateforme de paiement sécurisée. Conservez votre numéro de commande.",
+    footer_sub:"Salon de Thé · Recoleta, Asunción, Paraguay · 2026",
+    qty_label:"Quantité",
+    cat_hot:"Thés Chauds", cat_iced:"Thés Glacés", cat_py:"Tradition Paraguayenne",
+    cat_coffee:"Cafés Froids", cat_bottles:"À Emporter", cat_pancakes:"Pancakes", cat_sweets:"Douceurs"
+  },
+  de: {
+    nav_home:"Startseite", nav_about:"Über uns", nav_contact:"Kontakt",
+    header_eyebrow:"Teesalon · Recoleta, Asunción",
+    header_sub:"Wählen, entdecken, genießen",
+    print_link:"Druckversion",
+    add_cart:"Zur Bestellung hinzufügen",
+    cart_title:"Meine Bestellung",
+    cart_total:"Gesamt",
+    cart_empty:"Ihr Warenkorb ist leer",
+    pay_counter:"Bestätigen und an der Kasse zahlen",
+    pay_online:"Bestätigen und online zahlen",
+    ok_btn:"Verstanden",
+    order_counter_title:"Bestellung aufgegeben!",
+    order_counter_sub:"Bitte gehen Sie zur Kasse, um zu bezahlen und Ihre Bestellung abzuholen. Danke für Ihren Besuch!",
+    order_online_title:"Weiterleitung zur Zahlung…",
+    order_online_sub:"Sie werden zu unserer sicheren Zahlungsplattform weitergeleitet. Bitte notieren Sie Ihre Bestellnummer.",
+    footer_sub:"Teesalon · Recoleta, Asunción, Paraguay · 2026",
+    qty_label:"Menge",
+    cat_hot:"Heiße Tees", cat_iced:"Eistees", cat_py:"Paraguayische Tradition",
+    cat_coffee:"Kalter Kaffee", cat_bottles:"Zum Mitnehmen", cat_pancakes:"Pancakes", cat_sweets:"Süßes"
+  },
+  it: {
+    nav_home:"Home", nav_about:"Chi siamo", nav_contact:"Contatti",
+    header_eyebrow:"Salón de Té · Recoleta, Asunción",
+    header_sub:"Scegli, scopri, assapora",
+    print_link:"Versione stampabile",
+    add_cart:"Aggiungi all'ordine",
+    cart_title:"Il mio ordine",
+    cart_total:"Totale",
+    cart_empty:"Il tuo carrello è vuoto",
+    pay_counter:"Conferma e paga in cassa",
+    pay_online:"Conferma e paga online",
+    ok_btn:"Capito",
+    order_counter_title:"Ordine inviato!",
+    order_counter_sub:"Avvicinati alla cassa per pagare e ritirare il tuo ordine. Grazie per la visita!",
+    order_online_title:"Reindirizzamento al pagamento…",
+    order_online_sub:"Sarai reindirizzato alla nostra piattaforma di pagamento sicura. Conserva il numero d'ordine.",
+    footer_sub:"Salón de Té · Recoleta, Asunción, Paraguay · 2026",
+    qty_label:"Quantità",
+    cat_hot:"Tè Caldi", cat_iced:"Tè Freddi", cat_py:"Tradizione Paraguayana",
+    cat_coffee:"Caffè Freddi", cat_bottles:"Take Away", cat_pancakes:"Pancakes", cat_sweets:"Dolci"
+  }
+};
+
+/* ================================================================
+   MENU DATA — 30 items · 5 categories
+================================================================ */
+const MENU = [
+  /* ── TEAS CALIENTES ────────────────────────────── */
+  {
+    cat:'hot', icon:'🌸', grad:'grad-hot',
+    name:'Earl Grey Clásico',
+    price:'18.000',
+    desc:{
+      es:'Té negro con aceite de bergamota. Notas cítricas y florales, suave en taza.',
+      en:'Black tea with bergamot oil. Citrus and floral notes, smooth in the cup.',
+      fr:'Thé noir à l\'huile de bergamote. Notes citronnées et florales, doux en tasse.',
+      de:'Schwarzer Tee mit Bergamottöl. Zitrus- und Blumennoten, sanft im Abgang.',
+      it:'Tè nero con olio di bergamotto. Note agrumate e floreali, morbido in tazza.'
+    },
+    detail:{
+      es:'Origen: Sri Lanka. Infusión de 3–4 min. a 95°C. Ideal con un toque de leche o solo. Icónico y equilibrado.',
+      en:'Origin: Sri Lanka. Steep 3–4 min. at 95°C. Perfect with a splash of milk or plain. Iconic and balanced.',
+      fr:'Origine : Sri Lanka. Infusion 3–4 min. à 95°C. Idéal avec un nuage de lait ou nature. Iconique et équilibré.',
+      de:'Ursprung: Sri Lanka. 3–4 Min. bei 95°C ziehen lassen. Ideal mit einem Schuss Milch oder pur. Ikonisch und ausgewogen.',
+      it:'Origine: Sri Lanka. Infusione 3–4 min. a 95°C. Ottimo con un goccio di latte o al naturale. Iconico ed equilibrato.'
+    },
+    tags:[{l:'Cafeína media',type:'orange'},{l:'Sri Lanka',type:''},{l:'Sin azúcar',type:'green'}]
+  },
+  {
+    cat:'hot', icon:'🍵', grad:'grad-hot',
+    name:'Matcha Ceremonial',
+    price:'28.000',
+    desc:{
+      es:'Grado ceremonial japonés de Uji, Kyoto. Cremoso, umami y vibrante, batido al momento.',
+      en:'Japanese ceremonial grade from Uji, Kyoto. Creamy, umami and vibrant, whisked to order.',
+      fr:'Grade cérémonial japonais d\'Uji, Kyoto. Crémeux, umami et vibrant, battu à la demande.',
+      de:'Japanisches Zeremonien-Matcha aus Uji, Kyoto. Cremig, umami und lebendig, frisch aufgeschlagen.',
+      it:'Grado cerimoniale giapponese di Uji, Kyoto. Cremoso, umami e vivace, preparato al momento con chasen.'
+    },
+    detail:{
+      es:'Preparado con batidor de bambú (chasen) tradicional. Rico en L-teanina para un estado de calma alerta. Puede prepararse con leche de avena.',
+      en:'Prepared with a traditional bamboo whisk (chasen). Rich in L-theanine for calm alertness. Can be prepared with oat milk.',
+      fr:'Préparé avec un fouet en bambou traditionnel (chasen). Riche en L-théanine pour une vigilance calme. Peut être préparé avec du lait d\'avoine.',
+      de:'Mit traditionellem Bambusbesen (Chasen) zubereitet. Reich an L-Theanin für ruhige Wachheit. Auch mit Hafermilch erhältlich.',
+      it:'Preparato con frullino in bambù (chasen) tradizionale. Ricco di L-teanina per una calma vigile. Disponibile con latte di avena.'
+    },
+    tags:[{l:'Cafeína media',type:'orange'},{l:'Japón · Uji',type:''},{l:'Sin gluten',type:'green'},{l:'Vegano',type:'green'}]
+  },
+  {
+    cat:'hot', icon:'🌿', grad:'grad-hot',
+    name:'Darjeeling First Flush',
+    price:'22.000',
+    desc:{
+      es:'Primera cosecha de los jardines del Himalaya. Ligero, floral y muscatel.',
+      en:'First harvest from Himalayan gardens. Light, floral and muscatel.',
+      fr:'Première récolte des jardins de l\'Himalaya. Léger, floral et muscatel.',
+      de:'Erste Ernte aus den Himalaya-Gärten. Leicht, blumig und muskatartig.',
+      it:'Prima raccolta dai giardini dell\'Himalaya. Leggero, floreale e muscatel.'
+    },
+    detail:{
+      es:'Considerado el "champagne de los tés". Cosecha de primavera (marzo–mayo). Infusión 2–3 min. a 85°C para preservar los aromas delicados.',
+      en:'Known as the "champagne of teas". Spring harvest (March–May). Steep 2–3 min. at 85°C to preserve the delicate aromas.',
+      fr:'Considéré comme le "champagne des thés". Récolte de printemps (mars–mai). Infusion 2–3 min. à 85°C.',
+      de:'Als "Champagner der Tees" bekannt. Frühlingsernte (März–Mai). 2–3 Min. bei 85°C ziehen lassen.',
+      it:'Considerato lo "champagne dei tè". Raccolta primaverile (marzo–maggio). Infusione 2–3 min. a 85°C.'
+    },
+    tags:[{l:'Cafeína baja',type:'green'},{l:'India · Himalaya',type:''},{l:'Single origin',type:''}]
+  },
+  {
+    cat:'hot', icon:'☕', grad:'grad-hot',
+    name:'Assam English Breakfast',
+    price:'18.000',
+    desc:{
+      es:'Robusto y maltado. Ideal con leche, perfecto para empezar el día con energía.',
+      en:'Robust and malty. Ideal with milk, perfect for starting the day with energy.',
+      fr:'Robuste et malté. Idéal avec du lait, parfait pour commencer la journée.',
+      de:'Kräftig und malzig. Ideal mit Milch, perfekt für einen energiereichen Start in den Tag.',
+      it:'Robusto e maltato. Ideale con il latte, perfetto per iniziare la giornata con energia.'
+    },
+    detail:{
+      es:'Té negro de Assam, India. Cuerpo pleno, ideal para cortar con leche o un poco de azúcar. Infusión 4 min. a 100°C.',
+      en:'Black tea from Assam, India. Full body, ideal with milk or a little sugar. Steep 4 min. at 100°C.',
+      fr:'Thé noir d\'Assam, Inde. Corps plein, idéal avec du lait ou un peu de sucre. Infusion 4 min. à 100°C.',
+      de:'Schwarzer Tee aus Assam, Indien. Vollmundig, ideal mit Milch oder etwas Zucker. 4 Min. bei 100°C.',
+      it:'Tè nero dell\'Assam, India. Corpo pieno, ideale con latte o un po\' di zucchero. Infusione 4 min. a 100°C.'
+    },
+    tags:[{l:'Cafeína alta',type:'orange'},{l:'India · Assam',type:''},{l:'Con leche',type:''}]
+  },
+  {
+    cat:'hot', icon:'🍂', grad:'grad-hot',
+    name:'Rooibos Vainilla',
+    price:'17.000',
+    desc:{
+      es:'Rooibos sudafricano con vainilla natural. Dulce, suave y completamente sin cafeína.',
+      en:'South African rooibos with natural vanilla. Sweet, smooth and completely caffeine-free.',
+      fr:'Rooibos sud-africain à la vanille naturelle. Doux, sucré et sans caféine.',
+      de:'Südafrikanischer Rooibos mit natürlicher Vanille. Süß, sanft und völlig koffeinfrei.',
+      it:'Rooibos sudafricano con vaniglia naturale. Dolce, morbido e completamente senza caffeina.'
+    },
+    detail:{
+      es:'El rooibos es rico en antioxidantes y no contiene taninos. Infusión 5 min. a 100°C. Perfecto por la tarde o antes de dormir.',
+      en:'Rooibos is rich in antioxidants and contains no tannins. Steep 5 min. at 100°C. Perfect for afternoon or bedtime.',
+      fr:'Le rooibos est riche en antioxydants et ne contient pas de tanins. Infusion 5 min. à 100°C.',
+      de:'Rooibos ist reich an Antioxidantien und enthält keine Tannine. 5 Min. bei 100°C. Perfekt am Nachmittag oder vor dem Schlafengehen.',
+      it:'Il rooibos è ricco di antiossidanti e non contiene tannini. Infusione 5 min. a 100°C. Perfetto nel pomeriggio o prima di dormire.'
+    },
+    tags:[{l:'Sin cafeína',type:'green'},{l:'Sudáfrica',type:''},{l:'Sin gluten',type:'green'},{l:'Vegano',type:'green'}]
+  },
+  {
+    cat:'hot', icon:'🌶️', grad:'grad-hot',
+    name:'Chai Masala Gaucho',
+    price:'22.000',
+    desc:{
+      es:'Blend criollo de especias: canela, jengibre, cardamomo y clavo. Intenso y cálido.',
+      en:'Creole spice blend: cinnamon, ginger, cardamom and clove. Intense and warming.',
+      fr:'Mélange créole d\'épices : cannelle, gingembre, cardamome et clou de girofle. Intense et chaud.',
+      de:'Kreolische Gewürzmischung: Zimt, Ingwer, Kardamom und Nelke. Intensiv und wärmend.',
+      it:'Blend creolo di spezie: cannella, zenzero, cardamomo e chiodi di garofano. Intenso e avvolgente.'
+    },
+    detail:{
+      es:'Mezcla especial de la casa con inspiración india y toque local. Servido con leche de tu elección. Infusión 5 min. a 95°C.',
+      en:'House special blend with Indian inspiration and a local touch. Served with milk of your choice.',
+      fr:'Mélange spécial maison avec inspiration indienne et touche locale. Servi avec le lait de votre choix.',
+      de:'Hausbesonderer Blend mit indischer Inspiration und lokalem Touch. Mit Milch nach Wahl serviert.',
+      it:'Blend speciale della casa con ispirazione indiana e tocco locale. Servito con il latte a scelta.'
+    },
+    tags:[{l:'Cafeína media',type:'orange'},{l:'Blend local',type:''},{l:'Con leche',type:''}]
+  },
+  {
+    cat:'hot', icon:'🌺', grad:'grad-hot',
+    name:'Té Verde Jazmín',
+    price:'20.000',
+    desc:{
+      es:'Té verde chino con flores de jazmín. Ligero, muy aromático y refrescante aun en caliente.',
+      en:'Chinese green tea with jasmine flowers. Light, very aromatic and refreshing even when hot.',
+      fr:'Thé vert chinois aux fleurs de jasmin. Léger, très aromatique et rafraîchissant même chaud.',
+      de:'Chinesischer grüner Tee mit Jasminblüten. Leicht, sehr aromatisch und erfrischend auch heiß.',
+      it:'Tè verde cinese con fiori di gelsomino. Leggero, molto aromatico e rinfrescante anche caldo.'
+    },
+    detail:{
+      es:'El jazmín se infusiona de forma natural con las hojas de té verde. Origen Fujian, China. 2–3 min. a 80°C.',
+      en:'Jasmine is naturally scented with green tea leaves. Origin: Fujian, China. 2–3 min. at 80°C.',
+      fr:'Le jasmin est naturellement infusé avec les feuilles de thé vert. Origine : Fujian, Chine. 2–3 min. à 80°C.',
+      de:'Jasmin wird natürlich mit grünen Teeblättern aromatisiert. Herkunft: Fujian, China. 2–3 Min. bei 80°C.',
+      it:'Il gelsomino è aromatizzato naturalmente con le foglie di tè verde. Origine: Fujian, Cina. 2–3 min. a 80°C.'
+    },
+    tags:[{l:'Cafeína baja',type:'green'},{l:'China · Fujian',type:''},{l:'Vegano',type:'green'}]
+  },
+
+  /* ── TEAS FRÍOS ─────────────────────────────────── */
+  {
+    cat:'iced', icon:'🌺', grad:'grad-iced',
+    name:'Cold Brew Hibisco & Jengibre',
+    price:'20.000',
+    desc:{
+      es:'Hibisco, jengibre fresco, menta y limón, macerado 12 h. Refrescante y vivo.',
+      en:'Hibiscus, fresh ginger, mint and lemon, cold-brewed 12 h. Refreshing and vibrant.',
+      fr:'Hibiscus, gingembre frais, menthe et citron, macéré 12 h. Rafraîchissant et vif.',
+      de:'Hibiskus, frischer Ingwer, Minze und Zitrone, 12 h kalt gezogen. Erfrischend und lebendig.',
+      it:'Ibisco, zenzero fresco, menta e limone, macerato 12 h. Rinfrescante e vivace.'
+    },
+    detail:{
+      es:'El hibisco aporta vitamina C y un color rojo intenso. Servido con hielo y rodaja de limón. Sin azúcar añadida.',
+      en:'Hibiscus provides vitamin C and a deep red colour. Served with ice and a lemon slice. No added sugar.',
+      fr:'L\'hibiscus apporte de la vitamine C et une couleur rouge intense. Servi avec de la glace et un quartier de citron.',
+      de:'Hibiskus liefert Vitamin C und eine tiefrote Farbe. Mit Eis und Zitronenscheibe serviert. Ohne Zuckerzusatz.',
+      it:'L\'ibisco apporta vitamina C e un colore rosso intenso. Servito con ghiaccio e fettina di limone. Senza zucchero aggiunto.'
+    },
+    tags:[{l:'Sin cafeína',type:'green'},{l:'Sin azúcar',type:'green'},{l:'Vegano',type:'green'}]
+  },
+  {
+    cat:'iced', icon:'🍑', grad:'grad-iced',
+    name:'Green Tea Peach',
+    price:'20.000',
+    desc:{
+      es:'Té verde macerado en frío con durazno de estación. Delicado y afrutado.',
+      en:'Green tea cold-brewed with seasonal peach. Delicate and fruity.',
+      fr:'Thé vert macéré à froid avec pêche de saison. Délicat et fruité.',
+      de:'Kalt gezogener grüner Tee mit saisonalem Pfirsich. Zart und fruchtig.',
+      it:'Tè verde macerato a freddo con pesca di stagione. Delicato e fruttato.'
+    },
+    detail:{
+      es:'Maceración en frío 12 h con hojas de té verde y durazno natural. Sin colorantes artificiales. Servido con hielo.',
+      en:'Cold maceration 12 h with green tea leaves and natural peach. No artificial colours. Served with ice.',
+      fr:'Macération à froid 12 h avec des feuilles de thé vert et de la pêche naturelle. Servie avec de la glace.',
+      de:'12 h Kaltmazeration mit grünen Teeblättern und natürlichem Pfirsich. Ohne Kunstfarben. Mit Eis serviert.',
+      it:'Macerazione a freddo 12 h con foglie di tè verde e pesca naturale. Senza coloranti artificiali. Servito con ghiaccio.'
+    },
+    tags:[{l:'Cafeína baja',type:'green'},{l:'Estacional',type:''},{l:'Sin azúcar',type:'green'}]
+  },
+  {
+    cat:'iced', icon:'💙', grad:'grad-iced',
+    name:'Blue Butterfly Lemonade',
+    price:'24.000',
+    desc:{
+      es:'Té mariposa azul con jugo de limón: cambia de color del azul al violeta. Espectacular.',
+      en:'Blue butterfly tea with fresh lemon juice: changes colour from blue to violet. Spectacular.',
+      fr:'Thé papillon bleu avec jus de citron : change de couleur du bleu au violet. Spectaculaire.',
+      de:'Blauer Schmetterlingstee mit frischem Zitronensaft: Farbwechsel von blau nach violett. Spektakulär.',
+      it:'Tè farfalla blu con succo di limone fresco: cambia colore dal blu al viola. Spettacolare.'
+    },
+    detail:{
+      es:'El cambio de color ocurre por la reacción ácida del limón con la antocianina del té. 100% natural. Sin cafeína.',
+      en:'The colour change is caused by the acid reaction of lemon with the tea\'s anthocyanin. 100% natural. Caffeine-free.',
+      fr:'Le changement de couleur est dû à la réaction acide du citron avec l\'anthocyanine du thé. 100% naturel.',
+      de:'Der Farbwechsel entsteht durch die Säurereaktion von Zitrone mit dem Anthocyanin des Tees. 100% natürlich.',
+      it:'Il cambio di colore avviene per la reazione acida del limone con l\'antocianina del tè. 100% naturale.'
+    },
+    tags:[{l:'Sin cafeína',type:'green'},{l:'Sin colorantes',type:'green'},{l:'Instagrammable',type:''}]
+  },
+  {
+    cat:'iced', icon:'🍊', grad:'grad-iced',
+    name:'Rooibos Citrus',
+    price:'19.000',
+    desc:{
+      es:'Rooibos con naranja, mandarina y canela. Sin cafeína, ideal para cualquier momento.',
+      en:'Rooibos with orange, mandarin and cinnamon. Caffeine-free, ideal any time.',
+      fr:'Rooibos à l\'orange, mandarine et cannelle. Sans caféine, idéal à tout moment.',
+      de:'Rooibos mit Orange, Mandarine und Zimt. Koffeinfrei, jederzeit ideal.',
+      it:'Rooibos con arancia, mandarino e cannella. Senza caffeina, ideale in ogni momento.'
+    },
+    detail:{
+      es:'Maceración fría 12 h. Cítrico y cálido a la vez. Sin azúcar añadida. Servido con hielo y rodaja de naranja.',
+      en:'Cold maceration 12 h. Citrusy and warm at the same time. No added sugar. Served with ice and orange slice.',
+      fr:'Macération froide 12 h. Citronné et chaleureux à la fois. Sans sucre ajouté. Servi avec glace et rondelle d\'orange.',
+      de:'12 h Kaltmazeration. Gleichzeitig fruchtig und warm. Kein Zuckerzusatz. Mit Eis und Orangenscheibe serviert.',
+      it:'Macerazione fredda 12 h. Agrumato e caldo allo stesso tempo. Senza zucchero aggiunto. Con ghiaccio e fetta d\'arancia.'
+    },
+    tags:[{l:'Sin cafeína',type:'green'},{l:'Sudáfrica',type:''},{l:'Sin azúcar',type:'green'}]
+  },
+  {
+    cat:'iced', icon:'🫧', grad:'grad-iced',
+    name:'Cold Brew Menta & Lima',
+    price:'18.000',
+    desc:{
+      es:'Té verde con menta fresca y jugo de lima. Limpio, verde y muy refrescante.',
+      en:'Green tea with fresh mint and lime juice. Clean, green and very refreshing.',
+      fr:'Thé vert à la menthe fraîche et au jus de citron vert. Propre, vert et très rafraîchissant.',
+      de:'Grüner Tee mit frischer Minze und Limettensaft. Klar, grün und sehr erfrischend.',
+      it:'Tè verde con menta fresca e succo di lime. Pulito, verde e molto rinfrescante.'
+    },
+    detail:{
+      es:'La menta es del jardín de Liper. Macerado 12 h en frío. Servido con hielo y ramita de menta. Bajo en calorías.',
+      en:'Mint is from Liper\'s garden. Cold-brewed 12 h. Served with ice and a sprig of mint. Low calorie.',
+      fr:'La menthe vient du jardin de Liper. Macéré 12 h à froid. Servi avec de la glace et un brin de menthe.',
+      de:'Minze aus Lipers Garten. 12 h kalt gezogen. Mit Eis und Minzstiel serviert. Kalorienarm.',
+      it:'La menta è del giardino di Liper. Macerato 12 h a freddo. Servito con ghiaccio e rametto di menta. Ipocalorico.'
+    },
+    tags:[{l:'Cafeína baja',type:'green'},{l:'Sin azúcar',type:'green'},{l:'Vegano',type:'green'}]
+  },
+
+  /* ── TRADICIÓN PARAGUAYA ───────────────────────── */
+  {
+    cat:'py', icon:'🧉', grad:'grad-py',
+    name:'Mate Caliente',
+    price:'12.000',
+    desc:{
+      es:'Yerba mate premium en guampa tradicional con bombilla. La bienvenida de siempre.',
+      en:'Premium yerba mate in a traditional gourd with bombilla straw. The timeless welcome.',
+      fr:'Yerba maté premium dans une gourde traditionnelle avec bombilla. L\'accueil intemporel.',
+      de:'Premium Yerba Mate in traditioneller Kürbisflasche mit Bombilla-Strohhalm. Das zeitlose Willkommen.',
+      it:'Yerba mate premium in zucca tradizionale con bombilla. Il benvenuto senza tempo.'
+    },
+    detail:{
+      es:'Yerba mate seleccionada de productores locales paraguayos. Cebada a mano por Liper con agua caliente a 70°C. Sabor intenso y vegetal.',
+      en:'Yerba mate selected from local Paraguayan producers. Hand-served by Liper with water at 70°C. Intense and vegetal flavour.',
+      fr:'Yerba maté sélectionné chez des producteurs locaux paraguayens. Servi à la main par Liper avec de l\'eau à 70°C.',
+      de:'Yerba Mate von lokalen paraguayischen Produzenten. Von Liper handgereicht mit Wasser bei 70°C.',
+      it:'Yerba mate selezionata da produttori locali paraguaiani. Servita a mano da Liper con acqua a 70°C.'
+    },
+    tags:[{l:'Cafeína alta',type:'orange'},{l:'Tradición py.',type:''},{l:'Antioxidante',type:'green'}]
+  },
+  {
+    cat:'py', icon:'🧊', grad:'grad-py',
+    name:'Tereré con Yuyos',
+    price:'14.000',
+    desc:{
+      es:'Yerba mate fría con agua helada y hierbas medicinales: menta, cedrón, burrito.',
+      en:'Cold yerba mate with iced water and medicinal herbs: mint, lemon verbena, burrito.',
+      fr:'Yerba maté froid avec eau glacée et herbes médicinales : menthe, verveine citronnée, burrito.',
+      de:'Kalte Yerba Mate mit Eiswasser und Heilkräutern: Minze, Zitronenverbene, Burrito.',
+      it:'Yerba mate fredda con acqua ghiacciata e erbe medicinali: menta, citronella, burrito.'
+    },
+    detail:{
+      es:'El tereré es la bebida nacional de Paraguay. Se prepara con agua fría o jugo de frutas y yuyos (hierbas locales) con propiedades medicinales. Hidratante y refrescante.',
+      en:'Tereré is the national drink of Paraguay. Prepared with cold water or fruit juice and yuyos (local herbs) with medicinal properties. Hydrating and refreshing.',
+      fr:'Le tereré est la boisson nationale du Paraguay. Préparé avec de l\'eau froide et des yuyos (herbes locales) aux propriétés médicinales.',
+      de:'Tereré ist das Nationalgetränk Paraguays. Mit kaltem Wasser und Yuyos (lokale Heilkräuter). Hydrierend und erfrischend.',
+      it:'Il tereré è la bevanda nazionale del Paraguay. Preparato con acqua fredda e yuyos (erbe locali) con proprietà medicinali. Idratante e rinfrescante.'
+    },
+    tags:[{l:'Cafeína alta',type:'orange'},{l:'Nacional 🇵🇾',type:''},{l:'Medicinale',type:'green'}]
+  },
+  {
+    cat:'py', icon:'☕', grad:'grad-py',
+    name:'Cocido Paraguayo',
+    price:'15.000',
+    desc:{
+      es:'Yerba mate caramelizada con leche caliente. Reconfortante, único y muy nuestro.',
+      en:'Caramelised yerba mate with warm milk. Comforting, unique and very much ours.',
+      fr:'Yerba maté caramélisé avec du lait chaud. Réconfortant, unique et très paraguayen.',
+      de:'Karamellisierte Yerba Mate mit warmer Milch. Wohltuend, einzigartig und sehr paraguayisch.',
+      it:'Yerba mate caramellata con latte caldo. Confortante, unico e molto nostro.'
+    },
+    detail:{
+      es:'La yerba mate se tuesta ligeramente con azúcar quemado y luego se filtra con agua caliente, añadiendo leche al gusto. Sabor tostado, caramelizado y reconfortante.',
+      en:'Yerba mate is lightly toasted with burnt sugar, then filtered with hot water and milk to taste. Toasted, caramelised and comforting flavour.',
+      fr:'La yerba maté est légèrement torréfiée avec du sucre brûlé, puis filtrée avec de l\'eau chaude et du lait selon le goût.',
+      de:'Yerba Mate wird mit verbranntem Zucker leicht geröstet, dann mit heißem Wasser gefiltert und nach Geschmack mit Milch serviert.',
+      it:'La yerba mate viene leggermente tostata con zucchero bruciato, poi filtrata con acqua calda e latte a piacere.'
+    },
+    tags:[{l:'Cafeína media',type:'orange'},{l:'Tradicional 🇵🇾',type:''},{l:'Con leche',type:''}]
+  },
+  {
+    cat:'py', icon:'🌹', grad:'grad-py',
+    name:'Tereré Premium Rosa Mosqueta',
+    price:'18.000',
+    desc:{
+      es:'Tereré especial con yerba seleccionada, rosa mosqueta, menta y jengibre.',
+      en:'Special tereré with selected yerba, rosehip, mint and ginger.',
+      fr:'Tereré spécial avec yerba sélectionné, cynorrhodon, menthe et gingembre.',
+      de:'Besonderer Tereré mit ausgewählter Yerba, Hagebutte, Minze und Ingwer.',
+      it:'Tereré speciale con yerba selezionata, rosa canina, menta e zenzero.'
+    },
+    detail:{
+      es:'La rosa mosqueta es rica en vitamina C y betacarotenos. Combinada con la energía del mate y el frescor del jengibre, esta es la versión premium del tereré.',
+      en:'Rosehip is rich in vitamin C and beta-carotene. Combined with the energy of mate and the freshness of ginger, this is the premium version of tereré.',
+      fr:'Le cynorrhodon est riche en vitamine C et en bêta-carotènes. Combiné à l\'énergie du maté et à la fraîcheur du gingembre.',
+      de:'Hagebutte ist reich an Vitamin C und Beta-Carotin. Kombiniert mit der Energie des Mates und der Frische des Ingwers.',
+      it:'La rosa canina è ricca di vitamina C e betacaroteni. Combinata con l\'energia del mate e la freschezza dello zenzero.'
+    },
+    tags:[{l:'Cafeína alta',type:'orange'},{l:'Premium',type:''},{l:'Rica en Vit. C',type:'green'}]
+  },
+
+  /* ── CAFÉS FRÍOS ────────────────────────────────── */
+  {
+    cat:'coffee', icon:'🖤', grad:'grad-coffee',
+    name:'Cold Brew Clásico',
+    price:'22.000',
+    desc:{
+      es:'Café macerado 24 h en frío. Suave, bajo en acidez, oscuro y limpio.',
+      en:'Coffee cold-brewed for 24 h. Smooth, low-acid, dark and clean.',
+      fr:'Café macéré 24 h à froid. Doux, faible en acidité, sombre et propre.',
+      de:'24 h kalt gebrühter Kaffee. Sanft, säurearm, dunkel und rein.',
+      it:'Caffè macerato 24 h a freddo. Morbido, bassa acidità, scuro e pulito.'
+    },
+    detail:{
+      es:'Preparado la noche anterior con café specialty de origen único. Concentración estándar (1:8). Servido sobre hielo con o sin leche.',
+      en:'Prepared the night before with single-origin specialty coffee. Standard concentration (1:8). Served over ice with or without milk.',
+      fr:'Préparé la veille avec un café de spécialité à origine unique. Concentration standard (1:8). Servi sur glace avec ou sans lait.',
+      de:'Abends zuvor mit Single-Origin-Specialty-Kaffee zubereitet. Standardkonzentration (1:8). Über Eis serviert, mit oder ohne Milch.',
+      it:'Preparato la sera prima con caffè specialty a origine singola. Concentrazione standard (1:8). Servito su ghiaccio con o senza latte.'
+    },
+    tags:[{l:'Cafeína alta',type:'orange'},{l:'Single origin',type:''},{l:'Sin azúcar',type:'green'}]
+  },
+  {
+    cat:'coffee', icon:'🤍', grad:'grad-coffee',
+    name:'Dalgona Coffee',
+    price:'26.000',
+    desc:{
+      es:'Crema de café batido a nieve sobre leche fría. Cremoso y espectacular.',
+      en:'Whipped coffee cream over cold milk. Creamy and spectacular.',
+      fr:'Crème de café fouettée en neige sur lait froid. Crémeux et spectaculaire.',
+      de:'Aufgeschlagene Kaffeecreme über kalter Milch. Cremig und spektakulär.',
+      it:'Crema di caffè montata a neve su latte freddo. Cremoso e spettacolare.'
+    },
+    detail:{
+      es:'El café se bate con azúcar y agua caliente hasta formar una crema espesa. Se sirve sobre leche fría con hielo. Mezclar antes de beber.',
+      en:'Coffee is whipped with sugar and hot water until a thick cream forms. Served over cold milk with ice. Mix before drinking.',
+      fr:'Le café est fouetté avec du sucre et de l\'eau chaude jusqu\'à obtenir une crème épaisse. Servi sur du lait froid avec de la glace.',
+      de:'Kaffee wird mit Zucker und heißem Wasser zu einer dicken Creme aufgeschlagen. Über kalter Milch mit Eis serviert.',
+      it:'Il caffè viene montato con zucchero e acqua calda fino a formare una crema densa. Servito su latte freddo con ghiaccio.'
+    },
+    tags:[{l:'Cafeína alta',type:'orange'},{l:'Con leche',type:''},{l:'Instagrammable',type:''}]
+  },
+  {
+    cat:'coffee', icon:'🍦', grad:'grad-coffee',
+    name:'Iced Latte Vainilla',
+    price:'24.000',
+    desc:{
+      es:'Espresso doble sobre leche fría con sirope de vainilla artesanal y hielo.',
+      en:'Double espresso over cold milk with artisan vanilla syrup and ice.',
+      fr:'Double espresso sur lait froid avec sirop de vanille artisanal et glace.',
+      de:'Doppelter Espresso über kalter Milch mit handgemachtem Vanillesirup und Eis.',
+      it:'Doppio espresso su latte freddo con sciroppo di vaniglia artigianale e ghiaccio.'
+    },
+    detail:{
+      es:'El sirope de vainilla se prepara en casa con vainas de vainilla de Madagascar. Disponible con leche de avena o almendras.',
+      en:'Vanilla syrup is made in-house with Madagascar vanilla pods. Available with oat or almond milk.',
+      fr:'Le sirop de vanille est préparé maison avec des gousses de vanille de Madagascar. Disponible avec lait d\'avoine ou d\'amande.',
+      de:'Vanillesirup wird hauseigen mit Madagaskar-Vanilleschoten zubereitet. Auch mit Hafer- oder Mandelmilch erhältlich.',
+      it:'Lo sciroppo di vaniglia è preparato in casa con baccelli di vaniglia del Madagascar. Disponibile con latte di avena o mandorle.'
+    },
+    tags:[{l:'Cafeína alta',type:'orange'},{l:'Vainilla artesanal',type:''},{l:'Sin lactosa disp.',type:'green'}]
+  },
+  {
+    cat:'coffee', icon:'💚', grad:'grad-coffee',
+    name:'Matcha Latte Frío',
+    price:'28.000',
+    desc:{
+      es:'Matcha ceremonial con leche de avena y agave. Cremoso, verde y equilibrado.',
+      en:'Ceremonial matcha with oat milk and agave. Creamy, green and balanced.',
+      fr:'Matcha cérémonial avec lait d\'avoine et agave. Crémeux, vert et équilibré.',
+      de:'Zeremonien-Matcha mit Hafermilch und Agave. Cremig, grün und ausgewogen.',
+      it:'Matcha cerimoniale con latte di avena e agave. Cremoso, verde ed equilibrato.'
+    },
+    detail:{
+      es:'Matcha de grado ceremonial de Uji (Japón). Preparado con leche de avena y endulzado con jarabe de agave. Energizante sin el crash del café.',
+      en:'Ceremonial-grade matcha from Uji (Japan). Prepared with oat milk and sweetened with agave syrup. Energising without the coffee crash.',
+      fr:'Matcha de grade cérémonial d\'Uji (Japon). Préparé avec du lait d\'avoine et sucré au sirop d\'agave.',
+      de:'Zeremonien-Matcha aus Uji (Japan). Mit Hafermilch und Agavesirup gesüßt. Energetisierend ohne Kaffee-Crash.',
+      it:'Matcha di grado cerimoniale di Uji (Giappone). Preparato con latte di avena e addolcito con sciroppo di agave.'
+    },
+    tags:[{l:'Cafeína media',type:'orange'},{l:'Vegano',type:'green'},{l:'Sin lactosa',type:'green'}]
+  },
+  {
+    cat:'coffee', icon:'🥥', grad:'grad-coffee',
+    name:'Cold Brew Coco & Canela',
+    price:'26.000',
+    desc:{
+      es:'Cold brew con leche de coco y canela de Ceilán. Exótico, dulce y envolvente.',
+      en:'Cold brew with coconut milk and Ceylon cinnamon. Exotic, sweet and enveloping.',
+      fr:'Cold brew avec lait de coco et cannelle de Ceylan. Exotique, doux et enveloppant.',
+      de:'Cold Brew mit Kokosmilch und Ceylon-Zimt. Exotisch, süß und umhüllend.',
+      it:'Cold brew con latte di cocco e cannella di Ceylon. Esotico, dolce e avvolgente.'
+    },
+    detail:{
+      es:'Nuestro cold brew especial de temporada. La canela de Ceilán es más delicada y dulce que la cassia. Sin azúcar añadida, la dulzura viene del coco.',
+      en:'Our special seasonal cold brew. Ceylon cinnamon is more delicate and sweet than cassia. No added sugar — sweetness comes from coconut.',
+      fr:'Notre cold brew spécial de saison. La cannelle de Ceylan est plus délicate et douce que la casse. Sans sucre ajouté.',
+      de:'Unser besonderer Saison-Cold-Brew. Ceylon-Zimt ist zarter und süßer als Kassia. Kein Zuckerzusatz — Süße kommt von der Kokosnuss.',
+      it:'Il nostro cold brew speciale di stagione. La cannella di Ceylon è più delicata e dolce della casia. Senza zucchero aggiunto.'
+    },
+    tags:[{l:'Cafeína alta',type:'orange'},{l:'Vegano',type:'green'},{l:'Sin lactosa',type:'green'}]
+  },
+
+  /* ── TAKE AWAY ──────────────────────────────────── */
+  {
+    cat:'bottles', icon:'🫙', grad:'grad-bottles',
+    name:'Cold Brew Hibisco 500 ml',
+    price:'28.000',
+    desc:{
+      es:'Nuestra receta estrella embotellada con etiqueta propia. Lista para llevar.',
+      en:'Our star recipe bottled with our own label. Ready to take away.',
+      fr:'Notre recette vedette en bouteille avec notre propre étiquette. Prête à emporter.',
+      de:'Unser Starrezept in Flaschen mit eigenem Etikett. Bereit zum Mitnehmen.',
+      it:'La nostra ricetta stella in bottiglia con etichetta propria. Pronta da portare via.'
+    },
+    detail:{
+      es:'Hibisco, jengibre, menta y limón. Preparado el día anterior. Conservar en frío hasta 5 días. Agitar antes de consumir.',
+      en:'Hibiscus, ginger, mint and lemon. Prepared the day before. Keep refrigerated for up to 5 days. Shake before consuming.',
+      fr:'Hibiscus, gingembre, menthe et citron. Préparé la veille. Conserver au frais jusqu\'à 5 jours. Agiter avant consommation.',
+      de:'Hibiskus, Ingwer, Minze und Zitrone. Vortags zubereitet. Bis zu 5 Tage gekühlt lagern. Vor dem Trinken schütteln.',
+      it:'Ibisco, zenzero, menta e limone. Preparato il giorno prima. Conservare in fresco fino a 5 giorni. Agitare prima del consumo.'
+    },
+    tags:[{l:'Sin cafeína',type:'green'},{l:'500 ml',type:''},{l:'Artesanal',type:''}]
+  },
+  {
+    cat:'bottles', icon:'🍃', grad:'grad-bottles',
+    name:'Green Tea Peach 1 L',
+    price:'45.000',
+    desc:{
+      es:'Té verde con durazno en formato familiar. Ideal para compartir o para toda la semana.',
+      en:'Green tea with peach in family size. Perfect for sharing or for the whole week.',
+      fr:'Thé vert à la pêche en format familial. Idéal pour partager ou pour toute la semaine.',
+      de:'Grüner Tee mit Pfirsich im Familienformat. Perfekt zum Teilen oder für die ganze Woche.',
+      it:'Tè verde con pesca in formato famiglia. Ideale da condividere o per tutta la settimana.'
+    },
+    detail:{
+      es:'1 litro de nuestro cold brew favorito. Preparado artesanalmente. Conservar en frío hasta 5 días. Etiqueta personalizada — ideal de regalo.',
+      en:'1 litre of our favourite cold brew. Artisanally prepared. Keep refrigerated up to 5 days. Personalised label — ideal as a gift.',
+      fr:'1 litre de notre cold brew préféré. Préparé artisanalement. Conserver au frais 5 jours. Étiquette personnalisée — idéal en cadeau.',
+      de:'1 Liter unseres liebsten Cold Brews. Handwerklich zubereitet. Bis zu 5 Tage gekühlt. Personalisiertes Etikett — ideal als Geschenk.',
+      it:'1 litro del nostro cold brew preferito. Preparato artigianalmente. Conservare in fresco 5 giorni. Etichetta personalizzata — ideale come regalo.'
+    },
+    tags:[{l:'Cafeína baja',type:'green'},{l:'1 litro',type:''},{l:'Para compartir',type:''}]
+  },
+  {
+    cat:'bottles', icon:'🌸', grad:'grad-bottles',
+    name:'Earl Grey Cold Brew 500 ml',
+    price:'30.000',
+    desc:{
+      es:'El favorito de la casa en versión cold brew embotellado con etiqueta propia.',
+      en:'The house favourite in bottled cold brew version with our own label.',
+      fr:'Le favori de la maison en version cold brew en bouteille avec notre propre étiquette.',
+      de:'Der Hausfavorit als abgefüllter Cold Brew mit eigenem Etikett.',
+      it:'Il favorito della casa in versione cold brew imbottigliato con etichetta propria.'
+    },
+    detail:{
+      es:'Earl Grey macerado en frío 12 h. Bergamota suave sin amargor. Servido solo o con toque de leche. Ideal para llevar al trabajo.',
+      en:'Earl Grey cold-macerated 12 h. Gentle bergamot without bitterness. Served plain or with a touch of milk. Ideal to take to work.',
+      fr:'Earl Grey macéré à froid 12 h. Bergamote douce sans amertume. Servi nature ou avec un nuage de lait.',
+      de:'Earl Grey 12 h kalt mazeriert. Sanfte Bergamotte ohne Bitterkeit. Pur oder mit einem Schuss Milch serviert.',
+      it:'Earl Grey macerato a freddo 12 h. Bergamotto delicato senza amarezza. Servito al naturale o con un goccio di latte.'
+    },
+    tags:[{l:'Cafeína media',type:'orange'},{l:'500 ml',type:''},{l:'Sin azúcar',type:'green'}]
+  },
+
+  /* ── PANCAKES ───────────────────────────────────── */
+  {
+    cat:'pancakes', icon:'🥞', grad:'grad-pancakes',
+    name:'Pancakes Clásicos con Maple',
+    price:'28.000',
+    desc:{
+      es:'Tres pancakes esponjosos con manteca, maple real y fruta fresca de estación.',
+      en:'Three fluffy pancakes with butter, real maple syrup and fresh seasonal fruit.',
+      fr:'Trois pancakes moelleux avec beurre, vrai sirop d\'érable et fruits frais de saison.',
+      de:'Drei fluffige Pancakes mit Butter, echtem Ahornsirup und frischem Saisonobst.',
+      it:'Tre pancakes soffici con burro, sciroppo d\'acero vero e frutta fresca di stagione.'
+    },
+    detail:{
+      es:'Preparados al momento. Masa con harina de trigo, huevo y leche entera. Acompañados con maple canadiense 100% puro y fruta fresca.',
+      en:'Prepared to order. Batter made with wheat flour, egg and whole milk. Accompanied with 100% pure Canadian maple and fresh fruit.',
+      fr:'Préparés à la commande. Pâte avec farine de blé, œuf et lait entier. Accompagnés de sirop d\'érable canadien 100% pur et fruits frais.',
+      de:'Frisch zubereitet. Teig aus Weizenmehl, Ei und Vollmilch. Mit 100% reinem kanadischen Ahornsirup und frischem Obst.',
+      it:'Preparati al momento. Pastella con farina di grano, uovo e latte intero. Con sciroppo d\'acero canadese 100% puro e frutta fresca.'
+    },
+    tags:[{l:'Vegetariano',type:'green'},{l:'Fruta de estación',type:''},{l:'Horneado hoy',type:''}]
+  },
+  {
+    cat:'pancakes', icon:'🍓', grad:'grad-pancakes',
+    name:'Pancakes Frutos del Bosque',
+    price:'32.000',
+    desc:{
+      es:'Pancakes con compota de frutos rojos, crema chantilly y miel artesanal.',
+      en:'Pancakes with red berry compote, chantilly cream and artisan honey.',
+      fr:'Pancakes avec compote de fruits rouges, crème chantilly et miel artisanal.',
+      de:'Pancakes mit Roten-Beerenkompott, Chantilly-Sahne und handwerklichem Honig.',
+      it:'Pancakes con composta di frutti rossi, panna chantilly e miele artigianale.'
+    },
+    detail:{
+      es:'La compota se prepara diariamente con frutos rojos frescos o congelados de temporada. La crema chantilly es batida al momento. Miel local de apicultores de la región.',
+      en:'Compote is prepared daily with fresh or frozen seasonal berries. Chantilly cream is whipped to order. Local honey from regional beekeepers.',
+      fr:'La compote est préparée quotidiennement avec des fruits rouges frais ou surgelés de saison. Crème chantilly fouettée à la demande.',
+      de:'Kompott wird täglich mit frischen oder tiefgekühlten Saisonbeeren zubereitet. Chantilly-Sahne wird frisch aufgeschlagen.',
+      it:'La composta è preparata quotidianamente con frutti rossi freschi o surgelati di stagione. Panna chantilly montata al momento.'
+    },
+    tags:[{l:'Vegetariano',type:'green'},{l:'Crema fresca',type:''},{l:'Sin gluten disp.',type:'green'}]
+  },
+
+  /* ── DULCES ─────────────────────────────────────── */
+  {
+    cat:'sweets', icon:'🧇', grad:'grad-sweets',
+    name:'Scone de Manteca',
+    price:'18.000',
+    desc:{
+      es:'Horneado a diario. Servido con mermelada artesanal y clotted cream.',
+      en:'Baked daily. Served with artisan jam and clotted cream.',
+      fr:'Cuit quotidiennement. Servi avec de la confiture artisanale et de la clotted cream.',
+      de:'Täglich gebacken. Serviert mit handgemachter Marmelade und Clotted Cream.',
+      it:'Sfornato ogni giorno. Servito con marmellata artigianale e clotted cream.'
+    },
+    detail:{
+      es:'Elaborados por pastelería local con manteca francesa y harina de primera. Mermeladas de temporada que cambian cada semana. Clotted cream traída especialmente.',
+      en:'Made by local bakery with French butter and top-grade flour. Seasonal jams that change weekly. Specially sourced clotted cream.',
+      fr:'Fabriqués par une pâtisserie locale avec du beurre français et de la farine de qualité. Confitures de saison qui changent chaque semaine.',
+      de:'Von lokaler Bäckerei mit französischer Butter und erstklassigem Mehl. Saisonale Marmeladen, wöchentlich wechselnd.',
+      it:'Preparati da pasticceria locale con burro francese e farina di prima qualità. Marmellate di stagione che cambiano ogni settimana.'
+    },
+    tags:[{l:'Vegetariano',type:'green'},{l:'Horneado hoy',type:''},{l:'Pastelería local',type:''}]
+  },
+  {
+    cat:'sweets', icon:'🍫', grad:'grad-sweets',
+    name:'Brownie de Cacao 70%',
+    price:'20.000',
+    desc:{
+      es:'Chocolate oscuro 70%, sin harina, húmedo y denso. Servido tibio.',
+      en:'70% dark chocolate, flourless, moist and dense. Served warm.',
+      fr:'Chocolat noir 70%, sans farine, moelleux et dense. Servi tiède.',
+      de:'70% dunkle Schokolade, glutenfrei, feucht und dicht. Warm serviert.',
+      it:'Cioccolato fondente 70%, senza farina, umido e denso. Servito tiepido.'
+    },
+    detail:{
+      es:'Elaborado sin harina de trigo — naturalmente sin gluten. Chocolate de origen único al 70%. Húmedo por dentro, ligeramente crujiente por fuera. Servido con hojuela de sal marina.',
+      en:'Made without wheat flour — naturally gluten-free. Single-origin 70% chocolate. Moist inside, slightly crispy outside. Served with a flake of sea salt.',
+      fr:'Fait sans farine de blé — naturellement sans gluten. Chocolat à origine unique 70%. Moelleux à l\'intérieur, légèrement croustillant à l\'extérieur.',
+      de:'Ohne Weizenmehl — natürlich glutenfrei. Single-Origin-Schokolade 70%. Innen feucht, außen leicht knusprig. Mit Meersalzflocke serviert.',
+      it:'Senza farina di grano — naturalmente senza glutine. Cioccolato single origin al 70%. Umido dentro, leggermente croccante fuori. Con scaglia di sale marino.'
+    },
+    tags:[{l:'Sin gluten',type:'green'},{l:'Vegano disp.',type:'green'},{l:'Pastelería local',type:''}]
+  },
+  {
+    cat:'sweets', icon:'🍋', grad:'grad-sweets',
+    name:'Tarta de Limón Merengada',
+    price:'22.000',
+    desc:{
+      es:'Masa mantecada, crema de limón fresco y merengue italiano tostado.',
+      en:'Shortcrust pastry, fresh lemon curd and toasted Italian meringue.',
+      fr:'Pâte sablée, crème au citron frais et meringue italienne grillée.',
+      de:'Mürbeteig, frische Zitronencreme und geröstetes italienisches Baiser.',
+      it:'Pasta frolla, crema al limone fresco e meringa italiana tostata.'
+    },
+    detail:{
+      es:'La crema de limón se prepara con jugo de limón fresco, yemas de huevo y manteca. El merengue italiano se tuesta con soplete justo antes de servir.',
+      en:'Lemon curd is prepared with fresh lemon juice, egg yolks and butter. Italian meringue is torched just before serving.',
+      fr:'La crème au citron est préparée avec du jus de citron frais, des jaunes d\'œufs et du beurre. La meringue italienne est flambée juste avant de servir.',
+      de:'Lemon Curd wird mit frischem Zitronensaft, Eigelb und Butter zubereitet. Italienisches Baiser wird kurz vor dem Servieren abgeflämmt.',
+      it:'La crema al limone è preparata con succo di limone fresco, tuorli d\'uovo e burro. La meringa italiana viene fiammeggiata appena prima di servire.'
+    },
+    tags:[{l:'Vegetariano',type:'green'},{l:'Pastelería local',type:''},{l:'Limón fresco',type:''}]
+  },
+  {
+    cat:'sweets', icon:'🍰', grad:'grad-sweets',
+    name:'Cheesecake Frutos Rojos',
+    price:'26.000',
+    desc:{
+      es:'Base de galleta, queso crema, coulis de frutos rojos. Sin horno, cremoso y fresco.',
+      en:'Cookie base, cream cheese, red berry coulis. No-bake, creamy and fresh.',
+      fr:'Base de biscuit, fromage à la crème, coulis de fruits rouges. Sans cuisson, crémeux et frais.',
+      de:'Keksboden, Frischkäse, Rote-Beeren-Coulis. Ohne Backen, cremig und frisch.',
+      it:'Base biscotto, crema di formaggio, coulis ai frutti rossi. Senza cottura, cremoso e fresco.'
+    },
+    detail:{
+      es:'Receta sin horno de la pastelería Dulce Alma. Queso crema con ralladura de limón y vainilla. Coulis de frutos rojos preparado en casa sin colorantes.',
+      en:'No-bake recipe from Dulce Alma bakery. Cream cheese with lemon zest and vanilla. Red berry coulis prepared in-house without colourants.',
+      fr:'Recette sans cuisson de la pâtisserie Dulce Alma. Fromage à la crème avec zeste de citron et vanille. Coulis de fruits rouges maison sans colorants.',
+      de:'No-Bake-Rezept von Dulce Alma Bäckerei. Frischkäse mit Zitronenschale und Vanille. Hausgemachtes Beerencoulis ohne Farb stoffe.',
+      it:'Ricetta senza cottura della pasticceria Dulce Alma. Crema di formaggio con scorza di limone e vaniglia. Coulis ai frutti rossi fatto in casa senza coloranti.'
+    },
+    tags:[{l:'Vegetariano',type:'green'},{l:'Sin horno',type:''},{l:'Frutos rojos',type:''}]
+  }
+];
+
+/* Category meta */
+const CATS = [
+  { id:'hot',      icon:'🍵', grad:'grad-hot',      key:'cat_hot'      },
+  { id:'iced',     icon:'🧊', grad:'grad-iced',     key:'cat_iced'     },
+  { id:'py',       icon:'🧉', grad:'grad-py',       key:'cat_py'       },
+  { id:'coffee',   icon:'☕', grad:'grad-coffee',   key:'cat_coffee'   },
+  { id:'bottles',  icon:'🫙', grad:'grad-bottles',  key:'cat_bottles'  },
+  { id:'pancakes', icon:'🥞', grad:'grad-pancakes', key:'cat_pancakes' },
+  { id:'sweets',   icon:'🍰', grad:'grad-sweets',   key:'cat_sweets'   }
+];
+
+/* ================================================================
+   i18n
+================================================================ */
+let lang = localStorage.getItem('liper_lang') || 'es';
+function t(k){ return (TR[lang]&&TR[lang][k]) || (TR.es&&TR.es[k]) || k; }
+
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('.lang__btn').forEach(b => b.classList.toggle('active', b.dataset.lang===lang));
+  document.documentElement.lang = lang;
+  renderMenu();
+}
+function setLang(l){ if(!TR[l]) return; lang=l; localStorage.setItem('liper_lang',l); applyLang(); }
+document.querySelectorAll('.lang__btn').forEach(b => b.addEventListener('click',()=>setLang(b.dataset.lang)));
+
+/* ================================================================
+   RENDER MENU
+================================================================ */
+let activeCat = CATS[0].id;
+
+function renderMenu(){
+  /* tabs */
+  document.getElementById('catTabs').innerHTML = CATS.map(c=>`
+    <button class="cat-tab${c.id===activeCat?' active':''}" data-cat="${c.id}">
+      ${c.icon} ${t(c.key)}
+    </button>`).join('');
+
+  /* sections */
+  document.getElementById('menuContent').innerHTML = CATS.map(c=>{
+    const items = MENU.filter(i=>i.cat===c.id);
+    return `<div class="cat-section${c.id===activeCat?' active':''}" id="sec-${c.id}">
+      <div class="items-grid">${items.map((item,idx)=>cardHtml(item,idx)).join('')}</div>
+    </div>`;
+  }).join('');
+
+  /* tab click */
+  document.getElementById('catTabs').addEventListener('click', e=>{
+    const btn = e.target.closest('.cat-tab');
+    if(!btn) return;
+    activeCat = btn.dataset.cat;
+    document.querySelectorAll('.cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.cat===activeCat));
+    document.querySelectorAll('.cat-section').forEach(s=>s.classList.toggle('active',s.id==='sec-'+activeCat));
+  },{once:true});
+
+  /* card click */
+  document.querySelectorAll('.item-card').forEach(card=>{
+    card.addEventListener('click', ()=> openModal(card.dataset.itemId));
+  });
+}
+
+function cardHtml(item, idx){
+  const itemId = MENU.indexOf(item);
+  return `<div class="item-card" data-item-id="${itemId}" role="button" tabindex="0"
+    aria-label="${item.name}">
+    <div class="item-card__visual ${item.grad}">${item.icon}</div>
+    <div class="item-card__body">
+      <h3 class="item-card__name">${item.name}</h3>
+      <p class="item-card__desc">${item.desc[lang]||item.desc.es}</p>
+      <div class="item-card__footer">
+        <span class="item-card__price">Gs. ${item.price}</span>
+        <button class="item-card__btn" aria-label="Ver detalles">+</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ================================================================
+   MODAL
+================================================================ */
+let modalQty = 1;
+let currentItem = null;
+
+function openModal(itemId){
+  currentItem = MENU[itemId];
+  if(!currentItem) return;
+  modalQty = 1;
+  document.getElementById('qtyVal').textContent = 1;
+
+  const vis = document.getElementById('modalVisual');
+  vis.className = `modal__visual ${currentItem.grad}`;
+  vis.querySelector('button') || vis.appendChild(document.getElementById('modalClose'));
+
+  document.getElementById('modalName').textContent   = currentItem.name;
+  document.getElementById('modalDesc').textContent   = currentItem.desc[lang]||currentItem.desc.es;
+  document.getElementById('modalDetail').textContent = currentItem.detail[lang]||currentItem.detail.es;
+  document.getElementById('modalPrice').textContent  = 'Gs. '+currentItem.price;
+
+  /* emoji in visual */
+  let emojiEl = vis.querySelector('.modal-emoji');
+  if(!emojiEl){ emojiEl = document.createElement('span'); emojiEl.className='modal-emoji'; emojiEl.style.cssText='font-size:4.5rem;position:relative;z-index:1;'; vis.insertBefore(emojiEl, vis.firstChild); }
+  emojiEl.textContent = currentItem.icon;
+
+  /* tags */
+  document.getElementById('modalTags').innerHTML = currentItem.tags.map(tag=>`
+    <span class="modal__tag${tag.type==='green'?' modal__tag--green':tag.type==='orange'?' modal__tag--orange':''}">${tag.l}</span>`
+  ).join('');
+
+  /* add button text */
+  const addBtn = document.getElementById('modalAddBtn');
+  addBtn.textContent = t('add_cart');
+  addBtn.classList.remove('modal__added');
+  addBtn.onclick = ()=>{ addToCart(currentItem, modalQty); flashAdded(); };
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function flashAdded(){
+  const btn = document.getElementById('modalAddBtn');
+  btn.classList.add('modal__added');
+  btn.textContent = '✓ '+t('add_cart');
+  setTimeout(()=>{ btn.classList.remove('modal__added'); btn.textContent=t('add_cart'); }, 1400);
+}
+
+document.getElementById('modalClose').onclick = closeModal;
+document.getElementById('modalOverlay').onclick = e=>{ if(e.target===document.getElementById('modalOverlay')) closeModal(); };
+document.getElementById('qtyMinus').onclick = ()=>{ if(modalQty>1){ modalQty--; document.getElementById('qtyVal').textContent=modalQty; }};
+document.getElementById('qtyPlus').onclick  = ()=>{ if(modalQty<99){ modalQty++; document.getElementById('qtyVal').textContent=modalQty; }};
+
+/* ================================================================
+   CART
+================================================================ */
+let cart = [];
+
+function addToCart(item, qty){
+  const existing = cart.find(c=>c.item===item);
+  if(existing) existing.qty += qty;
+  else cart.push({item, qty});
+  updateCart();
+}
+
+function updateCart(){
+  const total = cart.reduce((s,c)=>s+c.qty,0);
+  const fab = document.getElementById('cartFab');
+  document.getElementById('cartFabCount').textContent = total;
+  fab.classList.toggle('hidden', total===0);
+  renderCartItems();
+}
+
+function renderCartItems(){
+  const container = document.getElementById('cartItems');
+  const footer    = document.getElementById('cartFooter');
+  if(cart.length===0){
+    container.innerHTML=`<div class="cart-empty"><div class="cart-empty__icon">🛒</div><span>${t('cart_empty')}</span></div>`;
+    footer.style.display='none';
+    return;
+  }
+  footer.style.display='block';
+  container.innerHTML = cart.map((c,i)=>{
+    const priceNum = parseInt(c.item.price.replace('.',''),10);
+    const subtotal = (priceNum*c.qty).toLocaleString('es');
+    return `<div class="cart-item">
+      <span class="cart-item__icon">${c.item.icon}</span>
+      <div class="cart-item__info">
+        <div class="cart-item__name">${c.item.name}</div>
+        <div class="cart-item__price">Gs. ${subtotal}</div>
+      </div>
+      <div class="cart-item__qty">
+        <button class="cqty-btn" data-idx="${i}" data-op="minus">−</button>
+        <span class="cqty-val">${c.qty}</span>
+        <button class="cqty-btn" data-idx="${i}" data-op="plus">+</button>
+      </div>
+      <button class="cart-remove" data-idx="${i}" aria-label="Eliminar">✕</button>
+    </div>`;
+  }).join('');
+
+  /* total */
+  const totalGs = cart.reduce((s,c)=>{
+    const n = parseInt(c.item.price.replace('.',''),10);
+    return s + n*c.qty;
+  },0);
+  document.getElementById('cartTotal').textContent = 'Gs. '+totalGs.toLocaleString('es');
+
+  /* qty / remove buttons */
+  container.querySelectorAll('.cqty-btn').forEach(btn=>{
+    btn.onclick = ()=>{
+      const i = parseInt(btn.dataset.idx);
+      if(btn.dataset.op==='plus') cart[i].qty++;
+      else if(cart[i].qty>1) cart[i].qty--;
+      else cart.splice(i,1);
+      updateCart();
+    };
+  });
+  container.querySelectorAll('.cart-remove').forEach(btn=>{
+    btn.onclick = ()=>{ cart.splice(parseInt(btn.dataset.idx),1); updateCart(); };
+  });
+}
+
+/* Cart open/close */
+function openCart(){ document.getElementById('cartPanel').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeCart(){ document.getElementById('cartPanel').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); document.body.style.overflow=''; }
+
+document.getElementById('cartFab').onclick    = openCart;
+document.getElementById('cartClose').onclick  = closeCart;
+document.getElementById('cartOverlay').onclick = closeCart;
+
+/* Checkout buttons */
+document.getElementById('btnCounter').onclick = ()=>{
+  closeCart();
+  showOrderModal('counter');
+};
+document.getElementById('btnOnline').onclick = ()=>{
+  closeCart();
+  showOrderModal('online');
+};
+
+/* ================================================================
+   ORDER CONFIRMATION MODAL
+================================================================ */
+function showOrderModal(type){
+  document.getElementById('orderIcon').textContent  = type==='counter' ? '✅' : '💳';
+  document.getElementById('orderTitle').textContent = t(type==='counter'?'order_counter_title':'order_online_title');
+  document.getElementById('orderSub').textContent   = t(type==='counter'?'order_counter_sub':'order_online_sub');
+  document.getElementById('orderModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(type==='counter'){ cart=[]; updateCart(); }
+}
+
+document.getElementById('orderOk').onclick = ()=>{
+  document.getElementById('orderModal').classList.remove('open');
+  document.body.style.overflow='';
+  cart=[]; updateCart();
+};
+
+/* ================================================================
+   NAVBAR SCROLL
+================================================================ */
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled', scrollY>44);
+},{passive:true});
+
+/* Hamburger */
+const ham = document.getElementById('hamburger');
+const drawer = document.getElementById('drawer');
+ham.addEventListener('click',()=>{
+  const open = drawer.classList.toggle('open');
+  ham.classList.toggle('open',open);
+});
+drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{drawer.classList.remove('open');ham.classList.remove('open');}));
+
+/* ================================================================
+   BOOT
+================================================================ */
+applyLang();
+document.getElementById('footerYear') && (document.getElementById('footerYear').textContent = new Date().getFullYear());
+</script>
+</body>
+</html>

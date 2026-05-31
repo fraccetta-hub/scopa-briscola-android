@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menú — El Rincón de Liper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Screen base ── */
+    :root {
+      --ink:    #2e1f14;
+      --ink-2:  #5c4030;
+      --ink-3:  #8a7060;
+      --beige:  #fdf9f4;
+      --beige-1:#f5ece0;
+      --beige-2:#e8d5ba;
+      --terra:  #c4714e;
+      --terra-d:#9e5536;
+      --sage:   #667a54;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--beige);
+      color: var(--ink);
+      line-height: 1.65;
+    }
+    h1,h2,h3,h4 { font-family: 'Playfair Display', serif; }
+
+    /* ── Screen wrapper ── */
+    .page-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+    }
+
+    /* ── Print button (screen only) ── */
+    .print-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--beige-2);
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--terra); }
+    .print-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .55rem 1.4rem;
+      background: var(--terra);
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      font-family: 'Lato', sans-serif;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .print-btn:hover { background: var(--terra-d); }
+    .print-btn svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── Cover ── */
+    .cover {
+      text-align: center;
+      padding: 2rem 0 2.5rem;
+      border-bottom: 1.5px solid var(--beige-2);
+      margin-bottom: 2.5rem;
+    }
+    .cover__logo {
+      width: min(200px, 55vw);
+      height: auto;
+      margin: 0 auto 1.25rem;
+    }
+    .cover__tagline {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--ink-2);
+      margin-bottom: .35rem;
+    }
+    .cover__sub {
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .cover__divider {
+      width: 36px;
+      height: 2px;
+      background: var(--terra);
+      margin: 1rem auto 0;
+    }
+
+    /* ── Category section ── */
+    .cat-section { margin-bottom: 2.25rem; }
+    .cat-header {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: .2rem;
+    }
+    .cat-header__icon { font-size: 1.15rem; }
+    .cat-header__name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .cat-header__rule {
+      flex: 1;
+      height: 1px;
+      background: var(--beige-2);
+      margin-left: .5rem;
+    }
+    .cat-desc-es {
+      font-size: .78rem;
+      font-weight: 300;
+      color: var(--ink-3);
+      font-style: italic;
+      margin-bottom: 1rem;
+      padding-left: 1.9rem;
+    }
+
+    /* ── Items grid — two columns ── */
+    .items-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .2rem 2rem;
+    }
+
+    /* ── Item row ── */
+    .item {
+      padding: .65rem 0;
+      border-bottom: 1px solid var(--beige-1);
+    }
+    .item:last-child { border-bottom: none; }
+    .item__top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: .5rem;
+    }
+    .item__name-es {
+      font-family: 'Playfair Display', serif;
+      font-size: .97rem;
+      font-weight: 600;
+      color: var(--ink);
+      flex: 1;
+    }
+    .item__price {
+      font-family: 'Playfair Display', serif;
+      font-size: .92rem;
+      font-weight: 600;
+      color: var(--terra);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .item__desc-es {
+      font-size: .79rem;
+      color: var(--ink-2);
+      font-weight: 300;
+      line-height: 1.5;
+      margin-top: .1rem;
+    }
+    .item__name-en {
+      font-size: .72rem;
+      font-style: italic;
+      color: var(--ink-3);
+      font-weight: 300;
+      margin-top: .12rem;
+    }
+
+    /* ── Tags ── */
+    .item__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .25rem;
+      margin-top: .3rem;
+    }
+    .tag {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: .08rem .45rem;
+      border-radius: 100px;
+      background: var(--beige-1);
+      color: var(--ink-3);
+      border: 1px solid var(--beige-2);
+    }
+
+    /* ── Footer ── */
+    .menu-footer {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1.5px solid var(--beige-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+    .menu-footer__brand {
+      font-family: 'Playfair Display', serif;
+      font-size: .88rem;
+      color: var(--ink-2);
+      font-style: italic;
+    }
+    .menu-footer__info {
+      font-size: .72rem;
+      font-weight: 300;
+      color: var(--ink-3);
+      text-align: right;
+      line-height: 1.6;
+    }
+    .menu-footer__note {
+      margin-top: 1rem;
+      font-size: .7rem;
+      color: var(--ink-3);
+      font-weight: 300;
+      font-style: italic;
+      text-align: center;
+    }
+
+    /* ── Responsive screen ── */
+    @media (max-width: 600px) {
+      .items-grid { grid-template-columns: 1fr; }
+      .page-wrap  { padding: 1.5rem 1rem 3rem; }
+    }
+
+    /* ================================================================
+       PRINT STYLES
+    ================================================================ */
+    @media print {
+      @page {
+        size: A4;
+        margin: 18mm 16mm 20mm;
+      }
+
+      html { font-size: 10.5pt; }
+      body { background: #fff; }
+
+      .print-bar { display: none !important; }
+      .page-wrap { max-width: 100%; padding: 0; margin: 0; }
+
+      /* Cover */
+      .cover {
+        padding: 0 0 14pt;
+        margin-bottom: 16pt;
+      }
+      .cover__logo { width: 130pt; }
+      .cover__tagline { font-size: 11pt; }
+      .cover__sub     { font-size: 7.5pt; }
+
+      /* Categories */
+      .cat-section { margin-bottom: 14pt; page-break-inside: avoid; }
+      .cat-header__name { font-size: 11pt; }
+      .cat-desc-es { font-size: 7pt; margin-bottom: 6pt; }
+
+      /* Items */
+      .items-grid { gap: 0 16pt; }
+      .item { padding: 4pt 0; }
+      .item__name-es  { font-size: 9pt; }
+      .item__price    { font-size: 8.5pt; }
+      .item__desc-es  { font-size: 7.5pt; }
+      .item__name-en  { font-size: 7pt; }
+      .tag { font-size: 5.5pt; padding: .5pt 3pt; }
+
+      /* Footer */
+      .menu-footer { margin-top: 14pt; padding-top: 8pt; }
+      .menu-footer__brand { font-size: 8pt; }
+      .menu-footer__info  { font-size: 7pt; }
+      .menu-footer__note  { font-size: 6.5pt; margin-top: 6pt; }
+
+      /* Page breaks */
+      .cat-section.break-before { page-break-before: always; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Screen-only bar -->
+  <div class="print-bar">
+    <a href="menu.html" class="back-link">← Volver al menú digital</a>
+    <button class="print-btn" onclick="window.print()">
+      <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Imprimir / Guardar PDF
+    </button>
+  </div>
+
+  <!-- Cover -->
+  <div class="cover">
+    <img src="Images/logo.png" alt="El Rincón de Liper" class="cover__logo" />
+    <p class="cover__tagline">Un rincón donde el tiempo se detiene</p>
+    <p class="cover__sub">Salón de Té · Recoleta, Asunción, Paraguay</p>
+    <div class="cover__divider"></div>
+  </div>
+
+  <!-- ── TÉS CALIENTES ─────────────────────────── -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <span class="cat-header__icon">🍵</span>
+      <span class="cat-header__name">Tés Calientes</span>
+      <div class="cat-header__rule"></div>
+    </div>
+    <p class="cat-desc-es">Infusiones de origen cuidadosamente seleccionadas · <em>Carefully selected single-origin infusions</em></p>
+    <div class="items-grid">
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Earl Grey Clásico</span>
+          <span class="item__price">Gs. 18.000</span>
+        </div>
+        <p class="item__desc-es">Té negro con aceite de bergamota. Notas cítricas y florales.</p>
+        <p class="item__name-en">Black tea with bergamot oil. Citrus and floral notes.</p>
+        <div class="item__tags"><span class="tag">Cafeína media</span><span class="tag">Sri Lanka</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Matcha Ceremonial</span>
+          <span class="item__price">Gs. 28.000</span>
+        </div>
+        <p class="item__desc-es">Grado ceremonial japonés de Uji. Cremoso y umami, batido al momento.</p>
+        <p class="item__name-en">Japanese ceremonial grade from Uji. Creamy and umami, whisked to order.</p>
+        <div class="item__tags"><span class="tag">Cafeína media</span><span class="tag">Japón</span><span class="tag">Sin gluten</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Darjeeling First Flush</span>
+          <span class="item__price">Gs. 22.000</span>
+        </div>
+        <p class="item__desc-es">Primera cosecha del Himalaya. Ligero, floral y muscatel.</p>
+        <p class="item__name-en">First Himalayan harvest. Light, floral and muscatel.</p>
+        <div class="item__tags"><span class="tag">Cafeína baja</span><span class="tag">India</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Assam English Breakfast</span>
+          <span class="item__price">Gs. 18.000</span>
+        </div>
+        <p class="item__desc-es">Robusto y maltado. Ideal con leche para empezar el día.</p>
+        <p class="item__name-en">Robust and malty. Ideal with milk to start the day.</p>
+        <div class="item__tags"><span class="tag">Cafeína alta</span><span class="tag">India</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Rooibos Vainilla</span>
+          <span class="item__price">Gs. 17.000</span>
+        </div>
+        <p class="item__desc-es">Rooibos sudafricano con vainilla natural. Dulce y sin cafeína.</p>
+        <p class="item__name-en">South African rooibos with natural vanilla. Sweet and caffeine-free.</p>
+        <div class="item__tags"><span class="tag">Sin cafeína</span><span class="tag">Vegano</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Chai Masala Gaucho</span>
+          <span class="item__price">Gs. 22.000</span>
+        </div>
+        <p class="item__desc-es">Blend criollo: canela, jengibre, cardamomo y clavo. Intenso.</p>
+        <p class="item__name-en">Creole blend: cinnamon, ginger, cardamom and clove. Intense.</p>
+        <div class="item__tags"><span class="tag">Cafeína media</span><span class="tag">Blend local</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Té Verde Jazmín</span>
+          <span class="item__price">Gs. 20.000</span>
+        </div>
+        <p class="item__desc-es">Té verde chino con flores de jazmín. Ligero y muy aromático.</p>
+        <p class="item__name-en">Chinese green tea with jasmine flowers. Light and very aromatic.</p>
+        <div class="item__tags"><span class="tag">Cafeína baja</span><span class="tag">China</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── TÉS FRÍOS ──────────────────────────────── -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <span class="cat-header__icon">🧊</span>
+      <span class="cat-header__name">Tés Fríos — Cold Brew</span>
+      <div class="cat-header__rule"></div>
+    </div>
+    <p class="cat-desc-es">Macerados en frío durante 12 horas · <em>Cold-brewed for 12 hours</em></p>
+    <div class="items-grid">
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Cold Brew Hibisco &amp; Jengibre</span>
+          <span class="item__price">Gs. 20.000</span>
+        </div>
+        <p class="item__desc-es">Hibisco, jengibre fresco, menta y limón. Refrescante y vivo.</p>
+        <p class="item__name-en">Hibiscus, ginger, mint and lemon. Refreshing and vibrant.</p>
+        <div class="item__tags"><span class="tag">Sin cafeína</span><span class="tag">Sin azúcar</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Green Tea Peach</span>
+          <span class="item__price">Gs. 20.000</span>
+        </div>
+        <p class="item__desc-es">Té verde macerado en frío con durazno de estación.</p>
+        <p class="item__name-en">Cold-brewed green tea with seasonal peach.</p>
+        <div class="item__tags"><span class="tag">Cafeína baja</span><span class="tag">Estacional</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Blue Butterfly Lemonade</span>
+          <span class="item__price">Gs. 24.000</span>
+        </div>
+        <p class="item__desc-es">Té mariposa azul con limón: cambia de color al violeta.</p>
+        <p class="item__name-en">Blue butterfly tea with lemon — changes colour to violet.</p>
+        <div class="item__tags"><span class="tag">Sin cafeína</span><span class="tag">Sin colorantes</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Rooibos Citrus</span>
+          <span class="item__price">Gs. 19.000</span>
+        </div>
+        <p class="item__desc-es">Rooibos con naranja, mandarina y canela. Sin cafeína.</p>
+        <p class="item__name-en">Rooibos with orange, mandarin and cinnamon. Caffeine-free.</p>
+        <div class="item__tags"><span class="tag">Sin cafeína</span><span class="tag">Sin azúcar</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Cold Brew Menta &amp; Lima</span>
+          <span class="item__price">Gs. 18.000</span>
+        </div>
+        <p class="item__desc-es">Té verde con menta fresca y lima. Limpio y muy refrescante.</p>
+        <p class="item__name-en">Green tea with fresh mint and lime. Clean and very refreshing.</p>
+        <div class="item__tags"><span class="tag">Cafeína baja</span><span class="tag">Sin azúcar</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── TRADICIÓN PARAGUAYA ────────────────────── -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <span class="cat-header__icon">🧉</span>
+      <span class="cat-header__name">Tradición Paraguaya</span>
+      <div class="cat-header__rule"></div>
+    </div>
+    <p class="cat-desc-es">Bebidas tradicionales de nuestra tierra · <em>Traditional drinks from our land</em></p>
+    <div class="items-grid">
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Mate Caliente</span>
+          <span class="item__price">Gs. 12.000</span>
+        </div>
+        <p class="item__desc-es">Yerba mate premium en guampa tradicional con bombilla.</p>
+        <p class="item__name-en">Premium yerba mate in traditional gourd with bombilla straw.</p>
+        <div class="item__tags"><span class="tag">Cafeína alta</span><span class="tag">Tradicional 🇵🇾</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Tereré con Yuyos</span>
+          <span class="item__price">Gs. 14.000</span>
+        </div>
+        <p class="item__desc-es">Yerba mate fría con agua helada y hierbas medicinales locales.</p>
+        <p class="item__name-en">Cold yerba mate with iced water and local medicinal herbs.</p>
+        <div class="item__tags"><span class="tag">Cafeína alta</span><span class="tag">Nacional 🇵🇾</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Cocido Paraguayo</span>
+          <span class="item__price">Gs. 15.000</span>
+        </div>
+        <p class="item__desc-es">Yerba mate caramelizada con leche caliente. Único y reconfortante.</p>
+        <p class="item__name-en">Caramelised yerba mate with warm milk. Unique and comforting.</p>
+        <div class="item__tags"><span class="tag">Cafeína media</span><span class="tag">Con leche</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Tereré Premium Rosa Mosqueta</span>
+          <span class="item__price">Gs. 18.000</span>
+        </div>
+        <p class="item__desc-es">Tereré especial con rosa mosqueta, menta y jengibre.</p>
+        <p class="item__name-en">Special tereré with rosehip, mint and ginger.</p>
+        <div class="item__tags"><span class="tag">Cafeína alta</span><span class="tag">Premium</span><span class="tag">Rica en Vit. C</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── CAFÉS FRÍOS ────────────────────────────── -->
+  <div class="cat-section break-before">
+    <div class="cat-header">
+      <span class="cat-header__icon">☕</span>
+      <span class="cat-header__name">Cafés Fríos</span>
+      <div class="cat-header__rule"></div>
+    </div>
+    <p class="cat-desc-es">Café de especialidad preparado en frío · <em>Specialty coffee, cold-prepared</em></p>
+    <div class="items-grid">
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Cold Brew Clásico</span>
+          <span class="item__price">Gs. 22.000</span>
+        </div>
+        <p class="item__desc-es">Café macerado 24 h en frío. Suave, bajo en acidez y limpio.</p>
+        <p class="item__name-en">Coffee cold-brewed 24 h. Smooth, low-acid and clean.</p>
+        <div class="item__tags"><span class="tag">Cafeína alta</span><span class="tag">Single origin</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Dalgona Coffee</span>
+          <span class="item__price">Gs. 26.000</span>
+        </div>
+        <p class="item__desc-es">Crema de café batido a nieve sobre leche fría. Cremoso.</p>
+        <p class="item__name-en">Whipped coffee cream over cold milk. Creamy.</p>
+        <div class="item__tags"><span class="tag">Cafeína alta</span><span class="tag">Con leche</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Iced Latte Vainilla</span>
+          <span class="item__price">Gs. 24.000</span>
+        </div>
+        <p class="item__desc-es">Espresso doble, leche fría y sirope de vainilla artesanal.</p>
+        <p class="item__name-en">Double espresso, cold milk and artisan vanilla syrup.</p>
+        <div class="item__tags"><span class="tag">Cafeína alta</span><span class="tag">Vainilla artesanal</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Matcha Latte Frío</span>
+          <span class="item__price">Gs. 28.000</span>
+        </div>
+        <p class="item__desc-es">Matcha ceremonial con leche de avena y agave. Cremoso.</p>
+        <p class="item__name-en">Ceremonial matcha with oat milk and agave. Creamy.</p>
+        <div class="item__tags"><span class="tag">Cafeína media</span><span class="tag">Vegano</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Cold Brew Coco &amp; Canela</span>
+          <span class="item__price">Gs. 26.000</span>
+        </div>
+        <p class="item__desc-es">Cold brew con leche de coco y canela de Ceilán. Exótico.</p>
+        <p class="item__name-en">Cold brew with coconut milk and Ceylon cinnamon. Exotic.</p>
+        <div class="item__tags"><span class="tag">Cafeína alta</span><span class="tag">Vegano</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── TAKE AWAY ──────────────────────────────── -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <span class="cat-header__icon">🫙</span>
+      <span class="cat-header__name">Take Away · Botellas</span>
+      <div class="cat-header__rule"></div>
+    </div>
+    <p class="cat-desc-es">Preparados artesanalmente, listos para llevar · <em>Artisanally prepared, ready to take away</em></p>
+    <div class="items-grid">
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Cold Brew Hibisco 500 ml</span>
+          <span class="item__price">Gs. 28.000</span>
+        </div>
+        <p class="item__desc-es">Receta estrella embotellada con etiqueta propia.</p>
+        <p class="item__name-en">Star recipe bottled with our own label.</p>
+        <div class="item__tags"><span class="tag">Sin cafeína</span><span class="tag">500 ml</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Green Tea Peach 1 L</span>
+          <span class="item__price">Gs. 45.000</span>
+        </div>
+        <p class="item__desc-es">Té verde con durazno, formato familiar. Ideal para compartir.</p>
+        <p class="item__name-en">Green tea with peach, family size. Perfect for sharing.</p>
+        <div class="item__tags"><span class="tag">Cafeína baja</span><span class="tag">1 litro</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Earl Grey Cold Brew 500 ml</span>
+          <span class="item__price">Gs. 30.000</span>
+        </div>
+        <p class="item__desc-es">El favorito de la casa en versión embotellada.</p>
+        <p class="item__name-en">The house favourite in bottled version.</p>
+        <div class="item__tags"><span class="tag">Cafeína media</span><span class="tag">500 ml</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── PANCAKES ───────────────────────────────── -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <span class="cat-header__icon">🥞</span>
+      <span class="cat-header__name">Pancakes</span>
+      <div class="cat-header__rule"></div>
+    </div>
+    <p class="cat-desc-es">Preparados al momento con ingredientes frescos · <em>Made to order with fresh ingredients</em></p>
+    <div class="items-grid">
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Pancakes Clásicos con Maple</span>
+          <span class="item__price">Gs. 28.000</span>
+        </div>
+        <p class="item__desc-es">Tres pancakes esponjosos con maple real y fruta fresca de estación.</p>
+        <p class="item__name-en">Three fluffy pancakes with real maple syrup and fresh seasonal fruit.</p>
+        <div class="item__tags"><span class="tag">Vegetariano</span><span class="tag">Maple canadiense</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Pancakes Frutos del Bosque</span>
+          <span class="item__price">Gs. 32.000</span>
+        </div>
+        <p class="item__desc-es">Con compota de frutos rojos, crema chantilly y miel artesanal.</p>
+        <p class="item__name-en">With red berry compote, chantilly cream and artisan honey.</p>
+        <div class="item__tags"><span class="tag">Vegetariano</span><span class="tag">Sin gluten disp.</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── DULCES ─────────────────────────────────── -->
+  <div class="cat-section">
+    <div class="cat-header">
+      <span class="cat-header__icon">🍰</span>
+      <span class="cat-header__name">Dulces de Pastelería</span>
+      <div class="cat-header__rule"></div>
+    </div>
+    <p class="cat-desc-es">Elaborados a diario por pastelería local · <em>Crafted daily by local bakery</em></p>
+    <div class="items-grid">
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Scone de Manteca</span>
+          <span class="item__price">Gs. 18.000</span>
+        </div>
+        <p class="item__desc-es">Horneado a diario. Con mermelada artesanal y clotted cream.</p>
+        <p class="item__name-en">Baked daily. With artisan jam and clotted cream.</p>
+        <div class="item__tags"><span class="tag">Vegetariano</span><span class="tag">Horneado hoy</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Brownie de Cacao 70%</span>
+          <span class="item__price">Gs. 20.000</span>
+        </div>
+        <p class="item__desc-es">Chocolate oscuro 70%, sin harina, húmedo. Servido tibio.</p>
+        <p class="item__name-en">70% dark chocolate, flourless, moist. Served warm.</p>
+        <div class="item__tags"><span class="tag">Sin gluten</span><span class="tag">Vegano disp.</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Tarta de Limón Merengada</span>
+          <span class="item__price">Gs. 22.000</span>
+        </div>
+        <p class="item__desc-es">Masa mantecada, crema de limón y merengue italiano tostado.</p>
+        <p class="item__name-en">Shortcrust pastry, lemon curd and toasted Italian meringue.</p>
+        <div class="item__tags"><span class="tag">Vegetariano</span><span class="tag">Limón fresco</span></div>
+      </div>
+
+      <div class="item">
+        <div class="item__top">
+          <span class="item__name-es">Cheesecake Frutos Rojos</span>
+          <span class="item__price">Gs. 26.000</span>
+        </div>
+        <p class="item__desc-es">Base de galleta, queso crema y coulis de frutos rojos. Sin horno.</p>
+        <p class="item__name-en">Cookie base, cream cheese and red berry coulis. No-bake.</p>
+        <div class="item__tags"><span class="tag">Vegetariano</span><span class="tag">Sin horno</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="menu-footer">
+    <span class="menu-footer__brand">El Rincón de Liper</span>
+    <div class="menu-footer__info">
+      Recoleta, Asunción, Paraguay<br>
+      Lunes–Viernes 09:00–20:00 · Sábado 10:00–21:00
+    </div>
+  </div>
+  <p class="menu-footer__note">
+    Precios en guaraníes (Gs.) · Los productos con alérgenos pueden cambiar — consulte al personal · Carta sujeta a disponibilidad estacional.
+    <br><em>Prices in Paraguayan Guaraní · Allergen information available on request · Menu subject to seasonal availability.</em>
+  </p>
+
+</div><!-- /page-wrap -->
+</body>
+</html>

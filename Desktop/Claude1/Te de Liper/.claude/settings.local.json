@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(git -C \"C:\\\\Users\\\\Utente\\\\Desktop\\\\Claude1\\\\Te de Liper\" status)",
-      "Bash(git -C \"C:\\\\Users\\\\Utente\\\\Desktop\\\\Claude1\\\\Te de Liper\" log --oneline -5)"
+      "Bash(git -C \"C:\\\\Users\\\\Utente\\\\Desktop\\\\Claude1\\\\Te de Liper\" log --oneline -5)",
+      "Bash(git -C \"C:\\\\Users\\\\Utente\" add \"Desktop/Claude1/Te de Liper/index.html\")",
+      "Bash(git -C \"C:\\\\Users\\\\Utente\" diff --cached --stat)",
+      "WebFetch(domain:www.teablendsforyou.com.ar)"
     ]
   }
 }
