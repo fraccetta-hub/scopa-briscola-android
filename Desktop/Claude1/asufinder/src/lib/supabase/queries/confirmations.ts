@@ -21,9 +21,10 @@ export async function getConfirmationCount(placeId: string): Promise<number> {
 export async function addConfirmation(placeId: string, userId: string): Promise<void> {
   const supabase = createClient()
   const row: ConfirmationInsert = { place_id: placeId, user_id: userId }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await supabase
     .from('confirmations')
-    .insert(row)
+    .insert(row as any)
 
   if (error) throw error
 }

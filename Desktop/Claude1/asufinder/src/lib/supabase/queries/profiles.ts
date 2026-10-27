@@ -23,10 +23,11 @@ export async function updatePoints(userId: string, delta: number): Promise<void>
   const profile = await getProfile(userId)
   const newPoints = profile.points + delta
 
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from('profiles')
     .update({ points: newPoints })
-    .eq('id', userId)
+    .eq('id', userId) as { error: { message: string } | null }
 
   if (error) throw error
 }

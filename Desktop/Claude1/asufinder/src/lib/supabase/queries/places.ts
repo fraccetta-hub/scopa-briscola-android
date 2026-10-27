@@ -49,9 +49,10 @@ export async function getPlace(id: string): Promise<Place | null> {
 
 export async function insertPlace(data: PlaceInsert): Promise<Place> {
   const supabase = createClient()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: inserted, error } = await supabase
     .from('places')
-    .insert(data)
+    .insert(data as any)
     .select()
     .single()
 
@@ -61,14 +62,16 @@ export async function insertPlace(data: PlaceInsert): Promise<Place> {
 
 export async function updatePlace(id: string, patch: Partial<Place>): Promise<Place> {
   const supabase = createClient()
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from('places')
     .update(patch)
     .eq('id', id)
     .select()
-    .single()
+    .single() as { data: Place | null; error: { message: string } | null }
 
-  if (error) throw error
+  if (error) throw new Error(error.message)
+  if (!data) throw new Error('No data returned from update')
   return data
 }
 
@@ -100,7 +103,7 @@ export async function checkDuplicates(
 
   const nameLower = name.toLowerCase()
 
-  return data.filter((place) => {
+  return (data as Place[]).filter((place) => {
     const placeName = place.name.toLowerCase()
     // Simple similarity approximation: one includes the other, or shared
     // prefix length / max length exceeds the threshold.

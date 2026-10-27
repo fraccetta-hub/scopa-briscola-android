@@ -36,6 +36,7 @@ export type Database = {
           points?: number
           created_at?: string
         }
+        Relationships: []
       }
       places: {
         Row: {
@@ -107,6 +108,7 @@ export type Database = {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       confirmations: {
         Row: {
@@ -127,6 +129,7 @@ export type Database = {
           user_id?: string
           created_at?: string
         }
+        Relationships: []
       }
       flags: {
         Row: {
@@ -150,6 +153,7 @@ export type Database = {
           reason?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       place_products: {
         Row: {
@@ -185,6 +189,7 @@ export type Database = {
           expires_at?: string
           created_at?: string
         }
+        Relationships: []
       }
       product_votes: {
         Row: {
@@ -208,6 +213,7 @@ export type Database = {
           type?: 'confirm' | 'deny'
           created_at?: string
         }
+        Relationships: []
       }
       tag_synonyms: {
         Row: {
@@ -225,6 +231,7 @@ export type Database = {
           tag_a?: string
           tag_b?: string
         }
+        Relationships: []
       }
       reviews: {
         Row: {
@@ -248,6 +255,7 @@ export type Database = {
           body?: string
           created_at?: string
         }
+        Relationships: []
       }
       place_owners: {
         Row: {
@@ -277,6 +285,7 @@ export type Database = {
           approved_by?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       otp_tokens: {
         Row: {
@@ -306,6 +315,7 @@ export type Database = {
           expires_at?: string
           created_at?: string
         }
+        Relationships: []
       }
       place_edits: {
         Row: {
