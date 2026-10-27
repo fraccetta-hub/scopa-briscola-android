@@ -33,7 +33,7 @@ export function Input({
 
   const baseStyle: React.CSSProperties = {
     border: error
-      ? '1.5px solid #DC2626'
+      ? '1.5px solid var(--color-error)'
       : '1.5px solid color-mix(in srgb, var(--color-navy) 20%, transparent)',
     borderRadius: '0.375rem',
     backgroundColor: 'var(--color-surface)',
@@ -76,14 +76,8 @@ export function Input({
         />
       </div>
       {error && (
-        <span style={{ color: '#DC2626', fontSize: '0.75rem' }}>{error}</span>
+        <span style={{ color: 'var(--color-error)', fontSize: '0.75rem' }}>{error}</span>
       )}
-      <style>{`
-        .input-field:focus {
-          border-color: var(--color-primary) !important;
-          box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
-        }
-      `}</style>
     </div>
   );
 }

@@ -15,6 +15,23 @@ const sizeClasses: Record<Size, string> = {
   lg: 'px-6 py-3 text-lg',
 };
 
+const variantStyle: Record<Variant, React.CSSProperties> = {
+  primary: {
+    backgroundColor: 'var(--color-primary)',
+    color: 'var(--color-white)',
+  },
+  secondary: {
+    backgroundColor: 'transparent',
+    color: 'var(--color-primary)',
+    border: '1.5px solid var(--color-primary)',
+  },
+  ghost: {
+    backgroundColor: 'transparent',
+    color: 'var(--color-navy)',
+    border: 'none',
+  },
+};
+
 export function Button({
   variant = 'primary',
   size = 'md',
@@ -25,23 +42,6 @@ export function Button({
   const base =
     'inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
 
-  const variantStyle: Record<Variant, React.CSSProperties> = {
-    primary: {
-      backgroundColor: 'var(--color-primary)',
-      color: '#fff',
-    },
-    secondary: {
-      backgroundColor: 'transparent',
-      color: 'var(--color-primary)',
-      border: '1.5px solid var(--color-primary)',
-    },
-    ghost: {
-      backgroundColor: 'transparent',
-      color: 'var(--color-navy)',
-      border: 'none',
-    },
-  };
-
   return (
     <button
       className={`${base} ${sizeClasses[size]} btn-${variant} ${className}`}
@@ -49,14 +49,6 @@ export function Button({
       {...props}
     >
       {children}
-      <style>{`
-        .btn-primary:hover:not(:disabled) { filter: brightness(0.9); }
-        .btn-secondary:hover:not(:disabled) { background-color: var(--color-mint); }
-        .btn-ghost:hover:not(:disabled) { background-color: var(--color-mint); }
-        .btn-primary:focus { --tw-ring-color: var(--color-primary); }
-        .btn-secondary:focus { --tw-ring-color: var(--color-primary); }
-        .btn-ghost:focus { --tw-ring-color: var(--color-navy); }
-      `}</style>
     </button>
   );
 }

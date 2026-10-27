@@ -1,8 +1,8 @@
+@import '../styles/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import '../styles/tokens.css';
 
 :root {
   --background: #ffffff;
@@ -26,4 +26,15 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Button hover/focus styles */
+.btn-primary:hover:not(:disabled) { filter: brightness(0.9); }
+.btn-secondary:hover:not(:disabled) { background-color: var(--color-mint); }
+.btn-ghost:hover:not(:disabled) { background-color: var(--color-mint); }
+
+/* Input focus styles */
+.input-field:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }

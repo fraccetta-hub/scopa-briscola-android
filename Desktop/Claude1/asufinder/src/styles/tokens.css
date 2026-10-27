@@ -5,4 +5,20 @@
   --color-navy: #1A3A4A;
   --color-surface: #FFFFFF;
   --color-bg: #F0F4F8;
+
+  /* Status colors */
+  --color-status-live-bg: #D1FAE5;
+  --color-status-live-fg: #065F46;
+  --color-status-pending-bg: #FEF3C7;
+  --color-status-pending-fg: #92400E;
+  --color-status-review-bg: #FFEDD5;
+  --color-status-review-fg: #9A3412;
+  --color-status-closed-bg: #F3F4F6;
+  --color-status-closed-fg: #4B5563;
+  --color-status-rejected-bg: #FEE2E2;
+  --color-status-rejected-fg: #991B1B;
+
+  /* Semantic */
+  --color-white: #FFFFFF;
+  --color-error: #DC2626;
 }

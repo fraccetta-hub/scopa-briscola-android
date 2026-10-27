@@ -11,17 +11,17 @@ interface BadgeProps {
 }
 
 const statusStyles: Record<StatusValue, React.CSSProperties> = {
-  live: { backgroundColor: '#D1FAE5', color: '#065F46' },
-  pending: { backgroundColor: '#FEF3C7', color: '#92400E' },
-  needs_review: { backgroundColor: '#FFEDD5', color: '#9A3412' },
-  closed: { backgroundColor: '#F3F4F6', color: '#4B5563' },
-  rejected: { backgroundColor: '#FEE2E2', color: '#991B1B' },
+  live: { backgroundColor: 'var(--color-status-live-bg)', color: 'var(--color-status-live-fg)' },
+  pending: { backgroundColor: 'var(--color-status-pending-bg)', color: 'var(--color-status-pending-fg)' },
+  needs_review: { backgroundColor: 'var(--color-status-review-bg)', color: 'var(--color-status-review-fg)' },
+  closed: { backgroundColor: 'var(--color-status-closed-bg)', color: 'var(--color-status-closed-fg)' },
+  rejected: { backgroundColor: 'var(--color-status-rejected-bg)', color: 'var(--color-status-rejected-fg)' },
 };
 
 const variantStyles: Record<Exclude<BadgeVariant, 'status'>, React.CSSProperties> = {
   category: { backgroundColor: 'var(--color-mint)', color: 'var(--color-primary)' },
-  role: { backgroundColor: 'var(--color-navy)', color: '#fff' },
-  featured: { backgroundColor: 'var(--color-accent)', color: '#fff' },
+  role: { backgroundColor: 'var(--color-navy)', color: 'var(--color-white)' },
+  featured: { backgroundColor: 'var(--color-accent)', color: 'var(--color-white)' },
 };
 
 export function Badge({ variant, status, className = '', children }: BadgeProps) {
