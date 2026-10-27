@@ -32,6 +32,9 @@ body {
 .btn-primary:hover:not(:disabled) { filter: brightness(0.9); }
 .btn-secondary:hover:not(:disabled) { background-color: var(--color-mint); }
 .btn-ghost:hover:not(:disabled) { background-color: var(--color-mint); }
+.btn-primary:focus { --tw-ring-color: var(--color-primary); }
+.btn-secondary:focus { --tw-ring-color: var(--color-primary); }
+.btn-ghost:focus { --tw-ring-color: var(--color-navy); }
 
 /* Input focus styles */
 .input-field:focus {
