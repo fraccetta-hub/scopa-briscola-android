@@ -1,0 +1,102 @@
+{
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "addPlace": "Add place",
+    "login": "Log in",
+    "register": "Register",
+    "logout": "Log out",
+    "howItWorks": "How it works"
+  },
+  "search": {
+    "placeholder": "What are you looking for? E.g.: shoe store, screws, thermos...",
+    "button": "Search",
+    "noResults": "No places found",
+    "resultsCount": "{count} places found",
+    "filterByCategory": "Filter by category"
+  },
+  "place": {
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "website": "Website",
+    "address": "Address",
+    "hours": "Hours",
+    "category": "Category",
+    "products": "Products / Services",
+    "addToMap": "View on map",
+    "claim": "I am the owner",
+    "confirm": "Confirm place",
+    "confirmCount": "{count} of {required} confirmations",
+    "status": {
+      "live": "Verified",
+      "pending": "Pending",
+      "review": "Under review",
+      "closed": "Closed",
+      "rejected": "Rejected"
+    },
+    "featured": "Featured"
+  },
+  "forms": {
+    "addPlace": {
+      "title": "Add a place",
+      "name": "Place name",
+      "category": "Category",
+      "barrio": "Neighborhood",
+      "address": "Address (optional)",
+      "phone": "Phone (optional)",
+      "whatsapp": "WhatsApp (optional)",
+      "website": "Website (optional)",
+      "products": "What do they sell or do here?",
+      "productsHint": "E.g.: Nike sneakers, phone repairs, custom cakes",
+      "submit": "Add place",
+      "cancel": "Cancel",
+      "duplicateWarning": "This place may already exist:",
+      "success": "Place added successfully!"
+    }
+  },
+  "errors": {
+    "required": "This field is required",
+    "tooShort": "Minimum {min} characters",
+    "tooLong": "Maximum {max} characters",
+    "invalidUrl": "Invalid URL",
+    "invalidPhone": "Invalid phone number",
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Not found",
+    "unauthorized": "You must be logged in"
+  },
+  "confirmation": {
+    "title": "Confirm place",
+    "description": "Does this place exist and is the information correct?",
+    "confirm": "Yes, confirm",
+    "notFound": "Does not exist or is closed",
+    "alreadyConfirmed": "You already confirmed this place",
+    "limitReached": "You have reached your daily confirmation limit",
+    "success": "Thank you for confirming!"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Create account",
+    "email": "Email address",
+    "password": "Password",
+    "username": "Username",
+    "loginButton": "Log in",
+    "registerButton": "Create account",
+    "googleLogin": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "register": "Register",
+    "login": "Log in"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "seeAll": "See all",
+    "shareWhatsApp": "Share on WhatsApp",
+    "openMaps": "Open in Maps"
+  }
+}

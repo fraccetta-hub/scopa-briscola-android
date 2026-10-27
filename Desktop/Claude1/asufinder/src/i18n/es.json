@@ -1,0 +1,102 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "search": "Buscar",
+    "addPlace": "Agregar lugar",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "howItWorks": "Cómo funciona"
+  },
+  "search": {
+    "placeholder": "¿Qué estás buscando? Ej: zapatería, tornillos, termos...",
+    "button": "Buscar",
+    "noResults": "No se encontraron lugares",
+    "resultsCount": "{count} lugares encontrados",
+    "filterByCategory": "Filtrar por categoría"
+  },
+  "place": {
+    "phone": "Teléfono",
+    "whatsapp": "WhatsApp",
+    "website": "Sitio web",
+    "address": "Dirección",
+    "hours": "Horario",
+    "category": "Categoría",
+    "products": "Productos / Servicios",
+    "addToMap": "Ver en mapa",
+    "claim": "Soy el dueño",
+    "confirm": "Confirmar lugar",
+    "confirmCount": "{count} de {required} confirmaciones",
+    "status": {
+      "live": "Verificado",
+      "pending": "Pendiente",
+      "review": "En revisión",
+      "closed": "Cerrado",
+      "rejected": "Rechazado"
+    },
+    "featured": "Destacado"
+  },
+  "forms": {
+    "addPlace": {
+      "title": "Agregar un lugar",
+      "name": "Nombre del lugar",
+      "category": "Categoría",
+      "barrio": "Barrio",
+      "address": "Dirección (opcional)",
+      "phone": "Teléfono (opcional)",
+      "whatsapp": "WhatsApp (opcional)",
+      "website": "Sitio web (opcional)",
+      "products": "¿Qué venden o hacen aquí?",
+      "productsHint": "Ej: zapatillas Nike, reparación de celulares, tortas personalizadas",
+      "submit": "Agregar lugar",
+      "cancel": "Cancelar",
+      "duplicateWarning": "Puede que este lugar ya exista:",
+      "success": "¡Lugar agregado exitosamente!"
+    }
+  },
+  "errors": {
+    "required": "Este campo es requerido",
+    "tooShort": "Mínimo {min} caracteres",
+    "tooLong": "Máximo {max} caracteres",
+    "invalidUrl": "URL inválida",
+    "invalidPhone": "Número de teléfono inválido",
+    "generic": "Algo salió mal. Intenta de nuevo.",
+    "notFound": "No encontrado",
+    "unauthorized": "Debes iniciar sesión"
+  },
+  "confirmation": {
+    "title": "Confirmar lugar",
+    "description": "¿Este lugar existe y la información es correcta?",
+    "confirm": "Sí, confirmar",
+    "notFound": "No existe o está cerrado",
+    "alreadyConfirmed": "Ya confirmaste este lugar",
+    "limitReached": "Alcanzaste el límite diario de confirmaciones",
+    "success": "¡Gracias por confirmar!"
+  },
+  "auth": {
+    "loginTitle": "Iniciar sesión",
+    "registerTitle": "Crear cuenta",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "username": "Nombre de usuario",
+    "loginButton": "Iniciar sesión",
+    "registerButton": "Crear cuenta",
+    "googleLogin": "Continuar con Google",
+    "noAccount": "¿No tenés cuenta?",
+    "hasAccount": "¿Ya tenés cuenta?",
+    "register": "Registrarse",
+    "login": "Iniciar sesión"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "close": "Cerrar",
+    "seeAll": "Ver todos",
+    "shareWhatsApp": "Compartir por WhatsApp",
+    "openMaps": "Abrir en Maps"
+  }
+}

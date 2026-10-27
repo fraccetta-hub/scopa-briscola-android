@@ -2,7 +2,10 @@
 // All direct Supabase calls for the `confirmations` table go here.
 
 import { createClient } from '../client'
+import type { Database } from '../types'
 import { SETTINGS } from '@/config/settings'
+
+type ConfirmationInsert = Database['public']['Tables']['confirmations']['Insert']
 
 export async function getConfirmationCount(placeId: string): Promise<number> {
   const supabase = createClient()
@@ -17,10 +20,10 @@ export async function getConfirmationCount(placeId: string): Promise<number> {
 
 export async function addConfirmation(placeId: string, userId: string): Promise<void> {
   const supabase = createClient()
-  const { error } = await supabase.from('confirmations').insert({
-    place_id: placeId,
-    user_id: userId,
-  })
+  const row: ConfirmationInsert = { place_id: placeId, user_id: userId }
+  const { error } = await supabase
+    .from('confirmations')
+    .insert(row)
 
   if (error) throw error
 }
