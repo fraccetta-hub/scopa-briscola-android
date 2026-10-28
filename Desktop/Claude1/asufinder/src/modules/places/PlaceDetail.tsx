@@ -6,6 +6,7 @@ import type { Place } from '@/lib/supabase/types'
 import { Badge } from '@/ui/Badge'
 import { ClaimButton } from '@/modules/owner/ClaimButton'
 import { ReviewList } from '@/modules/reviews/ReviewList'
+import { TagList } from '@/modules/products/TagList'
 
 const PlaceMap = dynamic(() => import('./PlaceMap').then((m) => m.PlaceMap), { ssr: false })
 
@@ -118,6 +119,8 @@ export function PlaceDetail({ place, isClaimed = false, userId = null }: PlaceDe
       )}
 
       <ReviewList placeId={place.id} />
+
+      <TagList placeId={place.id} userId={userId} />
     </article>
   )
 }

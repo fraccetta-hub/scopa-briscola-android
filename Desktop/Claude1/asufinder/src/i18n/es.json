@@ -143,6 +143,20 @@
     "colName": "Nombre",
     "colStatus": "Estado"
   },
+  "products": {
+    "title": "Productos / Servicios",
+    "noTags": "Sin etiquetas aún",
+    "addTag": "Agregar etiqueta",
+    "placeholder": "Ej: zapatillas Nike, termo Stanley...",
+    "submit": "Agregar",
+    "duplicateTag": "Esta etiqueta ya existe",
+    "rateLimit": "Límite diario alcanzado",
+    "blocked": "Contenido no permitido",
+    "confirm": "Confirmar",
+    "deny": "No está aquí",
+    "success": "¡Etiqueta agregada!",
+    "uncertain": "No confirmado recientemente"
+  },
   "common": {
     "loading": "Cargando...",
     "save": "Guardar",

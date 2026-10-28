@@ -29,7 +29,28 @@ export async function searchPlaces(
   const { data, error } = await req.range(offset, offset + limit - 1)
 
   if (error) throw error
-  return data ?? []
+  const nameResults: Place[] = data ?? []
+
+  // Also search by product tags and merge results
+  let tagResults: Place[] = []
+  try {
+    const { searchByTag } = await import('./products')
+    tagResults = await searchByTag(query, 20)
+  } catch {
+    // tag search is best-effort
+  }
+
+  // Deduplicate by place id
+  const seen = new Set<string>(nameResults.map((p) => p.id))
+  const merged = [...nameResults]
+  for (const place of tagResults) {
+    if (!seen.has(place.id)) {
+      seen.add(place.id)
+      merged.push(place)
+    }
+  }
+
+  return merged
 }
 
 export async function getPlace(id: string): Promise<Place | null> {

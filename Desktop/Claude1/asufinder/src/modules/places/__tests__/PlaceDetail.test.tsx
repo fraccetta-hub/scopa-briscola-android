@@ -16,6 +16,10 @@ vi.mock('@/modules/reviews/ReviewList', () => ({
   ReviewList: () => null,
 }))
 
+vi.mock('@/modules/products/TagList', () => ({
+  TagList: () => null,
+}))
+
 const mockPlace: Place = {
   id: 'test-id',
   name: 'Farmacia Central',

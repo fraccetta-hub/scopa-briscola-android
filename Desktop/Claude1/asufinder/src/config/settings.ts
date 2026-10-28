@@ -14,6 +14,8 @@ export const SETTINGS = {
     maxPlacesPerUserPerDay: 3,
     maxReviewsPerUserPerDay: 10,
     minAccountAgeMinutes: 60,
+    maxTagsPerUserPerDay: 10,
+    maxNewTagsPerPlacePerWeek: 20,
   },
 
   // Flagging
@@ -40,6 +42,7 @@ export const SETTINGS = {
     addPlace: 5,
     confirmPlace: 2,
     writeReview: 1,
+    addTag: 1,
     placeGetsFlagged: -3,
     placeGets5Flags: -5,
   },

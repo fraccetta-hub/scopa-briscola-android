@@ -143,6 +143,20 @@
     "colName": "Name",
     "colStatus": "Status"
   },
+  "products": {
+    "title": "Products / Services",
+    "noTags": "No tags yet",
+    "addTag": "Add tag",
+    "placeholder": "E.g.: Nike sneakers, Stanley thermos...",
+    "submit": "Add",
+    "duplicateTag": "This tag already exists",
+    "rateLimit": "Daily limit reached",
+    "blocked": "Content not allowed",
+    "confirm": "Confirm",
+    "deny": "Not here",
+    "success": "Tag added!",
+    "uncertain": "Not recently confirmed"
+  },
   "common": {
     "loading": "Loading...",
     "save": "Save",
