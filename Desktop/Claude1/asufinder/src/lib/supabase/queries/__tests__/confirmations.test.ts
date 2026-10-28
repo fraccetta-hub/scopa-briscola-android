@@ -28,8 +28,8 @@ function makeBuilder(resolved: BuilderResult) {
 
 let mockBuilder: ReturnType<typeof makeBuilder>
 
-vi.mock('../../client', () => ({
-  createClient: vi.fn(() => ({
+vi.mock('../../server', () => ({
+  createClient: vi.fn(async () => ({
     from: vi.fn(() => mockBuilder),
   })),
 }))

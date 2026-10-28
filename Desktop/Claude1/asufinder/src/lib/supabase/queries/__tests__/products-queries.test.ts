@@ -4,7 +4,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock supabase clients before importing the module under test
-vi.mock('@/lib/supabase/client', () => ({ createClient: vi.fn() }))
+vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn() }))
 vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: vi.fn() }))
 vi.mock('@/lib/supabase/queries/profiles', () => ({
   updatePoints: vi.fn(),
@@ -16,7 +16,7 @@ vi.mock('@/config/settings', () => ({
   },
 }))
 
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { updatePointsAdmin } from '@/lib/supabase/queries/profiles'
 import { voteTag, addTag } from '../products'
@@ -95,7 +95,7 @@ describe('addTag', () => {
         }),
       })),
     }
-    mockCreateClient.mockReturnValue(mockClient)
+    mockCreateClient.mockResolvedValue(mockClient)
 
     const result = await addTag('place-1', 'zapatillas', 'user-1', true)
     expect((insertedRow as Record<string, unknown>).status).toBe('confirmed')
@@ -118,7 +118,7 @@ describe('addTag', () => {
         }),
       })),
     }
-    mockCreateClient.mockReturnValue(mockClient)
+    mockCreateClient.mockResolvedValue(mockClient)
 
     const result = await addTag('place-1', 'zapatillas', 'user-1', false)
     expect((insertedRow as Record<string, unknown>).status).toBe('pending')
@@ -134,7 +134,7 @@ describe('voteTag — confirm transitions', () => {
       added_by: 'other', expires_at: null,
     }
     const captured: { patch: unknown } = { patch: null }
-    mockCreateClient.mockReturnValue(makeRegularClient())
+    mockCreateClient.mockResolvedValue(makeRegularClient())
     mockCreateAdminClient.mockReturnValue(makeAdminClient(tagState, captured))
 
     await voteTag('pp1', 'user-1', 'confirm', false)
@@ -150,7 +150,7 @@ describe('voteTag — confirm transitions', () => {
       added_by: 'other', expires_at: null,
     }
     const captured: { patch: unknown } = { patch: null }
-    mockCreateClient.mockReturnValue(makeRegularClient())
+    mockCreateClient.mockResolvedValue(makeRegularClient())
     mockCreateAdminClient.mockReturnValue(makeAdminClient(tagState, captured))
 
     await voteTag('pp1', 'user-1', 'confirm', false)
@@ -166,7 +166,7 @@ describe('voteTag — confirm transitions', () => {
       added_by: 'other', expires_at: null,
     }
     const captured: { patch: unknown } = { patch: null }
-    mockCreateClient.mockReturnValue(makeRegularClient())
+    mockCreateClient.mockResolvedValue(makeRegularClient())
     mockCreateAdminClient.mockReturnValue(makeAdminClient(tagState, captured))
 
     await voteTag('pp1', 'user-1', 'confirm', false)
@@ -183,7 +183,7 @@ describe('voteTag — deny transitions', () => {
       added_by: 'other-user', expires_at: null,
     }
     const captured: { patch: unknown } = { patch: null }
-    mockCreateClient.mockReturnValue(makeRegularClient())
+    mockCreateClient.mockResolvedValue(makeRegularClient())
     mockCreateAdminClient.mockReturnValue(makeAdminClient(tagState, captured))
     mockUpdatePointsAdmin.mockResolvedValue(undefined)
 
@@ -201,7 +201,7 @@ describe('voteTag — deny transitions', () => {
       added_by: 'other-user', expires_at: null,
     }
     const captured: { patch: unknown } = { patch: null }
-    mockCreateClient.mockReturnValue(makeRegularClient())
+    mockCreateClient.mockResolvedValue(makeRegularClient())
     mockCreateAdminClient.mockReturnValue(makeAdminClient(tagState, captured))
     mockUpdatePointsAdmin.mockResolvedValue(undefined)
 
@@ -218,7 +218,7 @@ describe('voteTag — deny transitions', () => {
       added_by: 'other', expires_at: null,
     }
     const captured: { patch: unknown } = { patch: null }
-    mockCreateClient.mockReturnValue(makeRegularClient())
+    mockCreateClient.mockResolvedValue(makeRegularClient())
     mockCreateAdminClient.mockReturnValue(makeAdminClient(tagState, captured))
 
     await voteTag('pp1', 'user-1', 'deny', false)

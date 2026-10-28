@@ -1,10 +1,11 @@
 // ASUFinder — WhatsApp OTP Service
+import { randomInt } from 'crypto'
 
 /**
- * Generate a random 6-digit numeric OTP string.
+ * Generate a cryptographically random 6-digit numeric OTP string.
  */
 export function generateOTP(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString()
+  return String(randomInt(0, 1_000_000)).padStart(6, '0')
 }
 
 /**

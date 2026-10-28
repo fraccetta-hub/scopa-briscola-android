@@ -1,14 +1,14 @@
 // ASUFinder — Confirmation queries
 // All direct Supabase calls for the `confirmations` table go here.
 
-import { createClient } from '../client'
+import { createClient } from '../server'
 import type { Database } from '../types'
 import { SETTINGS } from '@/config/settings'
 
 type ConfirmationInsert = Database['public']['Tables']['confirmations']['Insert']
 
 export async function getConfirmationCount(placeId: string): Promise<number> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { count, error } = await supabase
     .from('confirmations')
     .select('*', { count: 'exact', head: true })
@@ -19,7 +19,7 @@ export async function getConfirmationCount(placeId: string): Promise<number> {
 }
 
 export async function addConfirmation(placeId: string, userId: string): Promise<void> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const row: ConfirmationInsert = { place_id: placeId, user_id: userId }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await supabase
@@ -30,9 +30,9 @@ export async function addConfirmation(placeId: string, userId: string): Promise<
 }
 
 export async function getUserConfirmationsToday(userId: string): Promise<number> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const startOfDay = new Date()
-  startOfDay.setHours(0, 0, 0, 0)
+  startOfDay.setUTCHours(0, 0, 0, 0)
 
   const { count, error } = await supabase
     .from('confirmations')

@@ -1,7 +1,7 @@
 // ASUFinder — Review queries
 // All direct Supabase calls for the `reviews` table go here.
 
-import { createClient } from '../client'
+import { createClient } from '../server'
 import type { Database } from '../types'
 
 type ReviewRow = Database['public']['Tables']['reviews']['Row']
@@ -10,7 +10,7 @@ type ReviewInsert = Database['public']['Tables']['reviews']['Insert']
 export type { ReviewRow }
 
 export async function getReviews(placeId: string): Promise<ReviewRow[]> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('reviews')
     .select('*')
@@ -22,7 +22,7 @@ export async function getReviews(placeId: string): Promise<ReviewRow[]> {
 }
 
 export async function getUserReviewsToday(userId: string): Promise<number> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const startOfDay = new Date()
   startOfDay.setUTCHours(0, 0, 0, 0)
 
@@ -40,7 +40,7 @@ export async function getUserReviewForPlace(
   placeId: string,
   userId: string,
 ): Promise<ReviewRow | null> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('reviews')
     .select('*')
@@ -57,7 +57,7 @@ export async function insertReview(
   userId: string,
   body: string,
 ): Promise<ReviewRow> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const row: ReviewInsert = { place_id: placeId, user_id: userId, body }
   // TS5.9 + @supabase/ssr: .insert() resolves to never[] — cast required
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -20,10 +20,12 @@ vi.mock('@/lib/supabase/server', () => ({
 
 // Mock places queries
 const mockGetPlace = vi.fn()
-const mockUpdatePlace = vi.fn()
+const mockGetPlaceAdmin = vi.fn()
+const mockUpdatePlaceAdmin = vi.fn()
 vi.mock('@/lib/supabase/queries/places', () => ({
   getPlace: (id: unknown) => mockGetPlace(id),
-  updatePlace: (id: unknown, patch: unknown) => mockUpdatePlace(id, patch),
+  getPlaceAdmin: (id: unknown) => mockGetPlaceAdmin(id),
+  updatePlaceAdmin: (id: unknown, patch: unknown) => mockUpdatePlaceAdmin(id, patch),
 }))
 
 // Mock confirmations queries
@@ -83,22 +85,23 @@ describe('POST /api/places/[id]/confirm', () => {
     mockCreateClient.mockResolvedValue(makeAuthClient())
     mockGetUserConfirmationsToday.mockResolvedValue(0)
     mockAddConfirmation.mockResolvedValue(undefined)
-    mockUpdatePlace.mockResolvedValue({ status: 'live' })
+    mockGetPlaceAdmin.mockResolvedValue({ id: 'p1', added_by: 'other-user', status: 'pending' })
+    mockUpdatePlaceAdmin.mockResolvedValue({ status: 'live' })
   })
 
   it('returns 403 when confirmer is the submitter', async () => {
-    mockGetPlace.mockResolvedValue({ id: 'p1', added_by: 'user-1', status: 'pending' })
+    mockGetPlaceAdmin.mockResolvedValue({ id: 'p1', added_by: 'user-1', status: 'pending' })
     const res = await confirmPost(fakeRequest, { params: { id: 'p1' } })
     expect((res as unknown as { _status: number })._status).toBe(403)
   })
 
   it('status becomes live after required confirmations', async () => {
-    mockGetPlace.mockResolvedValue({ id: 'p1', added_by: 'other-user', status: 'pending' })
+    mockGetPlaceAdmin.mockResolvedValue({ id: 'p1', added_by: 'other-user', status: 'pending' })
     mockGetConfirmationCount.mockResolvedValue(3)
-    mockUpdatePlace.mockResolvedValue({ status: 'live' })
+    mockUpdatePlaceAdmin.mockResolvedValue({ status: 'live' })
 
     const res = await confirmPost(fakeRequest, { params: { id: 'p1' } })
-    expect(mockUpdatePlace).toHaveBeenCalledWith('p1', { status: 'live' })
+    expect(mockUpdatePlaceAdmin).toHaveBeenCalledWith('p1', { status: 'live' })
     expect((res as unknown as { _data: { placeStatus: string } })._data.placeStatus).toBe('live')
   })
 })
@@ -108,13 +111,13 @@ describe('POST /api/places/[id]/flag', () => {
     vi.clearAllMocks()
     mockCreateClient.mockResolvedValue(makeAuthClient())
     mockInsertFlag.mockResolvedValue(undefined)
-    mockUpdatePlace.mockResolvedValue({ status: 'closed' })
+    mockUpdatePlaceAdmin.mockResolvedValue({ status: 'closed' })
   })
 
   it('status becomes closed after 5 flags', async () => {
     mockGetFlagCount.mockResolvedValue(5)
     const res = await flagPost(fakeRequest, { params: { id: 'p1' } })
-    expect(mockUpdatePlace).toHaveBeenCalledWith('p1', { status: 'closed' })
+    expect(mockUpdatePlaceAdmin).toHaveBeenCalledWith('p1', { status: 'closed' })
     expect((res as unknown as { _data: { count: number } })._data.count).toBe(5)
   })
 })

@@ -5,7 +5,7 @@ import {
   getConfirmationCount,
   getUserConfirmationsToday,
 } from '@/lib/supabase/queries/confirmations'
-import { getPlace, updatePlace } from '@/lib/supabase/queries/places'
+import { getPlaceAdmin, updatePlaceAdmin } from '@/lib/supabase/queries/places'
 import { updatePoints } from '@/lib/supabase/queries/profiles'
 import { SETTINGS } from '@/config/settings'
 
@@ -34,8 +34,8 @@ export async function POST(
 
   const placeId = params.id
 
-  // 3. Get place — check user is NOT the submitter
-  const place = await getPlace(placeId)
+  // 3. Get place (admin client — pending places are invisible to RLS select_live)
+  const place = await getPlaceAdmin(placeId)
   if (!place) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
@@ -66,7 +66,7 @@ export async function POST(
   // 7. Promote to live if threshold reached
   let placeStatus = place.status
   if (count >= SETTINGS.confirmations.required) {
-    const updated = await updatePlace(placeId, { status: 'live' })
+    const updated = await updatePlaceAdmin(placeId, { status: 'live' })
     placeStatus = updated.status
   }
 

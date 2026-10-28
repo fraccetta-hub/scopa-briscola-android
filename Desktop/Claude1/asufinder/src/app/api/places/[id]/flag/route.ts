@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { insertFlag, getFlagCount } from '@/lib/supabase/queries/flags'
-import { updatePlace } from '@/lib/supabase/queries/places'
+import { updatePlaceAdmin } from '@/lib/supabase/queries/places'
 import { SETTINGS } from '@/config/settings'
 
 export async function POST(
@@ -32,9 +32,9 @@ export async function POST(
 
   // 4. Update place status based on flag count
   if (count >= SETTINGS.flagging.closedThreshold) {
-    await updatePlace(placeId, { status: 'closed' })
+    await updatePlaceAdmin(placeId, { status: 'closed' })
   } else if (count >= SETTINGS.flagging.needsReviewThreshold) {
-    await updatePlace(placeId, { status: 'needs_review' })
+    await updatePlaceAdmin(placeId, { status: 'needs_review' })
   }
 
   return NextResponse.json({ flagged: true, count })

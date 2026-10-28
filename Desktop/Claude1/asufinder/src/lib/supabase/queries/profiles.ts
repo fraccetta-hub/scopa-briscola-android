@@ -1,12 +1,12 @@
 // ASUFinder — Profile queries
 // All direct Supabase calls for the `profiles` table go here.
 
-import { createClient } from '../client'
+import { createClient } from '../server'
 import { createAdminClient } from '../admin'
 import type { Profile } from '../types'
 
 export async function getProfile(userId: string): Promise<Profile> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -18,7 +18,7 @@ export async function getProfile(userId: string): Promise<Profile> {
 }
 
 export async function updatePoints(userId: string, delta: number): Promise<void> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // Read current points first (RPC increment would be cleaner with a live DB)
   const profile = await getProfile(userId)

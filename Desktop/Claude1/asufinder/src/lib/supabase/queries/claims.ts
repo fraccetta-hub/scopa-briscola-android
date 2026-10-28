@@ -1,25 +1,97 @@
 // ASUFinder — Claim queries (owner verification)
 
+import { createHash } from 'crypto'
+import { createAdminClient } from '../admin'
 import { createClient } from '../server'
 
-// In-memory OTP store — intentionally ephemeral per spec ("in-memory Map for now").
-// Acceptable for MVP single-instance deploys; replace with Supabase table before multi-instance.
-// Key: placeId, Value: { userId, otp, expiresAt }
-const otpStore = new Map<string, { userId: string; otp: string; expiresAt: number }>()
-
-export function storeOTP(placeId: string, userId: string, otp: string): void {
-  const expiresAt = Date.now() + 10 * 60 * 1000 // 10 minutes
-  otpStore.set(placeId, { userId, otp, expiresAt })
+function hashOTP(otp: string): string {
+  return createHash('sha256').update(otp).digest('hex')
 }
 
-export function getStoredOTP(
+/**
+ * Store an OTP for a place/user in the otp_tokens table.
+ * Deletes any prior unused tokens for the same place+user before inserting.
+ */
+export async function storeOTP(placeId: string, userId: string, otp: string): Promise<void> {
+  const supabase = createAdminClient()
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString()
+  const codeHash = hashOTP(otp)
+
+  // Clean up any existing unused tokens for this place+user
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any)
+    .from('otp_tokens')
+    .delete()
+    .eq('place_id', placeId)
+    .eq('user_id', userId)
+    .eq('used', false)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('otp_tokens')
+    .insert({ place_id: placeId, user_id: userId, code: codeHash, expires_at: expiresAt } as any)
+
+  if (error) throw new Error((error as { message: string }).message)
+}
+
+/**
+ * Check if a recent (< 60s old) unused OTP exists for this place+user.
+ * Returns true if the caller should rate-limit (too many requests).
+ */
+export async function hasRecentOTP(placeId: string, userId: string): Promise<boolean> {
+  const supabase = createAdminClient()
+  const sixtySecondsAgo = new Date(Date.now() - 60 * 1000).toISOString()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (supabase as any)
+    .from('otp_tokens')
+    .select('id')
+    .eq('place_id', placeId)
+    .eq('user_id', userId)
+    .eq('used', false)
+    .gte('created_at', sixtySecondsAgo)
+    .limit(1) as { data: { id: string }[] | null }
+
+  return Array.isArray(data) && data.length > 0
+}
+
+/**
+ * Verify an OTP code against the DB. Returns true if valid and marks it used.
+ */
+export async function verifyAndConsumeOTP(
   placeId: string,
-): { userId: string; otp: string; expiresAt: number } | undefined {
-  return otpStore.get(placeId)
-}
+  userId: string,
+  otp: string,
+): Promise<boolean> {
+  const supabase = createAdminClient()
+  const now = new Date().toISOString()
+  const codeHash = hashOTP(otp)
 
-export function deleteOTP(placeId: string): void {
-  otpStore.delete(placeId)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from('otp_tokens')
+    .select('id, code')
+    .eq('place_id', placeId)
+    .eq('user_id', userId)
+    .eq('used', false)
+    .gte('expires_at', now)
+    .order('created_at', { ascending: false })
+    .limit(1) as { data: { id: string; code: string }[] | null; error: { message: string } | null }
+
+  if (error) throw new Error(error.message)
+  if (!data || data.length === 0) return false
+
+  const token = data[0]
+  if (token.code !== codeHash) return false
+
+  // Mark token as used
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any)
+    .from('otp_tokens')
+    .update({ used: true } as any)
+    .eq('id', token.id)
+
+  return true
 }
 
 export async function claimPlace(placeId: string, userId: string): Promise<void> {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getPlace } from '@/lib/supabase/queries/places'
-import { storeOTP, isAlreadyClaimed } from '@/lib/supabase/queries/claims'
+import { storeOTP, isAlreadyClaimed, hasRecentOTP } from '@/lib/supabase/queries/claims'
 import { generateOTP, sendOTP } from '@/lib/whatsapp/otp'
 
 export async function POST(
@@ -20,28 +20,37 @@ export async function POST(
 
   const placeId = params.id
 
-  // 2. Get place
+  // 2. Rate limit — one OTP per 60 seconds per (place, user)
+  const recentExists = await hasRecentOTP(placeId, user.id)
+  if (recentExists) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': '60' } },
+    )
+  }
+
+  // 3. Get place
   const place = await getPlace(placeId)
   if (!place) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  // 3. Check already claimed
+  // 4. Check already claimed
   const claimed = await isAlreadyClaimed(placeId)
   if (claimed) {
     return NextResponse.json({ error: 'Already claimed' }, { status: 409 })
   }
 
-  // 4. Require WhatsApp
+  // 5. Require WhatsApp
   if (!place.whatsapp) {
     return NextResponse.json({ error: 'no_whatsapp' }, { status: 422 })
   }
 
-  // 5. Generate and store OTP
+  // 6. Generate, hash-store and send OTP
   const otp = generateOTP()
-  storeOTP(placeId, user.id, otp)
+  await storeOTP(placeId, user.id, otp)
 
-  // 6. Send OTP via WhatsApp
+  // 7. Send OTP via WhatsApp
   await sendOTP(place.whatsapp, otp)
 
   return NextResponse.json({ message: 'OTP sent' })

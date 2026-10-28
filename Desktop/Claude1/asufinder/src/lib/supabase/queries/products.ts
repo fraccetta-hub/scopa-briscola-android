@@ -1,7 +1,7 @@
 // ASUFinder — Product tag queries
 // All direct Supabase calls for place_products and product_votes tables go here.
 
-import { createClient } from '../client'
+import { createClient } from '../server'
 import { createAdminClient } from '../admin'
 import type { Database, Place } from '../types'
 import { updatePointsAdmin } from './profiles'
@@ -11,7 +11,7 @@ export type PlaceProduct = Database['public']['Tables']['place_products']['Row']
 export type ProductVote = Database['public']['Tables']['product_votes']['Row']
 
 export async function getPlaceTags(placeId: string): Promise<PlaceProduct[]> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('place_products')
     .select('*')
@@ -29,7 +29,7 @@ export async function addTag(
   userId: string,
   isOwner: boolean,
 ): Promise<PlaceProduct> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const status = isOwner ? 'confirmed' : 'pending'
   const row = { place_id: placeId, tag, added_by: userId, status }
 
@@ -52,7 +52,7 @@ export async function voteTag(
   type: 'confirm' | 'deny',
   isOwner: boolean,
 ): Promise<void> {
-  const supabase = createClient()
+  const supabase = await createClient()
   // Admin client required for place_products UPDATE — no RLS UPDATE policy for regular users
   const adminSupabase = createAdminClient()
 
@@ -131,7 +131,7 @@ export async function voteTag(
 }
 
 export async function getUserTagsToday(userId: string): Promise<number> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const startOfDay = new Date()
   startOfDay.setUTCHours(0, 0, 0, 0)
 
@@ -146,7 +146,7 @@ export async function getUserTagsToday(userId: string): Promise<number> {
 }
 
 export async function getPlaceTagsThisWeek(placeId: string): Promise<number> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
   const { count, error } = await supabase
@@ -163,7 +163,7 @@ export async function getUserVoteForTag(
   placeProductId: string,
   userId: string,
 ): Promise<ProductVote | null> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('product_votes')
     .select('*')
@@ -177,8 +177,8 @@ export async function getUserVoteForTag(
 
 export async function searchByTag(tag: string, limit = 20): Promise<Place[]> {
   if (!tag.trim()) return []
-  // Use anon client so places RLS (select_live) excludes non-live places
-  const supabase = createClient()
+  // Use server client so places RLS (select_live) excludes non-live places
+  const supabase = await createClient()
   const escapedTag = tag.replace(/[%_\\]/g, '\\$&')
   const { data, error } = await supabase
     .from('place_products')

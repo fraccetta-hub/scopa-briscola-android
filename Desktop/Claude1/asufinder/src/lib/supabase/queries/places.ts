@@ -1,7 +1,8 @@
 // ASUFinder — Place queries
 // All direct Supabase calls for the `places` table go here.
 
-import { createClient } from '../client'
+import { createClient } from '../server'
+import { createAdminClient } from '../admin'
 import type { Place } from '../types'
 import type { Database } from '../types'
 import { SETTINGS } from '@/config/settings'
@@ -14,7 +15,7 @@ export async function searchPlaces(
   page = 0,
   limit = SETTINGS.pagination.searchResultsPerPage,
 ): Promise<Place[]> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const offset = page * limit
 
   let req = supabase
@@ -56,7 +57,7 @@ export async function searchPlaces(
 }
 
 export async function getPlace(id: string): Promise<Place | null> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('places')
     .select('*')
@@ -71,7 +72,7 @@ export async function getPlace(id: string): Promise<Place | null> {
 }
 
 export async function insertPlace(data: PlaceInsert): Promise<Place> {
-  const supabase = createClient()
+  const supabase = await createClient()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: inserted, error } = await supabase
     .from('places')
@@ -84,7 +85,7 @@ export async function insertPlace(data: PlaceInsert): Promise<Place> {
 }
 
 export async function updatePlace(id: string, patch: Partial<Place>): Promise<Place> {
-  const supabase = createClient()
+  const supabase = await createClient()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from('places')
@@ -107,13 +108,43 @@ export async function updatePlace(id: string, patch: Partial<Place>): Promise<Pl
  *   WHERE similarity(name, $1) > $threshold AND barrio = $2
  * This approximation uses simple string inclusion as a stand-in.
  */
+export async function getPlaceAdmin(id: string): Promise<Place | null> {
+  const supabase = createAdminClient()
+  const { data, error } = await supabase
+    .from('places')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    if (error.code === 'PGRST116') return null
+    throw error
+  }
+  return data
+}
+
+export async function updatePlaceAdmin(id: string, patch: Partial<Place>): Promise<Place> {
+  const supabase = createAdminClient()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from('places')
+    .update(patch)
+    .eq('id', id)
+    .select()
+    .single() as { data: Place | null; error: { message: string } | null }
+
+  if (error) throw new Error(error.message)
+  if (!data) throw new Error('No data returned from update')
+  return data
+}
+
 export async function checkDuplicates(
   name: string,
   barrio: string,
   _lat?: number,
   _lng?: number,
 ): Promise<Place[]> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const threshold = SETTINGS.duplicates.nameSimilarityThreshold
 
   const { data, error } = await supabase

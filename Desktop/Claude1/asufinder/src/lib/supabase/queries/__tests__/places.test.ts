@@ -40,8 +40,8 @@ function makeBuilder(resolvedValue: unknown): MockBuilder {
 // Mock the Supabase browser client module
 let mockBuilder: MockBuilder
 
-vi.mock('../../client', () => ({
-  createClient: vi.fn(() => ({
+vi.mock('../../server', () => ({
+  createClient: vi.fn(async () => ({
     from: vi.fn(() => mockBuilder),
   })),
 }))
