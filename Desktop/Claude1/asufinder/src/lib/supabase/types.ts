@@ -18,21 +18,21 @@ export type Database = {
         Row: {
           id: string
           username: string
-          role: 'user' | 'admin' | 'superadmin'
+          role: 'user' | 'admin' | 'superadmin' | 'banned'
           points: number
           created_at: string
         }
         Insert: {
           id: string
           username: string
-          role?: 'user' | 'admin' | 'superadmin'
+          role?: 'user' | 'admin' | 'superadmin' | 'banned'
           points?: number
           created_at?: string
         }
         Update: {
           id?: string
           username?: string
-          role?: 'user' | 'admin' | 'superadmin'
+          role?: 'user' | 'admin' | 'superadmin' | 'banned'
           points?: number
           created_at?: string
         }

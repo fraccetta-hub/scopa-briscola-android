@@ -20,7 +20,9 @@ export async function PATCH(
   }
 
   // Role check for caller
-  const { data: callerProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  // TS5.9 + @supabase/ssr: .select('role') resolves to never — cast required
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: callerProfile } = await (supabase as any).from('profiles').select('role').eq('id', user.id).single() as { data: { role: string } | null; error: unknown }
   if (!callerProfile || !['admin', 'superadmin'].includes(callerProfile.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }

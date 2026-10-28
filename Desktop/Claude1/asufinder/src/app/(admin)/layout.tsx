@@ -14,11 +14,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/')
   }
 
-  const { data: profile } = await supabase
+  // TS5.9 + @supabase/ssr: .select('role') resolves to never — cast required
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: profile } = await (supabase as any)
     .from('profiles')
     .select('role')
     .eq('id', user.id)
-    .single()
+    .single() as { data: { role: string } | null; error: unknown }
 
   if (!profile || !['admin', 'superadmin'].includes(profile.role)) {
     redirect('/')
