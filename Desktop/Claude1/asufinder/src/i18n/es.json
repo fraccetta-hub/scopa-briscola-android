@@ -103,6 +103,15 @@
     "colStatus": "Estado",
     "colDate": "Fecha"
   },
+  "owner": {
+    "claim": "Soy el dueño",
+    "otpSent": "Te enviamos un código por WhatsApp",
+    "otpPlaceholder": "Código de 6 dígitos",
+    "verify": "Verificar",
+    "verified": "¡Lugar verificado!",
+    "noWhatsapp": "Este lugar no tiene WhatsApp registrado",
+    "error": "Algo salió mal. Intenta de nuevo."
+  },
   "common": {
     "loading": "Cargando...",
     "save": "Guardar",

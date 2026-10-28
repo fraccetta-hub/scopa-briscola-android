@@ -4,14 +4,17 @@ import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
 import type { Place } from '@/lib/supabase/types'
 import { Badge } from '@/ui/Badge'
+import { ClaimButton } from '@/modules/owner/ClaimButton'
 
 const PlaceMap = dynamic(() => import('./PlaceMap').then((m) => m.PlaceMap), { ssr: false })
 
 interface PlaceDetailProps {
   place: Place
+  isClaimed?: boolean
+  userId?: string | null
 }
 
-export function PlaceDetail({ place }: PlaceDetailProps) {
+export function PlaceDetail({ place, isClaimed = false, userId = null }: PlaceDetailProps) {
   const t = useTranslations('place')
 
   return (
@@ -107,6 +110,10 @@ export function PlaceDetail({ place }: PlaceDetailProps) {
 
       {place.lat !== null && place.lng !== null && (
         <PlaceMap lat={place.lat} lng={place.lng} name={place.name} />
+      )}
+
+      {!isClaimed && userId !== null && (
+        <ClaimButton placeId={place.id} hasWhatsapp={!!place.whatsapp} />
       )}
     </article>
   )
