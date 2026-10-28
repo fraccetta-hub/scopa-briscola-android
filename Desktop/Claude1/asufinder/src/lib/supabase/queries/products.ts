@@ -4,7 +4,7 @@
 import { createClient } from '../client'
 import { createAdminClient } from '../admin'
 import type { Database, Place } from '../types'
-import { updatePoints } from './profiles'
+import { updatePointsAdmin } from './profiles'
 import { SETTINGS } from '@/config/settings'
 
 export type PlaceProduct = Database['public']['Tables']['place_products']['Row']
@@ -119,10 +119,11 @@ export async function voteTag(
 
   if (updateError) throw new Error(updateError.message)
 
-  // Deduct points from submitter on denial transition (admin client for cross-user update)
+  // Deduct points from submitter on denial transition.
+  // updatePointsAdmin uses service-role client — bypasses profiles_update_own RLS.
   if (shouldDeductPoints && tag.added_by) {
     try {
-      await updatePoints(tag.added_by, SETTINGS.tags.denyPointDeduction)
+      await updatePointsAdmin(tag.added_by, SETTINGS.tags.denyPointDeduction)
     } catch {
       // Non-blocking: points deduction failure must not fail the vote
     }

@@ -6,7 +6,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 // Mock supabase clients before importing the module under test
 vi.mock('@/lib/supabase/client', () => ({ createClient: vi.fn() }))
 vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: vi.fn() }))
-vi.mock('@/lib/supabase/queries/profiles', () => ({ updatePoints: vi.fn() }))
+vi.mock('@/lib/supabase/queries/profiles', () => ({
+  updatePoints: vi.fn(),
+  updatePointsAdmin: vi.fn(),
+}))
 vi.mock('@/config/settings', () => ({
   SETTINGS: {
     tags: { confirmThreshold: 2, denyThreshold: 3, expiryDays: 90, denyPointDeduction: -2 },

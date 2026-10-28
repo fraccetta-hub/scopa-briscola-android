@@ -47,6 +47,7 @@ vi.mock('@/modules/moderation/moderation.service', () => ({
 // Mock profiles
 vi.mock('@/lib/supabase/queries/profiles', () => ({
   updatePoints: vi.fn(),
+  updatePointsAdmin: vi.fn(),
 }))
 
 vi.mock('@/config/settings', () => ({

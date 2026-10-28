@@ -51,7 +51,6 @@ export const SETTINGS = {
     confirmPlace: 2,
     writeReview: 1,
     addTag: 1,
-    denyTag: -2,
     placeGetsFlagged: -3,
     placeGets5Flags: -5,
   },
