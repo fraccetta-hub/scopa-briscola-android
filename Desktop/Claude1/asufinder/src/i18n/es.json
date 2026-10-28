@@ -127,7 +127,11 @@
     "noItems": "No hay elementos",
     "colUsername": "Usuario",
     "colPoints": "Puntos",
-    "colActions": "Acciones"
+    "colActions": "Acciones",
+    "colPlace": "Lugar",
+    "colBarrio": "Barrio",
+    "colName": "Nombre",
+    "colStatus": "Estado"
   },
   "common": {
     "loading": "Cargando...",

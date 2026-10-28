@@ -48,10 +48,10 @@ export function ClaimsList({ claims }: Props) {
         <table className="w-full text-sm">
           <thead>
             <tr style={{ borderBottom: '1px solid var(--color-bg)' }}>
-              <th className="text-left px-4 py-3 font-medium">Lugar</th>
-              <th className="text-left px-4 py-3 font-medium">Barrio</th>
-              <th className="text-left px-4 py-3 font-medium">Usuario</th>
-              <th className="text-left px-4 py-3 font-medium">Acciones</th>
+              <th className="text-left px-4 py-3 font-medium">{t('colPlace')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('colBarrio')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('colUsername')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('colActions')}</th>
             </tr>
           </thead>
           <tbody>

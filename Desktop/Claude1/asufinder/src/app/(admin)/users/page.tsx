@@ -16,7 +16,8 @@ export default async function UsersPage() {
     .eq('id', user.id)
     .single()
 
-  const callerRole = (profile?.role === 'superadmin' ? 'superadmin' : 'admin') as 'admin' | 'superadmin'
+  if (!profile || !['admin', 'superadmin'].includes(profile.role)) redirect('/')
+  const callerRole = (profile.role === 'superadmin' ? 'superadmin' : 'admin') as 'admin' | 'superadmin'
   const users = await getAllUsers()
   return <UsersList users={users} callerRole={callerRole} />
 }

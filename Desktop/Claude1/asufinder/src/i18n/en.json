@@ -127,7 +127,11 @@
     "noItems": "No items",
     "colUsername": "Username",
     "colPoints": "Points",
-    "colActions": "Actions"
+    "colActions": "Actions",
+    "colPlace": "Place",
+    "colBarrio": "Neighborhood",
+    "colName": "Name",
+    "colStatus": "Status"
   },
   "common": {
     "loading": "Loading...",

@@ -43,7 +43,7 @@ export function UsersList({ users, callerRole = 'admin' }: Props) {
         body: JSON.stringify({ banned: true }),
       })
       if (!res.ok) throw new Error('Request failed')
-      setItems(prev => prev.map(u => u.id === id ? { ...u, role: 'user' as ProfileRow['role'] } : u))
+      setItems(prev => prev.map(u => u.id === id ? { ...u, role: 'banned' as ProfileRow['role'] } : u))
     } finally {
       setLoading(null)
     }
