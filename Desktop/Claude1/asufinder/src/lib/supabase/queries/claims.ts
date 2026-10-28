@@ -2,7 +2,8 @@
 
 import { createClient } from '../server'
 
-// In-memory OTP store: persists per server process (sufficient for MVP)
+// In-memory OTP store — intentionally ephemeral per spec ("in-memory Map for now").
+// Acceptable for MVP single-instance deploys; replace with Supabase table before multi-instance.
 // Key: placeId, Value: { userId, otp, expiresAt }
 const otpStore = new Map<string, { userId: string; otp: string; expiresAt: number }>()
 
@@ -17,8 +18,13 @@ export function getStoredOTP(
   return otpStore.get(placeId)
 }
 
+export function deleteOTP(placeId: string): void {
+  otpStore.delete(placeId)
+}
+
 export async function claimPlace(placeId: string, userId: string): Promise<void> {
   const supabase = await createClient()
+  // TS5.9 + @supabase/ssr incompatibility: .insert() parameter resolves to never[] — cast required
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
     .from('place_owners')

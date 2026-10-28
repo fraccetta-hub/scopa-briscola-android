@@ -31,11 +31,10 @@ export function OTPForm({ placeId, onSuccess }: OTPFormProps) {
         setSuccess(true)
         onSuccess()
       } else {
-        const body = await res.json() as { error?: string }
-        setError(body.error ?? 'Error')
+        setError(t('error'))
       }
     } catch {
-      setError('Error')
+      setError(t('error'))
     } finally {
       setLoading(false)
     }

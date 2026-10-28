@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getStoredOTP, claimPlace } from '@/lib/supabase/queries/claims'
+import { getStoredOTP, claimPlace, deleteOTP } from '@/lib/supabase/queries/claims'
 import { verifyOTP } from '@/lib/whatsapp/otp'
 
 export async function POST(
@@ -33,18 +33,19 @@ export async function POST(
     return NextResponse.json({ error: 'No OTP found' }, { status: 404 })
   }
 
-  // 4. Verify OTP
+  // 4. Check user matches before revealing OTP validity (prevents timing oracle)
+  if (stored.userId !== user.id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  // 5. Verify OTP
   const valid = verifyOTP(stored, otp)
   if (!valid) {
     return NextResponse.json({ error: 'Invalid or expired OTP' }, { status: 400 })
   }
 
-  // 5. Check user matches
-  if (stored.userId !== user.id) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
-  // 6. Claim place
+  // 6. Delete OTP to prevent replay attacks, then claim place
+  deleteOTP(placeId)
   await claimPlace(placeId, user.id)
 
   return NextResponse.json({ claimed: true })
