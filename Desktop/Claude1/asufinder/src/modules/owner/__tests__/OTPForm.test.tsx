@@ -10,7 +10,7 @@ vi.mock('next-intl', () => ({
 describe('OTPForm', () => {
   it('OTPForm renders input and submit button', () => {
     render(<OTPForm placeId="p1" onSuccess={vi.fn()} />)
-    expect(screen.getByPlaceholderText(/6/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/otpPlaceholder|6/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /verificar|verify/i })).toBeInTheDocument()
   })
 })
