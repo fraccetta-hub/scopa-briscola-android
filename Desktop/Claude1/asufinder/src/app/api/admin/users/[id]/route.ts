@@ -41,11 +41,8 @@ export async function PATCH(
 
   try {
     if (body.banned === true) {
-      // Ban = set role to 'banned'; but 'banned' is not in the DB check constraint.
-      // MVP: treat ban as setting role='user' as a safe no-op for now.
-      // To properly ban, add 'banned' to the check constraint in DB.
-      // For now we just demote to 'user'.
-      await updateUserRole(params.id, 'user')
+      // 'banned' added to profiles.role check constraint in migration 003_add_banned_role.sql
+      await updateUserRole(params.id, 'banned')
     } else if (body.role !== undefined) {
       const newRole = body.role as 'user' | 'admin' | 'superadmin'
 

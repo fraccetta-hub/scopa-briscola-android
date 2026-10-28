@@ -124,7 +124,10 @@
     "featured": "Featured",
     "featuredUntil": "Featured until",
     "role": "Role",
-    "noItems": "No items"
+    "noItems": "No items",
+    "colUsername": "Username",
+    "colPoints": "Points",
+    "colActions": "Actions"
   },
   "common": {
     "loading": "Loading...",

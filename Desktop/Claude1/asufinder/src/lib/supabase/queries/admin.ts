@@ -120,10 +120,10 @@ export async function getAllUsers(): Promise<ProfileRow[]> {
   return (data ?? []) as ProfileRow[]
 }
 
-/** Updates a user's role. */
+/** Updates a user's role. Accepts 'banned' after migration 003. */
 export async function updateUserRole(
   id: string,
-  role: 'user' | 'admin' | 'superadmin',
+  role: 'user' | 'admin' | 'superadmin' | 'banned',
 ): Promise<void> {
   const supabase = createAdminClient()
   // TS5.9 + @supabase/ssr incompatibility: .update() resolves to never[] — cast required

@@ -124,7 +124,10 @@
     "featured": "Destacado",
     "featuredUntil": "Destacado hasta",
     "role": "Rol",
-    "noItems": "No hay elementos"
+    "noItems": "No hay elementos",
+    "colUsername": "Usuario",
+    "colPoints": "Puntos",
+    "colActions": "Acciones"
   },
   "common": {
     "loading": "Cargando...",
