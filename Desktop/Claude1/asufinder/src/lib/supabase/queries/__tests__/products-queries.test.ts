@@ -18,10 +18,12 @@ vi.mock('@/config/settings', () => ({
 
 import { createClient } from '@/lib/supabase/client'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { updatePointsAdmin } from '@/lib/supabase/queries/profiles'
 import { voteTag, addTag } from '../products'
 
 const mockCreateClient = createClient as ReturnType<typeof vi.fn>
 const mockCreateAdminClient = createAdminClient as ReturnType<typeof vi.fn>
+const mockUpdatePointsAdmin = updatePointsAdmin as ReturnType<typeof vi.fn>
 
 function makeInsertChain(result = { data: {}, error: null }) {
   const chain = {
@@ -174,35 +176,39 @@ describe('voteTag — confirm transitions', () => {
 })
 
 describe('voteTag — deny transitions', () => {
-  it('3 deny votes → patch has status=denied', async () => {
+  it('3 deny votes → patch has status=denied and updatePointsAdmin called', async () => {
     const tagState = {
       id: 'pp1', place_id: 'p1', tag: 'zapatillas',
       status: 'pending', confirmed_count: 0, denied_count: 2,
-      added_by: 'other', expires_at: null,
+      added_by: 'other-user', expires_at: null,
     }
     const captured: { patch: unknown } = { patch: null }
     mockCreateClient.mockReturnValue(makeRegularClient())
     mockCreateAdminClient.mockReturnValue(makeAdminClient(tagState, captured))
+    mockUpdatePointsAdmin.mockResolvedValue(undefined)
 
     await voteTag('pp1', 'user-1', 'deny', false)
 
     expect((captured.patch as Record<string, unknown>).status).toBe('denied')
     expect((captured.patch as Record<string, unknown>).denied_count).toBe(3)
+    expect(mockUpdatePointsAdmin).toHaveBeenCalledWith('other-user', -2)
   })
 
-  it('owner deny on pending tag → patch has status=denied regardless of count', async () => {
+  it('owner deny on pending tag → patch has status=denied and updatePointsAdmin called', async () => {
     const tagState = {
       id: 'pp1', place_id: 'p1', tag: 'zapatillas',
       status: 'pending', confirmed_count: 0, denied_count: 0,
-      added_by: 'other', expires_at: null,
+      added_by: 'other-user', expires_at: null,
     }
     const captured: { patch: unknown } = { patch: null }
     mockCreateClient.mockReturnValue(makeRegularClient())
     mockCreateAdminClient.mockReturnValue(makeAdminClient(tagState, captured))
+    mockUpdatePointsAdmin.mockResolvedValue(undefined)
 
     await voteTag('pp1', 'user-1', 'deny', true)
 
     expect((captured.patch as Record<string, unknown>).status).toBe('denied')
+    expect(mockUpdatePointsAdmin).toHaveBeenCalledWith('other-user', -2)
   })
 
   it('deny on already-denied tag → status NOT updated again (no double transition)', async () => {
