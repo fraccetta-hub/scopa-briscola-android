@@ -17,8 +17,8 @@ export function DuplicateAlert({ matches, onContinue, onCancel }: DuplicateAlert
     <div
       className="rounded-lg p-4 mb-4"
       style={{
-        border: '1.5px solid var(--color-warning, #f59e0b)',
-        backgroundColor: 'color-mix(in srgb, var(--color-warning, #f59e0b) 10%, var(--color-surface))',
+        border: '1.5px solid var(--color-warning)',
+        backgroundColor: 'color-mix(in srgb, var(--color-warning) 10%, var(--color-surface))',
       }}
     >
       <p className="font-medium mb-2" style={{ color: 'var(--color-navy)' }}>
