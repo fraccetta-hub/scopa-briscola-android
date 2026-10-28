@@ -15,6 +15,10 @@ CREATE POLICY profiles_update_own ON public.profiles
 CREATE OR REPLACE FUNCTION prevent_privilege_escalation()
 RETURNS TRIGGER AS $$
 BEGIN
+  -- service_role (admin client) is exempt — triggers fire for all roles in PG
+  IF current_setting('role', true) = 'service_role' THEN
+    RETURN NEW;
+  END IF;
   IF OLD.role IS DISTINCT FROM NEW.role THEN
     RAISE EXCEPTION 'role changes not allowed via client';
   END IF;

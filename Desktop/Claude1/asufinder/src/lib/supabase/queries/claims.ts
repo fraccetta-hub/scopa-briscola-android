@@ -67,8 +67,9 @@ export async function verifyAndConsumeOTP(
   const now = new Date().toISOString()
   const codeHash = hashOTP(otp)
 
+  // First find matching token (need code hash to compare before marking used)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data: tokens, error: selectError } = await (supabase as any)
     .from('otp_tokens')
     .select('id, code')
     .eq('place_id', placeId)
@@ -78,20 +79,22 @@ export async function verifyAndConsumeOTP(
     .order('created_at', { ascending: false })
     .limit(1) as { data: { id: string; code: string }[] | null; error: { message: string } | null }
 
-  if (error) throw new Error(error.message)
-  if (!data || data.length === 0) return false
+  if (selectError) throw new Error(selectError.message)
+  if (!tokens || tokens.length === 0) return false
+  if (tokens[0].code !== codeHash) return false
 
-  const token = data[0]
-  if (token.code !== codeHash) return false
-
-  // Mark token as used
+  // Atomic mark-used: UPDATE WHERE used=false prevents replay if two requests race
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase as any)
+  const { data: updated, error: updateError } = await (supabase as any)
     .from('otp_tokens')
     .update({ used: true } as any)
-    .eq('id', token.id)
+    .eq('id', tokens[0].id)
+    .eq('used', false)
+    .select('id') as { data: { id: string }[] | null; error: { message: string } | null }
 
-  return true
+  if (updateError) throw new Error(updateError.message)
+  // If 0 rows updated, another request already consumed this token
+  return !!(updated && updated.length > 0)
 }
 
 export async function claimPlace(placeId: string, userId: string): Promise<void> {
