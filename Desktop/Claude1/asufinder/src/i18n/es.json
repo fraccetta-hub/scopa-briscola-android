@@ -52,7 +52,8 @@
       "submit": "Agregar lugar",
       "cancel": "Cancelar",
       "duplicateWarning": "Puede que este lugar ya exista:",
-      "success": "¡Lugar agregado exitosamente!"
+      "success": "¡Lugar agregado exitosamente!",
+      "continueAnyway": "Continuar de todas formas"
     }
   },
   "errors": {

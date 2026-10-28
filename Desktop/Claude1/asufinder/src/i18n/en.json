@@ -52,7 +52,8 @@
       "submit": "Add place",
       "cancel": "Cancel",
       "duplicateWarning": "This place may already exist:",
-      "success": "Place added successfully!"
+      "success": "Place added successfully!",
+      "continueAnyway": "Continue anyway"
     }
   },
   "errors": {
