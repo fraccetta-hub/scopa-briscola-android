@@ -31,10 +31,10 @@ vi.mock('@/modules/moderation/moderation.service', () => ({
 
 // Mock places queries
 const mockInsertPlace = vi.fn()
-const mockCheckDuplicates = vi.fn(() => Promise.resolve([]))
+const mockCheckDuplicates = vi.fn((_name: unknown, _barrio: unknown) => Promise.resolve([]))
 vi.mock('@/lib/supabase/queries/places', () => ({
-  insertPlace: (...args: unknown[]) => mockInsertPlace(...args),
-  checkDuplicates: (...args: unknown[]) => mockCheckDuplicates(...args),
+  insertPlace: (data: unknown) => mockInsertPlace(data),
+  checkDuplicates: (name: unknown, barrio: unknown) => mockCheckDuplicates(name, barrio),
 }))
 
 // Mock profiles queries
@@ -118,6 +118,6 @@ describe('POST /api/places', () => {
     })
 
     const res = await POST(req)
-    expect((res as { _status: number })._status).toBe(400)
+    expect((res as unknown as { _status: number })._status).toBe(400)
   })
 })

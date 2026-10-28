@@ -47,6 +47,8 @@
       "phone": "Teléfono (opcional)",
       "whatsapp": "WhatsApp (opcional)",
       "website": "Sitio web (opcional)",
+      "mapsUrl": "Google Maps URL (opcional)",
+      "hours": "Horario (opcional)",
       "products": "¿Qué venden o hacen aquí?",
       "productsHint": "Ej: zapatillas Nike, reparación de celulares, tortas personalizadas",
       "submit": "Agregar lugar",

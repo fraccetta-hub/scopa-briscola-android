@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { CATEGORIES } from '@/config/categories'
 import { Input } from '@/ui/Input'
 import { Button } from '@/ui/Button'
@@ -32,6 +32,7 @@ export function AddPlaceForm() {
   const t = useTranslations('forms.addPlace')
   const tErr = useTranslations('errors')
   const router = useRouter()
+  const locale = useLocale() as 'es' | 'en'
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -165,7 +166,7 @@ export function AddPlaceForm() {
                 checked={formData.categories.includes(cat.slug)}
                 onChange={() => handleCategoryToggle(cat.slug)}
               />
-              {cat.icon} {cat.label.es}
+              {cat.icon} {cat.label[locale] ?? cat.label.es}
             </label>
           ))}
         </div>
@@ -207,13 +208,13 @@ export function AddPlaceForm() {
       />
 
       <Input
-        label="Google Maps URL (opcional)"
+        label={t('mapsUrl')}
         value={formData.maps_url}
         onChange={(e) => setFormData((p) => ({ ...p, maps_url: e.target.value }))}
       />
 
       <Input
-        label="Horario (opcional)"
+        label={t('hours')}
         value={formData.hours}
         onChange={(e) => setFormData((p) => ({ ...p, hours: e.target.value }))}
       />

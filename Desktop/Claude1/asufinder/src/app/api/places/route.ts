@@ -32,7 +32,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { name, categories, barrio, address, phone, whatsapp, website, maps_url, hours, force } = body
+  // products captured here; stored in place_products table by M9 (product tags module)
+  const { name, categories, barrio, address, phone, whatsapp, website, maps_url, hours, force, products: _products } = body
 
   if (!name || !barrio || !categories || categories.length === 0) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })

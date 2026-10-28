@@ -22,8 +22,8 @@ vi.mock('@/lib/supabase/server', () => ({
 const mockGetPlace = vi.fn()
 const mockUpdatePlace = vi.fn()
 vi.mock('@/lib/supabase/queries/places', () => ({
-  getPlace: (...args: unknown[]) => mockGetPlace(...args),
-  updatePlace: (...args: unknown[]) => mockUpdatePlace(...args),
+  getPlace: (id: unknown) => mockGetPlace(id),
+  updatePlace: (id: unknown, patch: unknown) => mockUpdatePlace(id, patch),
 }))
 
 // Mock confirmations queries
@@ -31,9 +31,9 @@ const mockAddConfirmation = vi.fn()
 const mockGetConfirmationCount = vi.fn()
 const mockGetUserConfirmationsToday = vi.fn()
 vi.mock('@/lib/supabase/queries/confirmations', () => ({
-  addConfirmation: (...args: unknown[]) => mockAddConfirmation(...args),
-  getConfirmationCount: (...args: unknown[]) => mockGetConfirmationCount(...args),
-  getUserConfirmationsToday: (...args: unknown[]) => mockGetUserConfirmationsToday(...args),
+  addConfirmation: (placeId: unknown, userId: unknown) => mockAddConfirmation(placeId, userId),
+  getConfirmationCount: (placeId: unknown) => mockGetConfirmationCount(placeId),
+  getUserConfirmationsToday: (userId: unknown) => mockGetUserConfirmationsToday(userId),
 }))
 
 // Mock profiles queries
@@ -45,8 +45,8 @@ vi.mock('@/lib/supabase/queries/profiles', () => ({
 const mockInsertFlag = vi.fn()
 const mockGetFlagCount = vi.fn()
 vi.mock('@/lib/supabase/queries/flags', () => ({
-  insertFlag: (...args: unknown[]) => mockInsertFlag(...args),
-  getFlagCount: (...args: unknown[]) => mockGetFlagCount(...args),
+  insertFlag: (placeId: unknown, userId: unknown, reason?: unknown) => mockInsertFlag(placeId, userId, reason),
+  getFlagCount: (placeId: unknown) => mockGetFlagCount(placeId),
 }))
 
 vi.mock('@/config/settings', () => ({
@@ -75,7 +75,7 @@ function makeAuthClient(userId = 'user-1', createdAt?: string) {
   }
 }
 
-const fakeRequest = new NextRequest()
+const fakeRequest = new NextRequest('http://localhost/api/places/p1/confirm')
 
 describe('POST /api/places/[id]/confirm', () => {
   beforeEach(() => {
@@ -89,7 +89,7 @@ describe('POST /api/places/[id]/confirm', () => {
   it('returns 403 when confirmer is the submitter', async () => {
     mockGetPlace.mockResolvedValue({ id: 'p1', added_by: 'user-1', status: 'pending' })
     const res = await confirmPost(fakeRequest, { params: { id: 'p1' } })
-    expect((res as { _status: number })._status).toBe(403)
+    expect((res as unknown as { _status: number })._status).toBe(403)
   })
 
   it('status becomes live after required confirmations', async () => {
@@ -99,7 +99,7 @@ describe('POST /api/places/[id]/confirm', () => {
 
     const res = await confirmPost(fakeRequest, { params: { id: 'p1' } })
     expect(mockUpdatePlace).toHaveBeenCalledWith('p1', { status: 'live' })
-    expect((res as { _data: { placeStatus: string } })._data.placeStatus).toBe('live')
+    expect((res as unknown as { _data: { placeStatus: string } })._data.placeStatus).toBe('live')
   })
 })
 
@@ -115,6 +115,6 @@ describe('POST /api/places/[id]/flag', () => {
     mockGetFlagCount.mockResolvedValue(5)
     const res = await flagPost(fakeRequest, { params: { id: 'p1' } })
     expect(mockUpdatePlace).toHaveBeenCalledWith('p1', { status: 'closed' })
-    expect((res as { _data: { count: number } })._data.count).toBe(5)
+    expect((res as unknown as { _data: { count: number } })._data.count).toBe(5)
   })
 })

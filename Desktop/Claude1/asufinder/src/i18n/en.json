@@ -47,6 +47,8 @@
       "phone": "Phone (optional)",
       "whatsapp": "WhatsApp (optional)",
       "website": "Website (optional)",
+      "mapsUrl": "Google Maps URL (optional)",
+      "hours": "Hours (optional)",
       "products": "What do they sell or do here?",
       "productsHint": "E.g.: Nike sneakers, phone repairs, custom cakes",
       "submit": "Add place",
