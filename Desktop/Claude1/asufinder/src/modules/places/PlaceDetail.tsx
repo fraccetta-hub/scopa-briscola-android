@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import type { Place } from '@/lib/supabase/types'
 import { Badge } from '@/ui/Badge'
 import { ClaimButton } from '@/modules/owner/ClaimButton'
+import { ReviewList } from '@/modules/reviews/ReviewList'
 
 const PlaceMap = dynamic(() => import('./PlaceMap').then((m) => m.PlaceMap), { ssr: false })
 
@@ -115,6 +116,8 @@ export function PlaceDetail({ place, isClaimed = false, userId = null }: PlaceDe
       {!isClaimed && userId !== null && (
         <ClaimButton placeId={place.id} hasWhatsapp={!!place.whatsapp} />
       )}
+
+      <ReviewList placeId={place.id} />
     </article>
   )
 }

@@ -12,6 +12,10 @@ vi.mock('next/dynamic', () => ({
   default: () => null,
 }))
 
+vi.mock('@/modules/reviews/ReviewList', () => ({
+  ReviewList: () => null,
+}))
+
 const mockPlace: Place = {
   id: 'test-id',
   name: 'Farmacia Central',

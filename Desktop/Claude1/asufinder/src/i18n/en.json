@@ -68,6 +68,16 @@
     "notFound": "Not found",
     "unauthorized": "You must be logged in"
   },
+  "reviews": {
+    "title": "Reviews",
+    "noReviews": "No reviews yet",
+    "addReview": "Write a review",
+    "placeholder": "How was your experience?",
+    "submit": "Publish",
+    "alreadyReviewed": "You have already reviewed this place",
+    "rateLimit": "You have reached your daily review limit",
+    "success": "Review published!"
+  },
   "confirmation": {
     "title": "Confirm place",
     "description": "Does this place exist and is the information correct?",

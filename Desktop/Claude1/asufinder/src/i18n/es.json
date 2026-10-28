@@ -68,6 +68,16 @@
     "notFound": "No encontrado",
     "unauthorized": "Debes iniciar sesión"
   },
+  "reviews": {
+    "title": "Reseñas",
+    "noReviews": "Aún no hay reseñas",
+    "addReview": "Escribir reseña",
+    "placeholder": "¿Cómo fue tu experiencia?",
+    "submit": "Publicar",
+    "alreadyReviewed": "Ya escribiste una reseña para este lugar",
+    "rateLimit": "Alcanzaste el límite diario de reseñas",
+    "success": "¡Reseña publicada!"
+  },
   "confirmation": {
     "title": "Confirmar lugar",
     "description": "¿Este lugar existe y la información es correcta?",
