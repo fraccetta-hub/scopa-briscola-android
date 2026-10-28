@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/ui/Button'
 import { Input } from '@/ui/Input'
@@ -36,9 +37,17 @@ export function RegisterForm() {
 
   if (success) {
     return (
-      <p style={{ color: 'var(--color-primary)', fontWeight: 500 }}>
-        {tAuth('checkEmail')}
-      </p>
+      <div className="flex flex-col gap-3">
+        <p style={{ color: 'var(--color-primary)', fontWeight: 500 }}>
+          {tAuth('checkEmail')}
+        </p>
+        <p className="text-sm" style={{ color: 'var(--color-navy)', opacity: 0.75 }}>
+          ¿Primera vez?{' '}
+          <Link href="/como-funciona" style={{ color: 'var(--color-primary)' }}>
+            Lee cómo funciona →
+          </Link>
+        </p>
+      </div>
     )
   }
 
