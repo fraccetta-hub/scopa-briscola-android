@@ -112,6 +112,20 @@
     "noWhatsapp": "Este lugar no tiene WhatsApp registrado",
     "error": "Algo salió mal. Intenta de nuevo."
   },
+  "admin": {
+    "title": "Panel de administración",
+    "pending": "Pendientes",
+    "claims": "Solicitudes de propietario",
+    "users": "Usuarios",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "ban": "Banear",
+    "unban": "Desbanear",
+    "featured": "Destacado",
+    "featuredUntil": "Destacado hasta",
+    "role": "Rol",
+    "noItems": "No hay elementos"
+  },
   "common": {
     "loading": "Cargando...",
     "save": "Guardar",

@@ -112,6 +112,20 @@
     "noWhatsapp": "This place has no WhatsApp registered",
     "error": "Something went wrong. Please try again."
   },
+  "admin": {
+    "title": "Admin panel",
+    "pending": "Pending",
+    "claims": "Owner requests",
+    "users": "Users",
+    "approve": "Approve",
+    "reject": "Reject",
+    "ban": "Ban",
+    "unban": "Unban",
+    "featured": "Featured",
+    "featuredUntil": "Featured until",
+    "role": "Role",
+    "noItems": "No items"
+  },
   "common": {
     "loading": "Loading...",
     "save": "Save",
