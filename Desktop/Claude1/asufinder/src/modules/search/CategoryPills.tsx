@@ -1,5 +1,6 @@
 'use client'
 
+import { useLocale } from 'next-intl'
 import { CATEGORIES } from '@/config/categories'
 
 interface CategoryPillsProps {
@@ -8,6 +9,8 @@ interface CategoryPillsProps {
 }
 
 export function CategoryPills({ selected, onSelect }: CategoryPillsProps) {
+  const locale = useLocale() as 'es' | 'en'
+
   function handleClick(slug: string) {
     onSelect(selected === slug ? undefined : slug)
   }
@@ -37,7 +40,7 @@ export function CategoryPills({ selected, onSelect }: CategoryPillsProps) {
             aria-pressed={isSelected}
           >
             <span aria-hidden="true">{cat.icon}</span>
-            <span>{cat.label.es}</span>
+            <span>{cat.label[locale] ?? cat.label.es}</span>
           </button>
         )
       })}

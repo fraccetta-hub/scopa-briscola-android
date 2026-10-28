@@ -60,7 +60,7 @@ export function PlaceDetail({ place }: PlaceDetailProps) {
           <p>
             <span className="font-medium text-sm" style={{ color: 'var(--color-navy)' }}>{t('whatsapp')}: </span>
             <a
-              href={`https://wa.me/${place.whatsapp}`}
+              href={`https://wa.me/${place.whatsapp.replace(/[\s+]/g, '')}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: 'var(--color-primary)' }}

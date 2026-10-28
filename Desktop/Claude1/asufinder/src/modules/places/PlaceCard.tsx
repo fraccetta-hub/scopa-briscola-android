@@ -64,7 +64,7 @@ export function PlaceCard({ place }: PlaceCardProps) {
         )}
         {place.whatsapp && (
           <a
-            href={`https://wa.me/${place.whatsapp}`}
+            href={`https://wa.me/${place.whatsapp.replace(/[\s+]/g, '')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium"

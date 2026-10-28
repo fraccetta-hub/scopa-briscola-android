@@ -38,7 +38,7 @@ export default function HomePage() {
           className="text-lg md:text-xl text-center max-w-xl"
           style={{ color: 'var(--color-mint)', opacity: 0.9 }}
         >
-          Gran Asunción, Paraguay
+          {t('tagline')}
         </p>
         <SearchBox onSearch={handleSearch} />
       </section>
