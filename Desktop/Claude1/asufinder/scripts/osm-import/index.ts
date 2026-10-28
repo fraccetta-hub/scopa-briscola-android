@@ -67,7 +67,8 @@ async function main(): Promise<void> {
   const elements = await fetchOverpass(BBOX)
   console.log(`[osm-import] Fetched ${elements.length} OSM elements`)
 
-  const supabase = DRY_RUN ? null : createAdminClient()
+  // Narrow type: supabase is only used after the DRY_RUN early-return below
+  const supabase = DRY_RUN ? (null as ReturnType<typeof createAdminClient> | null) : createAdminClient()
 
   const rows: PlaceRow[] = []
   let skippedNoName = 0
@@ -131,21 +132,25 @@ async function main(): Promise<void> {
   }
 
   // Batch insert in groups of BATCH_SIZE
+  // On error: log and continue rather than exit — partial runs can be safely re-run
+  // because dedup prevents double-inserts of already-inserted rows.
   let insertedCount = 0
+  let errorCount = 0
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE)
     // TS5.9 + supabase incompatibility: cast to any
     const { error } = await (supabase as any).from('places').insert(batch as any)
     if (error) {
-      console.error(`[osm-import] Insert error at batch ${i / BATCH_SIZE}:`, error.message)
-      throw new Error(error.message)
+      console.error(`[osm-import] Insert error at batch ${Math.floor(i / BATCH_SIZE) + 1}:`, error.message)
+      errorCount += batch.length
+      continue
     }
     insertedCount += batch.length
     console.log(`[osm-import] Inserted batch ${Math.floor(i / BATCH_SIZE) + 1}: ${insertedCount}/${rows.length}`)
   }
 
   console.log(
-    `[osm-import] Inserted ${insertedCount} places; skipped ${skippedDuplicate} duplicates`,
+    `[osm-import] Done: inserted ${insertedCount}, skipped ${skippedDuplicate} duplicates, ${errorCount} errors`,
   )
 }
 

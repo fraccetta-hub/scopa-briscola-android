@@ -39,11 +39,21 @@ out center;`
 
   const body = new URLSearchParams({ data: query })
 
-  const response = await fetch(OVERPASS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
-  })
+  // Client-side abort timeout (90s) in case the connection stalls before the server timeout fires
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 90_000)
+
+  let response: Response
+  try {
+    response = await fetch(OVERPASS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+      signal: controller.signal,
+    })
+  } finally {
+    clearTimeout(timeout)
+  }
 
   if (!response.ok) {
     throw new Error(`Overpass API error: ${response.status} ${response.statusText}`)

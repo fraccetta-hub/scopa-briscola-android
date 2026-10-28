@@ -14,7 +14,7 @@ export async function isDuplicate(name: string, barrio: string): Promise<boolean
     .from('places')
     .select('id')
     .eq('barrio', barrio)
-    .ilike('name', `%${name.slice(0, 10)}%`)
+    .ilike('name', `%${name}%`)
     .limit(1)
 
   if (error) {
