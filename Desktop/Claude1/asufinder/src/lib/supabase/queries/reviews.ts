@@ -24,7 +24,7 @@ export async function getReviews(placeId: string): Promise<ReviewRow[]> {
 export async function getUserReviewsToday(userId: string): Promise<number> {
   const supabase = createClient()
   const startOfDay = new Date()
-  startOfDay.setHours(0, 0, 0, 0)
+  startOfDay.setUTCHours(0, 0, 0, 0)
 
   const { count, error } = await supabase
     .from('reviews')

@@ -11,6 +11,7 @@ interface AddReviewFormProps {
 
 export function AddReviewForm({ placeId, onSuccess }: AddReviewFormProps) {
   const t = useTranslations('reviews')
+  const tErrors = useTranslations('errors')
   const [body, setBody] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -37,7 +38,7 @@ export function AddReviewForm({ placeId, onSuccess }: AddReviewFormProps) {
         return
       }
       if (!res.ok) {
-        setError(`Error ${res.status}`)
+        setError(tErrors('generic'))
         return
       }
 

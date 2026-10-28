@@ -29,8 +29,7 @@ export async function POST(
   }
 
   // 2. Account age check (≥ minAccountAgeMinutes)
-  const { data: { user: fullUser } } = await supabase.auth.getUser()
-  const createdAt = fullUser?.created_at ? new Date(fullUser.created_at) : null
+  const createdAt = user.created_at ? new Date(user.created_at) : null
   if (!createdAt) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }

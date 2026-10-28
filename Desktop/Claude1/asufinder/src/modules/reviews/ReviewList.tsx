@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
+import { createClient } from '@/lib/supabase/client'
 import type { ReviewRow } from '@/lib/supabase/queries/reviews'
 import { AddReviewForm } from './AddReviewForm'
 
@@ -13,6 +14,14 @@ export function ReviewList({ placeId }: ReviewListProps) {
   const t = useTranslations('reviews')
   const [reviews, setReviews] = useState<ReviewRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    void supabase.auth.getSession().then(({ data }) => {
+      setIsLoggedIn(!!data.session)
+    })
+  }, [])
 
   const fetchReviews = useCallback(async () => {
     try {
@@ -66,15 +75,17 @@ export function ReviewList({ placeId }: ReviewListProps) {
         </ul>
       )}
 
-      <div>
-        <p
-          className="font-medium text-sm mb-2"
-          style={{ color: 'var(--color-navy)' }}
-        >
-          {t('addReview')}
-        </p>
-        <AddReviewForm placeId={placeId} onSuccess={fetchReviews} />
-      </div>
+      {isLoggedIn && (
+        <div>
+          <p
+            className="font-medium text-sm mb-2"
+            style={{ color: 'var(--color-navy)' }}
+          >
+            {t('addReview')}
+          </p>
+          <AddReviewForm placeId={placeId} onSuccess={fetchReviews} />
+        </div>
+      )}
     </section>
   )
 }
