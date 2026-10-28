@@ -10,6 +10,7 @@ interface AddTagFormProps {
 
 export function AddTagForm({ placeId, onSuccess }: AddTagFormProps) {
   const t = useTranslations('products')
+  const tErrors = useTranslations('errors')
   const [value, setValue] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -35,7 +36,7 @@ export function AddTagForm({ placeId, onSuccess }: AddTagFormProps) {
         setValue('')
         onSuccess()
       } else {
-        setError('Error')
+        setError(tErrors('generic'))
       }
     } finally {
       setLoading(false)
@@ -58,12 +59,12 @@ export function AddTagForm({ placeId, onSuccess }: AddTagFormProps) {
         type="submit"
         disabled={loading || !value.trim()}
         className="px-3 py-1 rounded text-sm font-medium"
-        style={{ background: 'var(--color-primary)', color: '#fff' }}
+        style={{ background: 'var(--color-primary)', color: 'var(--color-white)' }}
       >
         {t('submit')}
       </button>
       {error && (
-        <span className="text-sm self-center" style={{ color: 'var(--color-danger, #c0392b)' }}>
+        <span className="text-sm self-center" style={{ color: 'var(--color-error)' }}>
           {error}
         </span>
       )}

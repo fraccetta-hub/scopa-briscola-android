@@ -37,12 +37,21 @@ export const SETTINGS = {
     otpLength: 6,
   },
 
+  // Product tags
+  tags: {
+    confirmThreshold: 2,    // votes to go from pending → confirmed
+    denyThreshold: 3,       // votes to go from pending → denied
+    expiryDays: 90,         // confirmed tag lifespan before uncertain
+    denyPointDeduction: -2, // points removed from submitter on denial
+  },
+
   // Points
   points: {
     addPlace: 5,
     confirmPlace: 2,
     writeReview: 1,
     addTag: 1,
+    denyTag: -2,
     placeGetsFlagged: -3,
     placeGets5Flags: -5,
   },

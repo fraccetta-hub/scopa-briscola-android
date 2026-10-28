@@ -31,13 +31,15 @@ export async function searchPlaces(
   if (error) throw error
   const nameResults: Place[] = data ?? []
 
-  // Also search by product tags and merge results
+  // Also search by product tags on page 0 only (tag results don't paginate)
   let tagResults: Place[] = []
-  try {
-    const { searchByTag } = await import('./products')
-    tagResults = await searchByTag(query, 20)
-  } catch {
-    // tag search is best-effort
+  if (page === 0 && query.trim()) {
+    try {
+      const { searchByTag } = await import('./products')
+      tagResults = await searchByTag(query, 20)
+    } catch {
+      // tag search is best-effort
+    }
   }
 
   // Deduplicate by place id

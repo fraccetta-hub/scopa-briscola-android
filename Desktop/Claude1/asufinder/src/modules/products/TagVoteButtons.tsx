@@ -45,7 +45,7 @@ export function TagVoteButtons({ tag, onVote }: TagVoteButtonsProps) {
         onClick={() => handleVote('deny')}
         title={t('deny')}
         className="text-xs px-1 rounded"
-        style={{ color: 'var(--color-danger, #c0392b)', border: '1px solid var(--color-danger, #c0392b)' }}
+        style={{ color: 'var(--color-error)', border: '1px solid var(--color-error)' }}
       >
         ✗ {tag.denied_count}
       </button>

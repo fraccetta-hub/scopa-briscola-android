@@ -48,8 +48,8 @@ export function TagList({ placeId, userId = null }: TagListProps) {
               className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm"
               style={
                 tag.status === 'confirmed'
-                  ? { background: 'var(--color-primary)', color: '#fff' }
-                  : { background: 'var(--color-primary)', color: '#fff', opacity: 0.5 }
+                  ? { background: 'var(--color-primary)', color: 'var(--color-white)' }
+                  : { background: 'var(--color-primary)', color: 'var(--color-white)', opacity: 0.5 }
               }
               title={tag.status === 'uncertain' ? t('uncertain') : undefined}
             >

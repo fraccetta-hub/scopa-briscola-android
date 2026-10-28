@@ -53,6 +53,9 @@ export async function POST(
   if (tagError || !tag) {
     return NextResponse.json({ error: 'TagNotFound' }, { status: 404 })
   }
+  if (tag.status === 'denied' || tag.status === 'expired') {
+    return NextResponse.json({ error: 'TagNotVotable' }, { status: 422 })
+  }
 
   // 5. Check already voted
   const existingVote = await getUserVoteForTag(placeProductId, user.id)

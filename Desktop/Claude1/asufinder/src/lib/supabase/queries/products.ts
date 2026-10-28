@@ -4,6 +4,8 @@
 import { createClient } from '../client'
 import { createAdminClient } from '../admin'
 import type { Database, Place } from '../types'
+import { updatePoints } from './profiles'
+import { SETTINGS } from '@/config/settings'
 
 export type PlaceProduct = Database['public']['Tables']['place_products']['Row']
 export type ProductVote = Database['public']['Tables']['product_votes']['Row']
@@ -51,8 +53,10 @@ export async function voteTag(
   isOwner: boolean,
 ): Promise<void> {
   const supabase = createClient()
+  // Admin client required for place_products UPDATE — no RLS UPDATE policy for regular users
+  const adminSupabase = createAdminClient()
 
-  // Insert vote
+  // Insert vote (product_votes has insert_authenticated policy — regular client ok)
   const voteRow = { place_product_id: placeProductId, user_id: userId, type }
   // TS5.9 + @supabase/ssr: .insert() resolves to never[] — cast required
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,10 +68,10 @@ export async function voteTag(
 
   if (voteError) throw new Error(voteError.message)
 
-  // Fetch current tag state
+  // Fetch current tag state via admin client (RLS blocks non-live reads)
   // TS5.9 + @supabase/ssr: .single() resolves to never — cast required
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: tag, error: fetchError } = await (supabase as any)
+  const { data: tag, error: fetchError } = await (adminSupabase as any)
     .from('place_products')
     .select('*')
     .eq('id', placeProductId)
@@ -77,30 +81,36 @@ export async function voteTag(
   if (!tag) throw new Error('Tag not found')
 
   let patch: Partial<PlaceProduct> = {}
+  let shouldDeductPoints = false
 
   if (type === 'confirm') {
     const newCount = (tag.confirmed_count ?? 0) + 1
-    patch = { confirmed_count: newCount }
-    if (newCount >= 2 && tag.status === 'pending') {
-      const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
-      patch = { ...patch, status: 'confirmed', expires_at: expiresAt }
+    // Reset expires_at on every confirm; transition pending/uncertain → confirmed when threshold met
+    const expiresAt = new Date(
+      Date.now() + SETTINGS.tags.expiryDays * 24 * 60 * 60 * 1000,
+    ).toISOString()
+    patch = { confirmed_count: newCount, expires_at: expiresAt }
+    if (
+      newCount >= SETTINGS.tags.confirmThreshold &&
+      (tag.status === 'pending' || tag.status === 'uncertain')
+    ) {
+      patch = { ...patch, status: 'confirmed' }
     }
   } else {
     const newCount = (tag.denied_count ?? 0) + 1
     patch = { denied_count: newCount }
-    if (newCount >= 3 || isOwner) {
+    const wasDenied = tag.status === 'denied'
+    if ((newCount >= SETTINGS.tags.denyThreshold || isOwner) && !wasDenied) {
+      // Only transition and deduct points once (on first denial)
       patch = { ...patch, status: 'denied' }
-      // Deduct 2 points from added_by (fire-and-forget)
-      if (tag.added_by) {
-        const { updatePoints } = await import('./profiles')
-        void updatePoints(tag.added_by, -2)
-      }
+      shouldDeductPoints = !!tag.added_by
     }
   }
 
+  // Update place_products via admin client — no UPDATE policy exists for regular users
   // TS5.9 + @supabase/ssr: .update() resolves to never[] — cast required
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error: updateError } = await (supabase as any)
+  const { error: updateError } = await (adminSupabase as any)
     .from('place_products')
     .update(patch as any)
     .eq('id', placeProductId)
@@ -108,6 +118,15 @@ export async function voteTag(
     .single() as { data: PlaceProduct | null; error: { message: string } | null }
 
   if (updateError) throw new Error(updateError.message)
+
+  // Deduct points from submitter on denial transition (admin client for cross-user update)
+  if (shouldDeductPoints && tag.added_by) {
+    try {
+      await updatePoints(tag.added_by, SETTINGS.tags.denyPointDeduction)
+    } catch {
+      // Non-blocking: points deduction failure must not fail the vote
+    }
+  }
 }
 
 export async function getUserTagsToday(userId: string): Promise<number> {
@@ -156,12 +175,15 @@ export async function getUserVoteForTag(
 }
 
 export async function searchByTag(tag: string, limit = 20): Promise<Place[]> {
-  const supabase = createAdminClient()
+  if (!tag.trim()) return []
+  // Use anon client so places RLS (select_live) excludes non-live places
+  const supabase = createClient()
+  const escapedTag = tag.replace(/[%_\\]/g, '\\$&')
   const { data, error } = await supabase
     .from('place_products')
-    .select('places(*)')
+    .select('places!inner(*)')
     .eq('status', 'confirmed')
-    .ilike('tag', '%' + tag + '%')
+    .ilike('tag', '%' + escapedTag + '%')
     .limit(limit)
 
   if (error) throw error
