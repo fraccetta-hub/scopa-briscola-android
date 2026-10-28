@@ -29,13 +29,15 @@ export async function addTag(
   userId: string,
   isOwner: boolean,
 ): Promise<PlaceProduct> {
-  const supabase = await createClient()
   const status = isOwner ? 'confirmed' : 'pending'
   const row = { place_id: placeId, tag, added_by: userId, status }
 
+  // Owner tags bypass RLS WITH CHECK (status='pending') — use admin client.
+  // Regular users insert pending tags via server client.
   // TS5.9 + @supabase/ssr: .insert() resolves to never[] — cast required
+  const client = isOwner ? createAdminClient() : await createClient()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await (client as any)
     .from('place_products')
     .insert(row as any)
     .select()

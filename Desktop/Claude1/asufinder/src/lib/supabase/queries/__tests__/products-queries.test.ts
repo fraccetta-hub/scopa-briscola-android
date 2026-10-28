@@ -81,7 +81,7 @@ beforeEach(() => {
 describe('addTag', () => {
   it('inserts with status=confirmed when isOwner=true', async () => {
     let insertedRow: unknown
-    const mockClient = {
+    const mockAdminClient = {
       from: vi.fn(() => ({
         insert: vi.fn((row: unknown) => {
           insertedRow = row
@@ -95,7 +95,7 @@ describe('addTag', () => {
         }),
       })),
     }
-    mockCreateClient.mockResolvedValue(mockClient)
+    mockCreateAdminClient.mockReturnValue(mockAdminClient)
 
     const result = await addTag('place-1', 'zapatillas', 'user-1', true)
     expect((insertedRow as Record<string, unknown>).status).toBe('confirmed')
