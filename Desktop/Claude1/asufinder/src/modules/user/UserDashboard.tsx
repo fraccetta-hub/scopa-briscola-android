@@ -16,6 +16,7 @@ interface Props {
 
 export function UserDashboard({ user, places, profile }: Props) {
   const t = useTranslations('auth')
+  const tPlace = useTranslations('place')
   const router = useRouter()
 
   async function handleLogout() {
@@ -67,10 +68,10 @@ export function UserDashboard({ user, places, profile }: Props) {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--color-bg)' }}>
-                <th className="text-left py-2 pr-4">Nombre</th>
-                <th className="text-left py-2 pr-4">Barrio</th>
-                <th className="text-left py-2 pr-4">Estado</th>
-                <th className="text-left py-2">Fecha</th>
+                <th className="text-left py-2 pr-4">{t('colName')}</th>
+                <th className="text-left py-2 pr-4">{t('colBarrio')}</th>
+                <th className="text-left py-2 pr-4">{t('colStatus')}</th>
+                <th className="text-left py-2">{t('colDate')}</th>
               </tr>
             </thead>
             <tbody>
@@ -86,7 +87,7 @@ export function UserDashboard({ user, places, profile }: Props) {
                       variant="status"
                       status={place.status === 'needs_review' ? 'needs_review' : place.status as 'live' | 'pending' | 'closed' | 'rejected'}
                     >
-                      {place.status}
+                      {tPlace(`status.${place.status === 'needs_review' ? 'review' : place.status}`)}
                     </Badge>
                   </td>
                   <td className="py-2">

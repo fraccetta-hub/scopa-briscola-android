@@ -97,7 +97,11 @@
     "logout": "Log out",
     "leaderboardTitle": "Leaderboard",
     "rank": "Rank",
-    "contributor": "Contributor"
+    "contributor": "Contributor",
+    "colName": "Name",
+    "colBarrio": "Neighborhood",
+    "colStatus": "Status",
+    "colDate": "Date"
   },
   "common": {
     "loading": "Loading...",

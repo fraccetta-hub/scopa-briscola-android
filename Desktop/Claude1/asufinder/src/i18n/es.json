@@ -97,7 +97,11 @@
     "logout": "Cerrar sesión",
     "leaderboardTitle": "Tabla de líderes",
     "rank": "Pos.",
-    "contributor": "Contribuyente"
+    "contributor": "Contribuyente",
+    "colName": "Nombre",
+    "colBarrio": "Barrio",
+    "colStatus": "Estado",
+    "colDate": "Fecha"
   },
   "common": {
     "loading": "Cargando...",
