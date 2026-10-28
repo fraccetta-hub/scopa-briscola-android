@@ -7,6 +7,7 @@
     "register": "Registrarse",
     "logout": "Cerrar sesión",
     "howItWorks": "Cómo funciona",
+    "leaderboard": "Ranking",
     "tagline": "Gran Asunción, Paraguay"
   },
   "search": {
@@ -101,6 +102,8 @@
     "register": "Registrarse",
     "login": "Iniciar sesión",
     "checkEmail": "Revisá tu correo para confirmar tu cuenta.",
+    "firstTimeHint": "¿Primera vez?",
+    "howItWorksLink": "Lee cómo funciona →",
     "dashboard": "Mi panel",
     "points": "Puntos",
     "placesContributed": "Lugares aportados",

@@ -33,7 +33,7 @@ export function Footer() {
             {t('howItWorks')}
           </Link>
           <Link href="/leaderboard" style={{ color: 'var(--color-navy)', opacity: 0.75 }}>
-            {t('tagline')}
+            {t('leaderboard')}
           </Link>
         </nav>
         <span style={{ opacity: 0.5, fontSize: '0.75rem' }}>

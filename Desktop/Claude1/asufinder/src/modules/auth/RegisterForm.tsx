@@ -9,7 +9,6 @@ import { Input } from '@/ui/Input'
 
 export function RegisterForm() {
   const t = useTranslations('auth')
-  const tAuth = useTranslations('auth')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
@@ -39,12 +38,12 @@ export function RegisterForm() {
     return (
       <div className="flex flex-col gap-3">
         <p style={{ color: 'var(--color-primary)', fontWeight: 500 }}>
-          {tAuth('checkEmail')}
+          {t('checkEmail')}
         </p>
         <p className="text-sm" style={{ color: 'var(--color-navy)', opacity: 0.75 }}>
-          ¿Primera vez?{' '}
+          {t('firstTimeHint')}{' '}
           <Link href="/como-funciona" style={{ color: 'var(--color-primary)' }}>
-            Lee cómo funciona →
+            {t('howItWorksLink')}
           </Link>
         </p>
       </div>

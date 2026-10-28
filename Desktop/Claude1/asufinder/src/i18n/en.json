@@ -7,6 +7,7 @@
     "register": "Register",
     "logout": "Log out",
     "howItWorks": "How it works",
+    "leaderboard": "Leaderboard",
     "tagline": "Gran Asunción, Paraguay"
   },
   "search": {
@@ -101,6 +102,8 @@
     "register": "Register",
     "login": "Log in",
     "checkEmail": "Check your email to confirm your account.",
+    "firstTimeHint": "First time?",
+    "howItWorksLink": "Read how it works →",
     "dashboard": "My dashboard",
     "points": "Points",
     "placesContributed": "Places contributed",

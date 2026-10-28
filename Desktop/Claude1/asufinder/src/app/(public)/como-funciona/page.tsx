@@ -4,10 +4,20 @@ import { howItWorksEs } from '@/i18n/pages/how-it-works.es'
 import { howItWorksEn } from '@/i18n/pages/how-it-works.en'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Cómo funciona – ASUFinder',
-  description:
-    'Aprende a buscar, agregar y confirmar lugares en el directorio comunitario de Gran Asunción.',
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  if (locale === 'en') {
+    return {
+      title: 'How it works – ASUFinder',
+      description:
+        'Learn how to search, add, and confirm places in the Greater Asunción community directory.',
+    }
+  }
+  return {
+    title: 'Cómo funciona – ASUFinder',
+    description:
+      'Aprende a buscar, agregar y confirmar lugares en el directorio comunitario de Gran Asunción.',
+  }
 }
 
 const sectionIcons: Record<string, string> = {
