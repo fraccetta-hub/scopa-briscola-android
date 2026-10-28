@@ -89,7 +89,15 @@
     "noAccount": "¿No tenés cuenta?",
     "hasAccount": "¿Ya tenés cuenta?",
     "register": "Registrarse",
-    "login": "Iniciar sesión"
+    "login": "Iniciar sesión",
+    "checkEmail": "Revisá tu correo para confirmar tu cuenta.",
+    "dashboard": "Mi panel",
+    "points": "Puntos",
+    "placesContributed": "Lugares aportados",
+    "logout": "Cerrar sesión",
+    "leaderboardTitle": "Tabla de líderes",
+    "rank": "Pos.",
+    "contributor": "Contribuyente"
   },
   "common": {
     "loading": "Cargando...",

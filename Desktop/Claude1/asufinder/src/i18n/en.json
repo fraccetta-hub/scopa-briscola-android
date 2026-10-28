@@ -89,7 +89,15 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "register": "Register",
-    "login": "Log in"
+    "login": "Log in",
+    "checkEmail": "Check your email to confirm your account.",
+    "dashboard": "My dashboard",
+    "points": "Points",
+    "placesContributed": "Places contributed",
+    "logout": "Log out",
+    "leaderboardTitle": "Leaderboard",
+    "rank": "Rank",
+    "contributor": "Contributor"
   },
   "common": {
     "loading": "Loading...",
