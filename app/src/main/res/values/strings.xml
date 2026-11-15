@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Scopa &amp; Briscola</string>
+
+    <!-- Home Screen -->
+    <string name="home_welcome">Benvenuto, %1$s!</string>
+    <string name="home_play_scopa">Gioca a Scopa</string>
+    <string name="home_play_briscola">Gioca a Briscola</string>
+    <string name="home_stats">Statistiche</string>
+    <string name="home_settings">Impostazioni</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_player_name_label">Nome giocatore</string>
+    <string name="settings_player_name_hint">Inserisci il tuo nome</string>
+    <string name="settings_save_name">Salva nome</string>
+    <string name="settings_change_card_back">Cambia dorso</string>
+
+    <!-- Navigation -->
+    <string name="nav_back">Indietro</string>
+
+    <!-- Stub screens -->
+    <string name="stub_lobby">Lobby: %1$s</string>
+    <string name="stub_scopa_game">Partita a Scopa</string>
+    <string name="stub_briscola_game">Partita a Briscola</string>
+    <string name="stub_result">Risultato: %1$s — %2$s</string>
+    <string name="stub_stats">Statistiche</string>
 </resources>

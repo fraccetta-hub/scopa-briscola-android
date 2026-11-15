@@ -6,16 +6,24 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+val TableGreen = Color(0xFF2D6A2D)
+val CardCream = Color(0xFFFFF8DC)
+val AccentGold = Color(0xFFDAA520)
+
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF4CAF50),
-    secondary = Color(0xFF8BC34A),
-    tertiary = Color(0xFFCDDC39)
+    primary = TableGreen,
+    secondary = AccentGold,
+    tertiary = CardCream,
+    background = Color(0xFF1B1B1B),
+    surface = Color(0xFF2C2C2C)
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF4CAF50),
-    secondary = Color(0xFF8BC34A),
-    tertiary = Color(0xFFCDDC39)
+    primary = TableGreen,
+    secondary = AccentGold,
+    tertiary = CardCream,
+    background = CardCream,
+    surface = Color(0xFFF5F0E0)
 )
 
 @Composable
