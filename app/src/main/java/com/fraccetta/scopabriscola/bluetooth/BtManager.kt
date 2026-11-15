@@ -10,8 +10,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 sealed class BtState {
@@ -35,34 +36,42 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     private val _state = MutableStateFlow<BtState>(BtState.Idle)
     val state: StateFlow<BtState> = _state.asStateFlow()
 
-    private val _events = MutableSharedFlow<ConnectionEvent>(replay = 1, extraBufferCapacity = 64)
-    val events: Flow<ConnectionEvent> = _events.asSharedFlow()
+    private data class Tagged(val gen: Int, val event: ConnectionEvent)
+    private val _tagged = MutableSharedFlow<Tagged>(replay = 1, extraBufferCapacity = 64)
+    @Volatile private var generation = 0
+
+    val events: Flow<ConnectionEvent> get() {
+        val gen = generation
+        return _tagged.filter { it.gen == gen }.map { it.event }
+    }
 
     private var btServer: BtServer? = null
     private var btClient: BtClient? = null
 
     fun startHosting() {
-        _events.resetReplayCache()
+        generation++
+        _tagged.resetReplayCache()
         _state.value = BtState.Hosting
         val server = BtServer(appContext)
         btServer = server
         server.start(scope)
+        val gen = generation
         scope.launch {
             server.incoming.collect { line ->
                 try {
                     val msg = BtProtocol.decode(line)
                     if (msg is BtMessage.Handshake) {
                         _state.value = BtState.Connected(msg.playerName)
-                        _events.emit(ConnectionEvent.Connected)
+                        _tagged.emit(Tagged(gen, ConnectionEvent.Connected))
                         startKeepalive()
                     }
-                    _events.emit(ConnectionEvent.MessageReceived(msg))
+                    _tagged.emit(Tagged(gen, ConnectionEvent.MessageReceived(msg)))
                 } catch (_: Exception) {
                     // ignore malformed lines
                 }
             }
             _state.value = BtState.Disconnected
-            _events.emit(ConnectionEvent.Lost)
+            _tagged.emit(Tagged(gen, ConnectionEvent.Lost))
         }
     }
 
@@ -71,26 +80,28 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     }
 
     fun connect(device: BluetoothDevice) {
-        _events.resetReplayCache()
+        generation++
+        _tagged.resetReplayCache()
         val client = BtClient(appContext)
         btClient = client
         client.connect(device, scope)
+        val gen = generation
         scope.launch {
             client.incoming.collect { line ->
                 try {
                     val msg = BtProtocol.decode(line)
                     if (_state.value is BtState.Scanning) {
                         _state.value = BtState.Connected(device.name ?: device.address)
-                        _events.emit(ConnectionEvent.Connected)
+                        _tagged.emit(Tagged(gen, ConnectionEvent.Connected))
                         startKeepalive()
                     }
-                    _events.emit(ConnectionEvent.MessageReceived(msg))
+                    _tagged.emit(Tagged(gen, ConnectionEvent.MessageReceived(msg)))
                 } catch (_: Exception) {
                     // ignore malformed lines
                 }
             }
             _state.value = BtState.Disconnected
-            _events.emit(ConnectionEvent.Lost)
+            _tagged.emit(Tagged(gen, ConnectionEvent.Lost))
         }
     }
 
@@ -106,7 +117,7 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
         btServer = null
         btClient = null
         _state.value = BtState.Disconnected
-        _events.resetReplayCache()
+        // No resetReplayCache here — old session's Lost carries stale generation and is filtered out
     }
 
     private fun startKeepalive() {
