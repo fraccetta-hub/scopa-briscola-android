@@ -69,6 +69,7 @@ class LobbyViewModel @Inject constructor(
                         if (msg is BtMessage.Handshake) {
                             _uiState.update { it.copy(remoteName = msg.playerName) }
                             GameSession.isServer = isServer
+                            GameSession.localPlayer = if (isServer) 1 else 2
                             GameSession.opponentName = msg.playerName
                             val destination = if (gameType == "briscola") "game/briscola" else "game/scopa"
                             _navigationEvent.emit(destination)

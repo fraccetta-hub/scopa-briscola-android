@@ -2,6 +2,8 @@ package com.fraccetta.scopabriscola.ui.game.scopa
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,7 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material3.Card as CardContainer
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -132,7 +134,7 @@ fun ScopaTableContent(
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
                 state.pendingCaptures.forEachIndexed { index, group ->
-                    Card(
+                    CardContainer(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
@@ -271,20 +273,23 @@ fun CardImage(card: Card, modifier: Modifier = Modifier) {
     var bitmap by remember(card.assetName) { mutableStateOf<ImageBitmap?>(null) }
 
     LaunchedEffect(card.assetName) {
-        bitmap = try {
-            context.assets.open("cards/${card.assetName}.png").use { stream ->
-                BitmapFactory.decodeStream(stream)?.asImageBitmap()
+        bitmap = withContext(Dispatchers.IO) {
+            try {
+                context.assets.open("cards/${card.assetName}.png").use { stream ->
+                    BitmapFactory.decodeStream(stream)?.asImageBitmap()
+                }
+            } catch (_: Exception) {
+                null
             }
-        } catch (_: Exception) {
-            null
         }
     }
 
     val bmp = bitmap
+    val cardDesc = stringResource(R.string.scopa_card_fallback, card.assetName)
     if (bmp != null) {
         Image(
             bitmap = bmp,
-            contentDescription = card.assetName,
+            contentDescription = cardDesc,
             modifier = modifier
         )
     } else {

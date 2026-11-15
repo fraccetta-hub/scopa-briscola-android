@@ -5,6 +5,7 @@ package com.fraccetta.scopabriscola.data
  * This is set by LobbyViewModel before navigating to the game.
  */
 object GameSession {
-    var isServer: Boolean = false
-    var opponentName: String? = null
+    @Volatile var isServer: Boolean = false
+    @Volatile var opponentName: String? = null
+    @Volatile var localPlayer: Int = 1
 }

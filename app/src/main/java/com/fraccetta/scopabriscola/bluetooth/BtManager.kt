@@ -5,13 +5,13 @@ import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 sealed class BtState {
@@ -35,8 +35,8 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     private val _state = MutableStateFlow<BtState>(BtState.Idle)
     val state: StateFlow<BtState> = _state.asStateFlow()
 
-    private val _events = Channel<ConnectionEvent>(Channel.UNLIMITED)
-    val events: Flow<ConnectionEvent> = _events.receiveAsFlow()
+    private val _events = MutableSharedFlow<ConnectionEvent>(extraBufferCapacity = 64)
+    val events: Flow<ConnectionEvent> = _events.asSharedFlow()
 
     private var btServer: BtServer? = null
     private var btClient: BtClient? = null
@@ -52,16 +52,16 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
                     val msg = BtProtocol.decode(line)
                     if (msg is BtMessage.Handshake) {
                         _state.value = BtState.Connected(msg.playerName)
-                        _events.trySend(ConnectionEvent.Connected)
+                        _events.tryEmit(ConnectionEvent.Connected)
                         startKeepalive()
                     }
-                    _events.trySend(ConnectionEvent.MessageReceived(msg))
+                    _events.tryEmit(ConnectionEvent.MessageReceived(msg))
                 } catch (_: Exception) {
                     // ignore malformed lines
                 }
             }
             _state.value = BtState.Disconnected
-            _events.trySend(ConnectionEvent.Lost)
+            _events.tryEmit(ConnectionEvent.Lost)
         }
     }
 
@@ -79,16 +79,16 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
                     val msg = BtProtocol.decode(line)
                     if (_state.value is BtState.Scanning) {
                         _state.value = BtState.Connected(device.name ?: device.address)
-                        _events.trySend(ConnectionEvent.Connected)
+                        _events.tryEmit(ConnectionEvent.Connected)
                         startKeepalive()
                     }
-                    _events.trySend(ConnectionEvent.MessageReceived(msg))
+                    _events.tryEmit(ConnectionEvent.MessageReceived(msg))
                 } catch (_: Exception) {
                     // ignore malformed lines
                 }
             }
             _state.value = BtState.Disconnected
-            _events.trySend(ConnectionEvent.Lost)
+            _events.tryEmit(ConnectionEvent.Lost)
         }
     }
 

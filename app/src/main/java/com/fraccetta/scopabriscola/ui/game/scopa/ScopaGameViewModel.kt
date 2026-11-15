@@ -10,6 +10,7 @@ import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.domain.Deck
 import com.fraccetta.scopabriscola.game.scopa.ScopaAction
 import com.fraccetta.scopabriscola.game.scopa.ScopaGame
+import com.fraccetta.scopabriscola.game.scopa.ScopaPhase
 import com.fraccetta.scopabriscola.game.scopa.ScopaState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -37,7 +38,7 @@ class ScopaGameViewModel @Inject constructor(
 
     private val scopaGame = ScopaGame()
     private val isServer: Boolean = GameSession.isServer
-    private val localPlayer: Int = if (isServer) 1 else 2
+    private val localPlayer: Int = GameSession.localPlayer
 
     private val initialState = scopaGame.newSession()
 
@@ -51,7 +52,7 @@ class ScopaGameViewModel @Inject constructor(
     )
     val uiState: StateFlow<ScopaUiState> = _uiState.asStateFlow()
 
-    private val _navigationEvent = MutableSharedFlow<String>()
+    private val _navigationEvent = MutableSharedFlow<String>(replay = 1, extraBufferCapacity = 1)
     val navigationEvent: SharedFlow<String> = _navigationEvent.asSharedFlow()
 
     private val cardLookup: Map<String, Card> = Deck.full().associateBy { it.assetName }
@@ -67,6 +68,11 @@ class ScopaGameViewModel @Inject constructor(
             btManager.events.collect { event ->
                 when (event) {
                     is ConnectionEvent.MessageReceived -> handleMessage(event.msg)
+                    is ConnectionEvent.Lost -> {
+                        viewModelScope.launch {
+                            _navigationEvent.emit("home")
+                        }
+                    }
                     else -> {}
                 }
             }
@@ -94,6 +100,8 @@ class ScopaGameViewModel @Inject constructor(
     }
 
     fun onNextRound() {
+        val state = _uiState.value.state
+        if (state.phase != ScopaPhase.ROUND_END) return
         if (isServer) {
             applyAndBroadcast(ScopaAction.NextRound)
         } else {
@@ -115,16 +123,23 @@ class ScopaGameViewModel @Inject constructor(
 
     private fun handleMessage(msg: BtMessage) {
         if (isServer) {
+            val state = _uiState.value.state
             when (msg) {
                 is BtMessage.PlayCard -> {
                     val card = cardLookup[msg.cardAssetName] ?: return
+                    if (state.currentPlayer != 2 || card !in state.player2Hand) return
                     applyAndBroadcast(ScopaAction.PlayCard(card))
                 }
                 is BtMessage.ChooseCapture -> {
+                    if (state.phase != ScopaPhase.WAITING_CAPTURE_CHOICE || state.currentPlayer != 2) return
                     val group = msg.cardAssetNames.mapNotNull { cardLookup[it] }
-                    if (group.isNotEmpty()) applyAndBroadcast(ScopaAction.ChooseCapture(group))
+                    if (group !in state.pendingCaptures) return
+                    applyAndBroadcast(ScopaAction.ChooseCapture(group))
                 }
-                is BtMessage.NextRound -> applyAndBroadcast(ScopaAction.NextRound)
+                is BtMessage.NextRound -> {
+                    if (state.phase != ScopaPhase.ROUND_END) return
+                    applyAndBroadcast(ScopaAction.NextRound)
+                }
                 else -> {}
             }
         } else {
@@ -141,10 +156,11 @@ class ScopaGameViewModel @Inject constructor(
     }
 
     private fun checkForSessionEnd(state: ScopaState) {
-        if (state.phase == com.fraccetta.scopabriscola.game.scopa.ScopaPhase.SESSION_END) {
-            val winner = if (state.player1SessionScore >= state.player2SessionScore) 1 else 2
+        if (state.phase == ScopaPhase.SESSION_END) {
+            val absoluteWinner = if (state.player1SessionScore >= state.player2SessionScore) 1 else 2
+            val relativeWinner = if (absoluteWinner == localPlayer) 1 else 2
             viewModelScope.launch {
-                _navigationEvent.emit("result/$winner/scopa")
+                _navigationEvent.emit("result/$relativeWinner/scopa")
             }
         }
     }
