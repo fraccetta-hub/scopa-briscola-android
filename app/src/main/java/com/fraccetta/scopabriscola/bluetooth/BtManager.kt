@@ -35,7 +35,7 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     private val _state = MutableStateFlow<BtState>(BtState.Idle)
     val state: StateFlow<BtState> = _state.asStateFlow()
 
-    private val _events = MutableSharedFlow<ConnectionEvent>(extraBufferCapacity = 64)
+    private val _events = MutableSharedFlow<ConnectionEvent>(replay = 1, extraBufferCapacity = 64)
     val events: Flow<ConnectionEvent> = _events.asSharedFlow()
 
     private var btServer: BtServer? = null
@@ -52,16 +52,16 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
                     val msg = BtProtocol.decode(line)
                     if (msg is BtMessage.Handshake) {
                         _state.value = BtState.Connected(msg.playerName)
-                        _events.tryEmit(ConnectionEvent.Connected)
+                        _events.emit(ConnectionEvent.Connected)
                         startKeepalive()
                     }
-                    _events.tryEmit(ConnectionEvent.MessageReceived(msg))
+                    _events.emit(ConnectionEvent.MessageReceived(msg))
                 } catch (_: Exception) {
                     // ignore malformed lines
                 }
             }
             _state.value = BtState.Disconnected
-            _events.tryEmit(ConnectionEvent.Lost)
+            _events.emit(ConnectionEvent.Lost)
         }
     }
 
@@ -79,16 +79,16 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
                     val msg = BtProtocol.decode(line)
                     if (_state.value is BtState.Scanning) {
                         _state.value = BtState.Connected(device.name ?: device.address)
-                        _events.tryEmit(ConnectionEvent.Connected)
+                        _events.emit(ConnectionEvent.Connected)
                         startKeepalive()
                     }
-                    _events.tryEmit(ConnectionEvent.MessageReceived(msg))
+                    _events.emit(ConnectionEvent.MessageReceived(msg))
                 } catch (_: Exception) {
                     // ignore malformed lines
                 }
             }
             _state.value = BtState.Disconnected
-            _events.tryEmit(ConnectionEvent.Lost)
+            _events.emit(ConnectionEvent.Lost)
         }
     }
 

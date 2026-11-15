@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -92,7 +93,10 @@ fun ScopaTableContent(
     val localScore = if (uiState.localPlayer == 1) state.player1SessionScore else state.player2SessionScore
     val opponentScore = if (uiState.localPlayer == 1) state.player2SessionScore else state.player1SessionScore
 
-    val captureSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val captureSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { it != SheetValue.Hidden }
+    )
 
     // Round-end dialog
     if (state.phase == ScopaPhase.ROUND_END) {

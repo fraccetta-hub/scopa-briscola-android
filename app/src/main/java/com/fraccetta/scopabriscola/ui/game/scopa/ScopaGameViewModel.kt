@@ -127,7 +127,7 @@ class ScopaGameViewModel @Inject constructor(
             when (msg) {
                 is BtMessage.PlayCard -> {
                     val card = cardLookup[msg.cardAssetName] ?: return
-                    if (state.currentPlayer != 2 || card !in state.player2Hand) return
+                    if (state.phase != ScopaPhase.WAITING_PLAY || state.currentPlayer != 2 || card !in state.player2Hand) return
                     applyAndBroadcast(ScopaAction.PlayCard(card))
                 }
                 is BtMessage.ChooseCapture -> {
@@ -153,6 +153,13 @@ class ScopaGameViewModel @Inject constructor(
                 checkForSessionEnd(newState)
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        GameSession.isServer = false
+        GameSession.localPlayer = 1
+        GameSession.opponentName = null
     }
 
     private fun checkForSessionEnd(state: ScopaState) {
