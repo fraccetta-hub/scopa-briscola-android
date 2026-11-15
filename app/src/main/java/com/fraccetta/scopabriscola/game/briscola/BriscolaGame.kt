@@ -3,7 +3,10 @@ package com.fraccetta.scopabriscola.game.briscola
 import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.domain.Deck
 import com.fraccetta.scopabriscola.domain.Suit
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
+@Serializable
 data class BriscolaState(
     val briscolaSuit: Suit,
     val briscolaCard: Card,
@@ -21,6 +24,7 @@ data class BriscolaState(
     val briscolaCardTaken: Boolean = false
 )
 
+@Serializable
 enum class BriscolaPhase { WAITING_FIRST, WAITING_SECOND, GAME_END, SESSION_END }
 
 class BriscolaGame(val winPoints: Int = 121) {

@@ -58,6 +58,20 @@
     <string name="scopa_scope_label">Scope: %1$d</string>
     <string name="scopa_waiting_server">In attesa del server…</string>
 
+    <!-- Briscola Game Screen -->
+    <string name="briscola_your_turn">Turno tuo</string>
+    <string name="briscola_opponent_turn">Turno avversario</string>
+    <string name="briscola_score_label">Punti: %1$d — %2$d</string>
+    <string name="briscola_trump_label">Briscola</string>
+    <string name="briscola_deck_remaining">Mazzo: %1$d</string>
+    <string name="briscola_your_hand">La tua mano</string>
+    <string name="briscola_trick_played">Carta giocata</string>
+    <string name="briscola_game_end_title">Fine partita</string>
+    <string name="briscola_game_end_scores">Punti: Tu %1$d — Avversario %2$d</string>
+    <string name="briscola_new_game">Nuova partita</string>
+    <string name="briscola_card_fallback">%1$s</string>
+    <string name="briscola_waiting_server">In attesa del server…</string>
+
     <!-- Stub screens -->
     <string name="stub_lobby">Lobby: %1$s</string>
     <string name="stub_scopa_game">Partita a Scopa</string>
