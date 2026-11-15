@@ -11,13 +11,6 @@ import androidx.navigation.NavHostController
 import com.fraccetta.scopabriscola.R
 
 @Composable
-fun LobbyScreen(gameType: String, navController: NavHostController) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = stringResource(R.string.stub_lobby, gameType))
-    }
-}
-
-@Composable
 fun ScopaGameScreen(navController: NavHostController) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = stringResource(R.string.stub_scopa_game))

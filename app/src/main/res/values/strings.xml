@@ -19,6 +19,23 @@
     <!-- Navigation -->
     <string name="nav_back">Indietro</string>
 
+    <!-- Lobby Screen -->
+    <string name="lobby_title_scopa">Lobby Scopa</string>
+    <string name="lobby_title_briscola">Lobby Briscola</string>
+    <string name="lobby_choose_role">Scegli il tuo ruolo</string>
+    <string name="lobby_host">Ospita partita</string>
+    <string name="lobby_scan">Cerca partita</string>
+    <string name="lobby_hosting">In attesa di un avversario…</string>
+    <string name="lobby_scanning">Dispositivi associati</string>
+    <string name="lobby_no_devices">Nessun dispositivo associato trovato</string>
+    <string name="lobby_select_device">Seleziona un dispositivo</string>
+    <string name="lobby_unknown_device">Dispositivo sconosciuto</string>
+    <string name="lobby_connected_to">Connesso a %1$s</string>
+    <string name="lobby_waiting_handshake">Connessione in corso…</string>
+    <string name="lobby_starting">Avvio partita…</string>
+    <string name="lobby_disconnected">Connessione interrotta</string>
+    <string name="lobby_retry">Riprova</string>
+
     <!-- Stub screens -->
     <string name="stub_lobby">Lobby: %1$s</string>
     <string name="stub_scopa_game">Partita a Scopa</string>

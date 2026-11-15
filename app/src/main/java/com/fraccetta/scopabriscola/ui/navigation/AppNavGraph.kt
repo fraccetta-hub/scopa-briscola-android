@@ -5,9 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.fraccetta.scopabriscola.ui.lobby.LobbyScreen
 import com.fraccetta.scopabriscola.ui.screens.BriscolaGameScreen
 import com.fraccetta.scopabriscola.ui.screens.HomeScreen
-import com.fraccetta.scopabriscola.ui.screens.LobbyScreen
 import com.fraccetta.scopabriscola.ui.screens.ResultScreen
 import com.fraccetta.scopabriscola.ui.screens.ScopaGameScreen
 import com.fraccetta.scopabriscola.ui.screens.StatsScreen
