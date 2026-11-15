@@ -36,6 +36,7 @@
     <string name="lobby_disconnected">Connessione interrotta</string>
     <string name="lobby_connection_lost">Connessione persa</string>
     <string name="lobby_bt_permission_denied">Permesso Bluetooth negato</string>
+    <string name="lobby_default_player_name">Giocatore</string>
     <string name="lobby_retry">Riprova</string>
 
     <!-- Stub screens -->

@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,15 +73,20 @@ fun LobbyScreen(
         arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN)
     }
 
-    var pendingAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+    var pendingBtAction by rememberSaveable { mutableStateOf<String?>(null) }
 
     val permLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { results ->
         if (results.values.all { it }) {
-            pendingAction?.invoke()
+            when (pendingBtAction) {
+                "HOST" -> viewModel.startHosting()
+                "SCAN" -> viewModel.startScanning()
+            }
+        } else {
+            viewModel.onPermissionDenied()
         }
-        pendingAction = null
+        pendingBtAction = null
     }
 
     Scaffold(
@@ -112,11 +118,11 @@ fun LobbyScreen(
                 is BtState.Idle -> {
                     IdleContent(
                         onHostClick = {
-                            pendingAction = { viewModel.startHosting() }
+                            pendingBtAction = "HOST"
                             permLauncher.launch(btPermissions)
                         },
                         onScanClick = {
-                            pendingAction = { viewModel.startScanning() }
+                            pendingBtAction = "SCAN"
                             permLauncher.launch(btPermissions)
                         }
                     )
@@ -139,7 +145,7 @@ fun LobbyScreen(
                 is BtState.Disconnected -> {
                     DisconnectedContent(
                         onRetryClick = {
-                            pendingAction = { viewModel.startScanning() }
+                            pendingBtAction = "SCAN"
                             permLauncher.launch(btPermissions)
                         }
                     )

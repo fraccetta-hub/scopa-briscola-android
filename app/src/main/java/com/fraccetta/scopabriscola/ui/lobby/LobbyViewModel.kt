@@ -2,11 +2,13 @@ package com.fraccetta.scopabriscola.ui.lobby
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fraccetta.scopabriscola.R
 import com.fraccetta.scopabriscola.bluetooth.BtManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.fraccetta.scopabriscola.bluetooth.BtMessage
 import com.fraccetta.scopabriscola.bluetooth.BtState
 import com.fraccetta.scopabriscola.bluetooth.ConnectionEvent
@@ -32,6 +34,7 @@ data class LobbyUiState(
 
 @HiltViewModel
 class LobbyViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val btManager: BtManager,
     private val userPrefs: UserPreferences
 ) : ViewModel() {
@@ -55,7 +58,8 @@ class LobbyViewModel @Inject constructor(
             btManager.events.collect { event ->
                 when (event) {
                     is ConnectionEvent.Connected -> {
-                        val playerName = userPrefs.playerName.first().ifEmpty { "Giocatore" }
+                        val playerName = userPrefs.playerName.first()
+                            .ifEmpty { context.getString(R.string.lobby_default_player_name) }
                         val role = if (isServer) "SERVER" else "CLIENT"
                         btManager.send(BtMessage.Handshake(playerName, role))
                     }
@@ -97,6 +101,10 @@ class LobbyViewModel @Inject constructor(
             null
         }
         _uiState.update { it.copy(pairedDevices = paired?.toList() ?: emptyList()) }
+    }
+
+    fun onPermissionDenied() {
+        _uiState.update { it.copy(errorResId = R.string.lobby_bt_permission_denied) }
     }
 
     fun connectTo(device: BluetoothDevice) {
