@@ -16,3 +16,23 @@
 
 # If you keep the line number information, uncomment this to hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# kotlinx.serialization
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+-keepclassmembers class kotlinx.serialization.json.** {
+    *** Companion;
+}
+-keepclasseswithmembers class **.*$serializer {
+    static **.*$serializer INSTANCE;
+}
+-keep,includedescriptorclasses class com.fraccetta.scopabriscola.**$$serializer { *; }
+-keepclassmembers class com.fraccetta.scopabriscola.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# Room
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keep @androidx.room.Dao interface *
+-dontwarn androidx.room.**
