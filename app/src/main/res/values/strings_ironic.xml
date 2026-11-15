@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="win_messages">
+        <item>Sei il Campione! ...per ora.</item>
+        <item>Bravo! Anche un orologio rotto segna l\'ora giusta due volte al giorno.</item>
+        <item>Hai vinto! Probabilmente per caso, ma lo scriviamo lo stesso.</item>
+        <item>Incredibile. Anche tu ogni tanto ci riesci.</item>
+        <item>Vittoria! Goditi il momento, dura poco.</item>
+    </string-array>
+    <string-array name="lose_messages">
+        <item>Hai perso. Ma almeno hai imparato qualcosa... o forse no.</item>
+        <item>Sconfitta epica. Da raccontare ai nipoti.</item>
+        <item>Ci vuole talento per perdere così. Complimenti.</item>
+        <item>Non è colpa tua. Sì, invece.</item>
+        <item>La prossima volta andrà peggio. No, dai, scherzavo... forse.</item>
+    </string-array>
+</resources>

@@ -72,6 +72,12 @@
     <string name="briscola_card_fallback">%1$s</string>
     <string name="briscola_waiting_server">In attesa del server…</string>
 
+    <!-- Result Screen -->
+    <string name="result_back_to_menu">Torna al menu</string>
+    <string name="result_player_label">Giocatore: %1$s</string>
+    <string name="result_game_type_scopa">Scopa</string>
+    <string name="result_game_type_briscola">Briscola</string>
+
     <!-- Stub screens -->
     <string name="stub_lobby">Lobby: %1$s</string>
     <string name="stub_scopa_game">Partita a Scopa</string>

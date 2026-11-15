@@ -11,13 +11,6 @@ import androidx.navigation.NavHostController
 import com.fraccetta.scopabriscola.R
 
 @Composable
-fun ResultScreen(winner: String, gameType: String, navController: NavHostController) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = stringResource(R.string.stub_result, winner, gameType))
-    }
-}
-
-@Composable
 fun StatsScreen(navController: NavHostController) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = stringResource(R.string.stub_stats))
