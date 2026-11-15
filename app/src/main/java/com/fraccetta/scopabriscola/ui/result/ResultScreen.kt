@@ -86,7 +86,6 @@ fun ResultScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(0.6f, fill = false)
                         .height(240.dp)
                 ) {
                     Image(

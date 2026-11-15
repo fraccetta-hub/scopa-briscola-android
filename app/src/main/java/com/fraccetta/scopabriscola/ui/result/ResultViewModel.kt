@@ -9,10 +9,12 @@ import com.fraccetta.scopabriscola.data.prefs.UserPreferences
 import com.fraccetta.scopabriscola.data.repository.StatsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class ResultUiState(
@@ -41,12 +43,14 @@ class ResultViewModel @Inject constructor(
 
             // Pick random image from assets/result
             val prefix = if (winner == "1") "win_" else "lose_"
-            val files = try {
-                context.assets.list("result")
-                    ?.filter { it.startsWith(prefix) && it.endsWith(".png") }
-                    ?: emptyList()
-            } catch (e: Exception) {
-                emptyList()
+            val files = withContext(Dispatchers.IO) {
+                try {
+                    context.assets.list("result")
+                        ?.filter { it.startsWith(prefix) && it.endsWith(".png") }
+                        ?: emptyList()
+                } catch (e: Exception) {
+                    emptyList()
+                }
             }
             val imagePath = if (files.isNotEmpty()) {
                 "result/${files.random()}"
