@@ -42,6 +42,7 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     private var btClient: BtClient? = null
 
     fun startHosting() {
+        _events.resetReplayCache()
         _state.value = BtState.Hosting
         val server = BtServer(appContext)
         btServer = server
@@ -70,6 +71,7 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     }
 
     fun connect(device: BluetoothDevice) {
+        _events.resetReplayCache()
         val client = BtClient(appContext)
         btClient = client
         client.connect(device, scope)
@@ -104,6 +106,7 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
         btServer = null
         btClient = null
         _state.value = BtState.Disconnected
+        _events.resetReplayCache()
     }
 
     private fun startKeepalive() {

@@ -8,6 +8,8 @@ import com.fraccetta.scopabriscola.bluetooth.ConnectionEvent
 import com.fraccetta.scopabriscola.data.GameSession
 import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.domain.Deck
+import com.fraccetta.scopabriscola.domain.Rank
+import com.fraccetta.scopabriscola.domain.Suit
 import com.fraccetta.scopabriscola.game.scopa.ScopaAction
 import com.fraccetta.scopabriscola.game.scopa.ScopaGame
 import com.fraccetta.scopabriscola.game.scopa.ScopaPhase
@@ -82,6 +84,9 @@ class ScopaGameViewModel @Inject constructor(
     fun onCardPlayed(card: Card) {
         val current = _uiState.value.state
         if (current.currentPlayer != localPlayer) return
+        if (current.phase != ScopaPhase.WAITING_PLAY) return
+        val localHand = if (localPlayer == 1) current.player1Hand else current.player2Hand
+        if (card !in localHand) return
         if (isServer) {
             applyAndBroadcast(ScopaAction.PlayCard(card))
         } else {
@@ -92,6 +97,8 @@ class ScopaGameViewModel @Inject constructor(
     fun onCaptureChosen(group: List<Card>) {
         val current = _uiState.value.state
         if (current.currentPlayer != localPlayer) return
+        if (current.phase != ScopaPhase.WAITING_CAPTURE_CHOICE) return
+        if (group !in current.pendingCaptures) return
         if (isServer) {
             applyAndBroadcast(ScopaAction.ChooseCapture(group))
         } else {
@@ -117,7 +124,12 @@ class ScopaGameViewModel @Inject constructor(
     }
 
     private fun sendGameState(state: ScopaState) {
-        val stateJson = json.encodeToString(ScopaState.serializer(), state)
+        // Mask server's hand and deck contents before sending to client
+        val masked = state.copy(
+            player1Hand = emptyList(),
+            deckCards = List(state.deckCards.size) { Card(Rank.ASSO, Suit.DENARI) }
+        )
+        val stateJson = json.encodeToString(ScopaState.serializer(), masked)
         btManager.send(BtMessage.GameState(stateJson))
     }
 
