@@ -78,6 +78,12 @@
     <string name="result_game_type_scopa">Scopa</string>
     <string name="result_game_type_briscola">Briscola</string>
 
+    <!-- Disconnection Dialog -->
+    <string name="disconnection_title">Connessione persa</string>
+    <string name="disconnection_message">La connessione con l\'avversario è stata interrotta. Vuoi riprovare?</string>
+    <string name="disconnection_retry">Riprova</string>
+    <string name="disconnection_abandon">Abbandona</string>
+
     <!-- Stats Screen -->
     <string name="stats_title">Statistiche</string>
     <string name="stats_tab_scopa">Scopa</string>

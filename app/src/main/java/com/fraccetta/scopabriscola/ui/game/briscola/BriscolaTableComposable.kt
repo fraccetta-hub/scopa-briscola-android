@@ -24,6 +24,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -48,6 +49,7 @@ import com.fraccetta.scopabriscola.R
 import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.game.briscola.BriscolaPhase
 import com.fraccetta.scopabriscola.game.briscola.BriscolaRules
+import com.fraccetta.scopabriscola.ui.game.DisconnectionDialog
 
 @Composable
 fun BriscolaGameScreen(
@@ -69,6 +71,13 @@ fun BriscolaGameScreen(
         onCardPlayed = viewModel::onCardPlayed,
         onNewGame = viewModel::onNewGame
     )
+
+    if (uiState.showDisconnectionDialog) {
+        DisconnectionDialog(
+            onRetry = { viewModel.onDisconnectionRetry() },
+            onAbandon = { viewModel.onDisconnectionAbandon() }
+        )
+    }
 }
 
 @Composable

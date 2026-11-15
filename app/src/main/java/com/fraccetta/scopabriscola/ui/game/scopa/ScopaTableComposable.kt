@@ -55,6 +55,7 @@ import androidx.navigation.NavHostController
 import com.fraccetta.scopabriscola.R
 import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.game.scopa.ScopaPhase
+import com.fraccetta.scopabriscola.ui.game.DisconnectionDialog
 
 @Composable
 fun ScopaGameScreen(
@@ -77,6 +78,13 @@ fun ScopaGameScreen(
         onCaptureChosen = viewModel::onCaptureChosen,
         onNextRound = viewModel::onNextRound
     )
+
+    if (uiState.showDisconnectionDialog) {
+        DisconnectionDialog(
+            onRetry = { viewModel.onDisconnectionRetry() },
+            onAbandon = { viewModel.onDisconnectionAbandon() }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

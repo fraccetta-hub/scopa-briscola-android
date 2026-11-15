@@ -14,6 +14,7 @@ import com.fraccetta.scopabriscola.game.briscola.BriscolaGame
 import com.fraccetta.scopabriscola.game.briscola.BriscolaPhase
 import com.fraccetta.scopabriscola.game.briscola.BriscolaState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,7 +30,8 @@ data class BriscolaUiState(
     val state: BriscolaState,
     val isServer: Boolean,
     val localPlayer: Int,
-    val opponentName: String? = null
+    val opponentName: String? = null,
+    val showDisconnectionDialog: Boolean = false
 )
 
 @HiltViewModel
@@ -60,22 +62,47 @@ class BriscolaGameViewModel @Inject constructor(
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    init {
-        if (isServer) {
-            sendGameState(initialState)
-        }
-        viewModelScope.launch {
+    private var eventsJob: Job? = null
+
+    private fun subscribeToEvents() {
+        eventsJob?.cancel()
+        eventsJob = viewModelScope.launch {
             btManager.events.collect { event ->
                 when (event) {
                     is ConnectionEvent.MessageReceived -> handleMessage(event.msg)
                     is ConnectionEvent.Lost -> {
-                        viewModelScope.launch {
-                            _navigationEvent.emit("home")
-                        }
+                        _uiState.update { it.copy(showDisconnectionDialog = true) }
+                    }
+                    is ConnectionEvent.Connected -> {
+                        _uiState.update { it.copy(showDisconnectionDialog = false) }
+                        if (isServer) sendGameState(_uiState.value.state)
                     }
                     else -> {}
                 }
             }
+        }
+    }
+
+    init {
+        if (isServer) {
+            sendGameState(initialState)
+        }
+        subscribeToEvents()
+    }
+
+    fun onDisconnectionRetry() {
+        if (isServer) {
+            btManager.startHosting()
+        } else {
+            GameSession.lastDevice?.let { btManager.connect(it) }
+        }
+        subscribeToEvents()
+    }
+
+    fun onDisconnectionAbandon() {
+        _uiState.update { it.copy(showDisconnectionDialog = false) }
+        viewModelScope.launch {
+            _navigationEvent.emit("home")
         }
     }
 

@@ -15,6 +15,7 @@ import com.fraccetta.scopabriscola.game.scopa.ScopaGame
 import com.fraccetta.scopabriscola.game.scopa.ScopaPhase
 import com.fraccetta.scopabriscola.game.scopa.ScopaState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -30,7 +31,8 @@ data class ScopaUiState(
     val state: ScopaState,
     val isServer: Boolean,
     val localPlayer: Int,
-    val opponentName: String? = null
+    val opponentName: String? = null,
+    val showDisconnectionDialog: Boolean = false
 )
 
 @HiltViewModel
@@ -61,23 +63,48 @@ class ScopaGameViewModel @Inject constructor(
 
     private val json = Json { ignoreUnknownKeys = true }
 
+    private var eventsJob: Job? = null
+
+    private fun subscribeToEvents() {
+        eventsJob?.cancel()
+        eventsJob = viewModelScope.launch {
+            btManager.events.collect { event ->
+                when (event) {
+                    is ConnectionEvent.MessageReceived -> handleMessage(event.msg)
+                    is ConnectionEvent.Lost -> {
+                        _uiState.update { it.copy(showDisconnectionDialog = true) }
+                    }
+                    is ConnectionEvent.Connected -> {
+                        _uiState.update { it.copy(showDisconnectionDialog = false) }
+                        if (isServer) sendGameState(_uiState.value.state)
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
     init {
         if (isServer) {
             // Server sends initial game state to client
             sendGameState(initialState)
         }
+        subscribeToEvents()
+    }
+
+    fun onDisconnectionRetry() {
+        if (isServer) {
+            btManager.startHosting()
+        } else {
+            GameSession.lastDevice?.let { btManager.connect(it) }
+        }
+        subscribeToEvents()
+    }
+
+    fun onDisconnectionAbandon() {
+        _uiState.update { it.copy(showDisconnectionDialog = false) }
         viewModelScope.launch {
-            btManager.events.collect { event ->
-                when (event) {
-                    is ConnectionEvent.MessageReceived -> handleMessage(event.msg)
-                    is ConnectionEvent.Lost -> {
-                        viewModelScope.launch {
-                            _navigationEvent.emit("home")
-                        }
-                    }
-                    else -> {}
-                }
-            }
+            _navigationEvent.emit("home")
         }
     }
 

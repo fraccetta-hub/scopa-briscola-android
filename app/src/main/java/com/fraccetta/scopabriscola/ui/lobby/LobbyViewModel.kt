@@ -120,6 +120,7 @@ class LobbyViewModel @Inject constructor(
 
     fun connectTo(device: BluetoothDevice) {
         _uiState.update { it.copy(errorResId = null) }
+        GameSession.lastDevice = device
         btManager.connect(device)
         subscribeToEvents()
     }
