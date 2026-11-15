@@ -48,6 +48,7 @@ class LobbyViewModel @Inject constructor(
 
     private var isServer = false
     private var gameType = ""
+    private var eventsJob: kotlinx.coroutines.Job? = null
 
     init {
         viewModelScope.launch {
@@ -55,7 +56,12 @@ class LobbyViewModel @Inject constructor(
                 _uiState.update { it.copy(btState = btState) }
             }
         }
-        viewModelScope.launch {
+        subscribeToEvents()
+    }
+
+    private fun subscribeToEvents() {
+        eventsJob?.cancel()
+        eventsJob = viewModelScope.launch {
             btManager.events.collect { event ->
                 when (event) {
                     is ConnectionEvent.Connected -> {
@@ -91,6 +97,7 @@ class LobbyViewModel @Inject constructor(
         isServer = true
         _uiState.update { it.copy(errorResId = null) }
         btManager.startHosting()
+        subscribeToEvents()
     }
 
     fun startScanning() {
@@ -114,6 +121,7 @@ class LobbyViewModel @Inject constructor(
     fun connectTo(device: BluetoothDevice) {
         _uiState.update { it.copy(errorResId = null) }
         btManager.connect(device)
+        subscribeToEvents()
     }
 
     override fun onCleared() {
