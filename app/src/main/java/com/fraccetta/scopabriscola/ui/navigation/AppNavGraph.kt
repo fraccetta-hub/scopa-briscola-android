@@ -10,7 +10,7 @@ import com.fraccetta.scopabriscola.ui.game.briscola.BriscolaGameScreen
 import com.fraccetta.scopabriscola.ui.screens.HomeScreen
 import com.fraccetta.scopabriscola.ui.result.ResultScreen
 import com.fraccetta.scopabriscola.ui.game.scopa.ScopaGameScreen
-import com.fraccetta.scopabriscola.ui.screens.StatsScreen
+import com.fraccetta.scopabriscola.ui.stats.StatsScreen
 import com.fraccetta.scopabriscola.ui.screens.settings.SettingsScreen
 
 @Composable

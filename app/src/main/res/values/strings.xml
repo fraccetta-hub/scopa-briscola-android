@@ -78,6 +78,18 @@
     <string name="result_game_type_scopa">Scopa</string>
     <string name="result_game_type_briscola">Briscola</string>
 
+    <!-- Stats Screen -->
+    <string name="stats_title">Statistiche</string>
+    <string name="stats_tab_scopa">Scopa</string>
+    <string name="stats_tab_briscola">Briscola</string>
+    <string name="stats_player_name">%1$s</string>
+    <string name="stats_sessions">Partite: %1$d (V:%2$d P:%3$d)</string>
+    <string name="stats_win_percent">Vittorie: %1$d%%</string>
+    <string name="stats_total_points">Punti totali: %1$d</string>
+    <string name="stats_total_scope">Scope totali: %1$d</string>
+    <string name="stats_empty">Nessuna statistica</string>
+    <string name="stats_back">Indietro</string>
+
     <!-- Stub screens -->
     <string name="stub_lobby">Lobby: %1$s</string>
     <string name="stub_scopa_game">Partita a Scopa</string>
