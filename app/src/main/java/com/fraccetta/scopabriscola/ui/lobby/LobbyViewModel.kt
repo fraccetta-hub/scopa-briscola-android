@@ -12,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import com.fraccetta.scopabriscola.bluetooth.BtMessage
 import com.fraccetta.scopabriscola.bluetooth.BtState
 import com.fraccetta.scopabriscola.bluetooth.ConnectionEvent
+import com.fraccetta.scopabriscola.data.GameSession
 import com.fraccetta.scopabriscola.data.prefs.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -67,6 +68,8 @@ class LobbyViewModel @Inject constructor(
                         val msg = event.msg
                         if (msg is BtMessage.Handshake) {
                             _uiState.update { it.copy(remoteName = msg.playerName) }
+                            GameSession.isServer = isServer
+                            GameSession.opponentName = msg.playerName
                             val destination = if (gameType == "briscola") "game/briscola" else "game/scopa"
                             _navigationEvent.emit(destination)
                         }

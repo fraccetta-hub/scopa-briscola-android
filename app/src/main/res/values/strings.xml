@@ -39,6 +39,25 @@
     <string name="lobby_default_player_name">Giocatore</string>
     <string name="lobby_retry">Riprova</string>
 
+    <!-- Scopa Game Screen -->
+    <string name="scopa_your_turn">Turno tuo</string>
+    <string name="scopa_opponent_turn">Turno avversario</string>
+    <string name="scopa_score_label">Punteggio: %1$d — %2$d</string>
+    <string name="scopa_on_table">Sul tavolo</string>
+    <string name="scopa_your_hand">La tua mano</string>
+    <string name="scopa_choose_capture">Scegli la presa</string>
+    <string name="scopa_capture_option">Opzione %1$d</string>
+    <string name="scopa_round_end_title">Fine manche</string>
+    <string name="scopa_round_end_scores">Punteggio: Tu %1$d — Avversario %2$d</string>
+    <string name="scopa_next_round">Prossimo round</string>
+    <string name="scopa_session_end_title">Partita terminata</string>
+    <string name="scopa_you_win">Hai vinto!</string>
+    <string name="scopa_opponent_wins">Ha vinto l\'avversario</string>
+    <string name="scopa_card_fallback">%1$s</string>
+    <string name="scopa_deck_remaining">Mazzo: %1$d</string>
+    <string name="scopa_scope_label">Scope: %1$d</string>
+    <string name="scopa_waiting_server">In attesa del server…</string>
+
     <!-- Stub screens -->
     <string name="stub_lobby">Lobby: %1$s</string>
     <string name="stub_scopa_game">Partita a Scopa</string>

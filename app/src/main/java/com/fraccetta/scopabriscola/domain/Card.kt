@@ -1,7 +1,11 @@
 package com.fraccetta.scopabriscola.domain
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class Suit { DENARI, COPPE, SPADE, BASTONI }
 
+@Serializable
 enum class Rank(val displayName: String, val numericValue: Int) {
     ASSO("asso", 1),
     DUE("2", 2),
@@ -15,6 +19,7 @@ enum class Rank(val displayName: String, val numericValue: Int) {
     RE("re", 10)
 }
 
+@Serializable
 data class Card(val rank: Rank, val suit: Suit) {
     val assetName: String get() = "${rank.displayName}_${suit.name.lowercase()}"
 }

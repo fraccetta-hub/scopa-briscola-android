@@ -2,7 +2,10 @@ package com.fraccetta.scopabriscola.game.scopa
 
 import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.domain.Deck
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
+@Serializable
 data class ScopaState(
     val tableCards: List<Card>,
     val player1Hand: List<Card>,
@@ -16,10 +19,11 @@ data class ScopaState(
     val currentPlayer: Int,         // 1 or 2
     val phase: ScopaPhase,
     val pendingCaptures: List<List<Card>>,  // non-empty only in WAITING_CAPTURE_CHOICE
-    val lastCapture: Pair<Int, List<Card>>?,  // (player, cards) for UI highlight
+    @Transient val lastCapture: Pair<Int, List<Card>>? = null,  // (player, cards) for UI highlight; not serialized
     val deckCards: List<Card>       // remaining deck for dealing mid-round
 )
 
+@Serializable
 enum class ScopaPhase {
     WAITING_PLAY,
     WAITING_CAPTURE_CHOICE,

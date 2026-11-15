@@ -9,7 +9,7 @@ import com.fraccetta.scopabriscola.ui.lobby.LobbyScreen
 import com.fraccetta.scopabriscola.ui.screens.BriscolaGameScreen
 import com.fraccetta.scopabriscola.ui.screens.HomeScreen
 import com.fraccetta.scopabriscola.ui.screens.ResultScreen
-import com.fraccetta.scopabriscola.ui.screens.ScopaGameScreen
+import com.fraccetta.scopabriscola.ui.game.scopa.ScopaGameScreen
 import com.fraccetta.scopabriscola.ui.screens.StatsScreen
 import com.fraccetta.scopabriscola.ui.screens.settings.SettingsScreen
 
