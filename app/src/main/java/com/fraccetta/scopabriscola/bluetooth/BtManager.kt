@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicInteger
 
 sealed class BtState {
     object Idle : BtState()
@@ -38,10 +39,10 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
 
     private data class Tagged(val gen: Int, val event: ConnectionEvent)
     private val _tagged = MutableSharedFlow<Tagged>(replay = 1, extraBufferCapacity = 64)
-    @Volatile private var generation = 0
+    private val generation = AtomicInteger(0)
 
     val events: Flow<ConnectionEvent> get() {
-        val gen = generation
+        val gen = generation.get()
         return _tagged.filter { it.gen == gen }.map { it.event }
     }
 
@@ -49,13 +50,12 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     private var btClient: BtClient? = null
 
     fun startHosting() {
-        generation++
+        val gen = generation.incrementAndGet()
         _tagged.resetReplayCache()
         _state.value = BtState.Hosting
         val server = BtServer(appContext)
         btServer = server
         server.start(scope)
-        val gen = generation
         scope.launch {
             server.incoming.collect { line ->
                 try {
@@ -80,12 +80,11 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     }
 
     fun connect(device: BluetoothDevice) {
-        generation++
+        val gen = generation.incrementAndGet()
         _tagged.resetReplayCache()
         val client = BtClient(appContext)
         btClient = client
         client.connect(device, scope)
-        val gen = generation
         scope.launch {
             client.incoming.collect { line ->
                 try {
