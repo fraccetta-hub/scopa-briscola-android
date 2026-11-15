@@ -16,14 +16,14 @@ class StatsViewModel @Inject constructor(
     private val statsRepository: StatsRepository
 ) : ViewModel() {
 
-    private val allStats: StateFlow<List<StatisticsEntity>> = statsRepository.getAllStats()
+    private val allStats = statsRepository.getAllStats()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val scopaStats: StateFlow<List<StatisticsEntity>> = statsRepository.getAllStats()
+    val scopaStats: StateFlow<List<StatisticsEntity>> = allStats
         .map { list -> list.filter { it.gameType == "scopa" } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val briscolaStats: StateFlow<List<StatisticsEntity>> = statsRepository.getAllStats()
+    val briscolaStats: StateFlow<List<StatisticsEntity>> = allStats
         .map { list -> list.filter { it.gameType == "briscola" } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 }

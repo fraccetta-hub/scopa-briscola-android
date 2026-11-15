@@ -90,10 +90,4 @@
     <string name="stats_empty">Nessuna statistica</string>
     <string name="stats_back">Indietro</string>
 
-    <!-- Stub screens -->
-    <string name="stub_lobby">Lobby: %1$s</string>
-    <string name="stub_scopa_game">Partita a Scopa</string>
-    <string name="stub_briscola_game">Partita a Briscola</string>
-    <string name="stub_result">Risultato: %1$s — %2$s</string>
-    <string name="stub_stats">Statistiche</string>
 </resources>
