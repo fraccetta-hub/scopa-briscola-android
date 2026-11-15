@@ -34,6 +34,8 @@
     <string name="lobby_waiting_handshake">Connessione in corso…</string>
     <string name="lobby_starting">Avvio partita…</string>
     <string name="lobby_disconnected">Connessione interrotta</string>
+    <string name="lobby_connection_lost">Connessione persa</string>
+    <string name="lobby_bt_permission_denied">Permesso Bluetooth negato</string>
     <string name="lobby_retry">Riprova</string>
 
     <!-- Stub screens -->

@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +33,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -69,10 +72,15 @@ fun LobbyScreen(
         arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN)
     }
 
+    var pendingAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+
     val permLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { results ->
-        // Permissions granted or denied — scanning will handle the error via SecurityException
+        if (results.values.all { it }) {
+            pendingAction?.invoke()
+        }
+        pendingAction = null
     }
 
     Scaffold(
@@ -85,7 +93,7 @@ fun LobbyScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = stringResource(R.string.nav_back)
                         )
                     }
@@ -104,12 +112,12 @@ fun LobbyScreen(
                 is BtState.Idle -> {
                     IdleContent(
                         onHostClick = {
+                            pendingAction = { viewModel.startHosting() }
                             permLauncher.launch(btPermissions)
-                            viewModel.startHosting()
                         },
                         onScanClick = {
+                            pendingAction = { viewModel.startScanning() }
                             permLauncher.launch(btPermissions)
-                            viewModel.startScanning()
                         }
                     )
                 }
@@ -131,17 +139,17 @@ fun LobbyScreen(
                 is BtState.Disconnected -> {
                     DisconnectedContent(
                         onRetryClick = {
+                            pendingAction = { viewModel.startScanning() }
                             permLauncher.launch(btPermissions)
-                            viewModel.startScanning()
                         }
                     )
                 }
             }
 
-            uiState.error?.let { error ->
+            uiState.errorResId?.let { resId ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = error,
+                    text = stringResource(resId),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium
                 )

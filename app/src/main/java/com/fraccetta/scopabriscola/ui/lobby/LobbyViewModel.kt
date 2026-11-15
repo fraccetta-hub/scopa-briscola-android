@@ -2,8 +2,10 @@ package com.fraccetta.scopabriscola.ui.lobby
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fraccetta.scopabriscola.R
 import com.fraccetta.scopabriscola.bluetooth.BtManager
 import com.fraccetta.scopabriscola.bluetooth.BtMessage
 import com.fraccetta.scopabriscola.bluetooth.BtState
@@ -25,7 +27,7 @@ data class LobbyUiState(
     val btState: BtState = BtState.Idle,
     val pairedDevices: List<BluetoothDevice> = emptyList(),
     val remoteName: String? = null,
-    val error: String? = null
+    @StringRes val errorResId: Int? = null
 )
 
 @HiltViewModel
@@ -66,7 +68,7 @@ class LobbyViewModel @Inject constructor(
                         }
                     }
                     is ConnectionEvent.Lost -> {
-                        _uiState.update { it.copy(error = "Connessione persa") }
+                        _uiState.update { it.copy(errorResId = R.string.lobby_connection_lost) }
                     }
                 }
             }
@@ -79,26 +81,26 @@ class LobbyViewModel @Inject constructor(
 
     fun startHosting() {
         isServer = true
-        _uiState.update { it.copy(error = null) }
+        _uiState.update { it.copy(errorResId = null) }
         btManager.startHosting()
     }
 
     fun startScanning() {
         isServer = false
-        _uiState.update { it.copy(error = null) }
+        _uiState.update { it.copy(errorResId = null) }
         btManager.startScanning()
         val paired: Set<BluetoothDevice>? = try {
             @Suppress("DEPRECATION")
             BluetoothAdapter.getDefaultAdapter()?.bondedDevices
         } catch (e: SecurityException) {
-            _uiState.update { it.copy(error = "Permesso Bluetooth negato") }
+            _uiState.update { it.copy(errorResId = R.string.lobby_bt_permission_denied) }
             null
         }
         _uiState.update { it.copy(pairedDevices = paired?.toList() ?: emptyList()) }
     }
 
     fun connectTo(device: BluetoothDevice) {
-        _uiState.update { it.copy(error = null) }
+        _uiState.update { it.copy(errorResId = null) }
         btManager.connect(device)
     }
 
