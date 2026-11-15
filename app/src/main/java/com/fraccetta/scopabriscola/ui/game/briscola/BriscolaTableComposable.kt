@@ -47,6 +47,7 @@ import androidx.navigation.NavHostController
 import com.fraccetta.scopabriscola.R
 import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.game.briscola.BriscolaPhase
+import com.fraccetta.scopabriscola.game.briscola.BriscolaRules
 
 @Composable
 fun BriscolaGameScreen(
@@ -84,7 +85,10 @@ fun BriscolaTableContent(
 
     // GAME_END dialog
     if (state.phase == BriscolaPhase.GAME_END) {
-        // Compute this-game points from captured cards (session points have already been accumulated)
+        val p1GamePoints = state.player1Captured.sumOf { BriscolaRules.cardPoints(it.rank) }
+        val p2GamePoints = state.player2Captured.sumOf { BriscolaRules.cardPoints(it.rank) }
+        val localGamePoints = if (uiState.localPlayer == 1) p1GamePoints else p2GamePoints
+        val opponentGamePoints = if (uiState.localPlayer == 1) p2GamePoints else p1GamePoints
         AlertDialog(
             onDismissRequest = {},
             title = { Text(text = stringResource(R.string.briscola_game_end_title)) },
@@ -92,8 +96,8 @@ fun BriscolaTableContent(
                 Text(
                     text = stringResource(
                         R.string.briscola_game_end_scores,
-                        localSessionPoints,
-                        opponentSessionPoints
+                        localGamePoints,
+                        opponentGamePoints
                     )
                 )
             },

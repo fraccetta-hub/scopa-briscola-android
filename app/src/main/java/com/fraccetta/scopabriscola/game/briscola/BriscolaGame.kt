@@ -4,7 +4,6 @@ import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.domain.Deck
 import com.fraccetta.scopabriscola.domain.Suit
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 data class BriscolaState(
