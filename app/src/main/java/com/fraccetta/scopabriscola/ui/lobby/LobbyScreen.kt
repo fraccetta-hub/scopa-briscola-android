@@ -93,7 +93,7 @@ fun LobbyScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    val titleRes = if (gameType == "briscola") R.string.lobby_title_briscola else R.string.lobby_title_scopa
+                    val titleRes = if (gameType.equals("briscola", ignoreCase = true)) R.string.lobby_title_briscola else R.string.lobby_title_scopa
                     Text(stringResource(titleRes))
                 },
                 navigationIcon = {

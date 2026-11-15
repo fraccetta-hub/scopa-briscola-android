@@ -19,6 +19,7 @@ data class ScopaState(
     val currentPlayer: Int,         // 1 or 2
     val phase: ScopaPhase,
     val pendingCaptures: List<List<Card>>,  // non-empty only in WAITING_CAPTURE_CHOICE
+    val lastCapturerId: Int = 1,       // who last made a capture
     @Transient val lastCapture: Pair<Int, List<Card>>? = null,  // (player, cards) for UI highlight; not serialized
     val deckCards: List<Card>       // remaining deck for dealing mid-round
 )
@@ -86,7 +87,7 @@ class ScopaGame(val winScore: Int = 11) {
         return when {
             captures.isEmpty() -> {
                 // No capture: add card to table, switch player
-                state.copy(
+                val afterPlay = state.copy(
                     tableCards = state.tableCards + card,
                     player1Hand = newP1Hand,
                     player2Hand = newP2Hand,
@@ -94,6 +95,12 @@ class ScopaGame(val winScore: Int = 11) {
                     lastCapture = null,
                     phase = ScopaPhase.WAITING_PLAY
                 ).checkDealIfNeeded()
+                // If hands and deck are all empty after a no-capture play, end the round
+                if (afterPlay.player1Hand.isEmpty() && afterPlay.player2Hand.isEmpty() && afterPlay.deckCards.isEmpty()) {
+                    endRound(afterPlay, afterPlay.lastCapturerId)
+                } else {
+                    afterPlay
+                }
             }
             captures.size == 1 -> {
                 // Single capture group: auto-capture
@@ -205,6 +212,7 @@ class ScopaGame(val winScore: Int = 11) {
             player1Scope = newP1Scope,
             player2Scope = newP2Scope,
             currentPlayer = nextPlayer,
+            lastCapturerId = state.currentPlayer,
             lastCapture = lastCapture,
             phase = ScopaPhase.WAITING_PLAY,
             pendingCaptures = emptyList()

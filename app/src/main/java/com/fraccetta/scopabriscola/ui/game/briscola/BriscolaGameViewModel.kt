@@ -183,15 +183,21 @@ class BriscolaGameViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        btManager.disconnect()
         GameSession.isServer = false
         GameSession.localPlayer = 1
         GameSession.opponentName = null
+        GameSession.lastDevice = null
+        GameSession.lastSessionPoints = 0
+        GameSession.lastSessionScope = 0
     }
 
     private fun checkForSessionEnd(state: BriscolaState) {
         if (state.phase == BriscolaPhase.SESSION_END) {
             val absoluteWinner = if (state.player1SessionPoints > state.player2SessionPoints) 1 else 2
             val relativeWinner = if (absoluteWinner == localPlayer) 1 else 2
+            GameSession.lastSessionPoints = if (localPlayer == 1) state.player1SessionPoints else state.player2SessionPoints
+            GameSession.lastSessionScope = 0  // no scope in Briscola
             viewModelScope.launch {
                 _navigationEvent.emit("result/$relativeWinner/briscola")
             }

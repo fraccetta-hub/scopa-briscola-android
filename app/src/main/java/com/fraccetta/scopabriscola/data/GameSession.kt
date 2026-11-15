@@ -9,4 +9,6 @@ object GameSession {
     @Volatile var opponentName: String? = null
     @Volatile var localPlayer: Int = 1
     @Volatile var lastDevice: android.bluetooth.BluetoothDevice? = null
+    @Volatile var lastSessionPoints: Int = 0
+    @Volatile var lastSessionScope: Int = 0
 }

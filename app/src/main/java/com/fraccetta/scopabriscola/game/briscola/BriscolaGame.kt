@@ -124,7 +124,7 @@ class BriscolaGame(val winPoints: Int = 121) {
             deck.size == 1 -> {
                 winnerHand.add(deck.removeAt(0))
                 if (!briscolaCardTaken) {
-                    winnerHand.add(state.briscolaCard)
+                    loserHand.add(state.briscolaCard)   // loser gets briscola card — standard rule
                     briscolaCardTaken = true
                 }
             }

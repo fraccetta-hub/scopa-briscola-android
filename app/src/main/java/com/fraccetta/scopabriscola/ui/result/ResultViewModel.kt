@@ -71,8 +71,8 @@ class ResultViewModel @Inject constructor(
                 playerName = playerName,
                 gameType = gameType,
                 won = winner == "1",
-                points = 0,
-                scope = 0
+                points = com.fraccetta.scopabriscola.data.GameSession.lastSessionPoints,
+                scope = com.fraccetta.scopabriscola.data.GameSession.lastSessionScope
             )
 
             _uiState.value = ResultUiState(

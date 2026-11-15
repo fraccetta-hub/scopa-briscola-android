@@ -2,6 +2,7 @@ package com.fraccetta.scopabriscola.bluetooth
 
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothServerSocket
+import android.bluetooth.BluetoothSocket
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +17,11 @@ import java.io.OutputStream
 class BtServer(private val context: Context) {
     private val _channel = Channel<String>(Channel.UNLIMITED)
     val incoming: Flow<String> = _channel.receiveAsFlow()
+    private val _accepted = Channel<Unit>(Channel.CONFLATED)
+    val accepted: Flow<Unit> = _accepted.receiveAsFlow()
     private var outputStream: OutputStream? = null
     private var serverSocket: BluetoothServerSocket? = null
+    private var connectedSocket: BluetoothSocket? = null
 
     fun start(scope: CoroutineScope) {
         scope.launch(Dispatchers.IO) {
@@ -29,7 +33,11 @@ class BtServer(private val context: Context) {
                     BluetoothConstants.SERVICE_UUID
                 )
                 val socket = serverSocket?.accept() ?: return@launch
+                connectedSocket = socket
+                serverSocket?.close()   // stop accepting further connections
+                serverSocket = null
                 outputStream = socket.outputStream
+                _accepted.trySend(Unit)   // signal: socket established
                 val reader = BufferedReader(InputStreamReader(socket.inputStream))
                 var line: String?
                 while (reader.readLine().also { line = it } != null) {
@@ -53,12 +61,10 @@ class BtServer(private val context: Context) {
     }
 
     fun stop() {
-        try {
-            serverSocket?.close()
-        } catch (_: Exception) {
-            // ignore
-        }
+        try { serverSocket?.close() } catch (_: Exception) {}
+        try { connectedSocket?.close() } catch (_: Exception) {}
         serverSocket = null
+        connectedSocket = null
         outputStream = null
     }
 }

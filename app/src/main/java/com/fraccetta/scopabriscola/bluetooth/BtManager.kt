@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
@@ -57,18 +58,24 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
         btServer = server
         server.start(scope)
         scope.launch {
+            try {
+                server.accepted.first()   // wait until socket accepted
+            } catch (_: Exception) {
+                _state.value = BtState.Disconnected
+                _tagged.emit(Tagged(gen, ConnectionEvent.Lost))
+                return@launch
+            }
+            _state.value = BtState.Connected("")   // name updated when Handshake arrives
+            _tagged.emit(Tagged(gen, ConnectionEvent.Connected))
+            startKeepalive()
             server.incoming.collect { line ->
                 try {
                     val msg = BtProtocol.decode(line)
                     if (msg is BtMessage.Handshake) {
                         _state.value = BtState.Connected(msg.playerName)
-                        _tagged.emit(Tagged(gen, ConnectionEvent.Connected))
-                        startKeepalive()
                     }
                     _tagged.emit(Tagged(gen, ConnectionEvent.MessageReceived(msg)))
-                } catch (_: Exception) {
-                    // ignore malformed lines
-                }
+                } catch (_: Exception) {}
             }
             _state.value = BtState.Disconnected
             _tagged.emit(Tagged(gen, ConnectionEvent.Lost))
@@ -82,22 +89,26 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     fun connect(device: BluetoothDevice) {
         val gen = generation.incrementAndGet()
         _tagged.resetReplayCache()
+        _state.value = BtState.Scanning
         val client = BtClient(appContext)
         btClient = client
         client.connect(device, scope)
         scope.launch {
+            try {
+                client.connected.first()   // wait until socket connected
+            } catch (_: Exception) {
+                _state.value = BtState.Disconnected
+                _tagged.emit(Tagged(gen, ConnectionEvent.Lost))
+                return@launch
+            }
+            _state.value = BtState.Connected(device.name ?: device.address)
+            _tagged.emit(Tagged(gen, ConnectionEvent.Connected))
+            startKeepalive()
             client.incoming.collect { line ->
                 try {
                     val msg = BtProtocol.decode(line)
-                    if (_state.value is BtState.Scanning) {
-                        _state.value = BtState.Connected(device.name ?: device.address)
-                        _tagged.emit(Tagged(gen, ConnectionEvent.Connected))
-                        startKeepalive()
-                    }
                     _tagged.emit(Tagged(gen, ConnectionEvent.MessageReceived(msg)))
-                } catch (_: Exception) {
-                    // ignore malformed lines
-                }
+                } catch (_: Exception) {}
             }
             _state.value = BtState.Disconnected
             _tagged.emit(Tagged(gen, ConnectionEvent.Lost))
@@ -106,8 +117,10 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
 
     fun send(msg: BtMessage) {
         val line = BtProtocol.encode(msg)
-        btServer?.send(line)
-        btClient?.send(line)
+        scope.launch(Dispatchers.IO) {
+            btServer?.send(line)
+            btClient?.send(line)
+        }
     }
 
     fun disconnect() {

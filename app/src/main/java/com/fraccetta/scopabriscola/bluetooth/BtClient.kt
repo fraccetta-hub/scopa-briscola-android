@@ -17,6 +17,8 @@ import java.io.OutputStream
 class BtClient(private val context: Context) {
     private val _channel = Channel<String>(Channel.UNLIMITED)
     val incoming: Flow<String> = _channel.receiveAsFlow()
+    private val _connected = Channel<Unit>(Channel.CONFLATED)
+    val connected: Flow<Unit> = _connected.receiveAsFlow()
     private var outputStream: OutputStream? = null
     private var socket: BluetoothSocket? = null
 
@@ -27,26 +29,20 @@ class BtClient(private val context: Context) {
 
     fun connect(device: BluetoothDevice, scope: CoroutineScope) {
         scope.launch(Dispatchers.IO) {
-            var attempt = 0
-            while (attempt <= 1) {
-                try {
-                    val s = device.createRfcommSocketToServiceRecord(BluetoothConstants.SERVICE_UUID)
-                    s.connect()
-                    socket = s
-                    outputStream = s.outputStream
-                    val reader = BufferedReader(InputStreamReader(s.inputStream))
-                    var line: String?
-                    while (reader.readLine().also { line = it } != null) {
-                        line?.let { _channel.trySend(it) }
-                    }
-                    break
-                } catch (e: Exception) {
-                    attempt++
-                    if (attempt > 1) {
-                        _channel.close()
-                        break
-                    }
+            try {
+                val s = device.createRfcommSocketToServiceRecord(BluetoothConstants.SERVICE_UUID)
+                s.connect()
+                socket = s
+                outputStream = s.outputStream
+                _connected.trySend(Unit)   // signal: socket established
+                val reader = BufferedReader(InputStreamReader(s.inputStream))
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    line?.let { _channel.trySend(it) }
                 }
+            } catch (_: Exception) {
+            } finally {
+                _channel.close()
             }
         }
     }
@@ -61,11 +57,7 @@ class BtClient(private val context: Context) {
     }
 
     fun disconnect() {
-        try {
-            socket?.close()
-        } catch (_: Exception) {
-            // ignore
-        }
+        try { socket?.close() } catch (_: Exception) {}
         socket = null
         outputStream = null
     }

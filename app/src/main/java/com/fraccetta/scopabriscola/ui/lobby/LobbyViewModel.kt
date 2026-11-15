@@ -77,7 +77,7 @@ class LobbyViewModel @Inject constructor(
                             GameSession.isServer = isServer
                             GameSession.localPlayer = if (isServer) 1 else 2
                             GameSession.opponentName = msg.playerName
-                            val destination = if (gameType == "briscola") "game/briscola" else "game/scopa"
+                            val destination = if (gameType.equals("briscola", ignoreCase = true)) "game/briscola" else "game/scopa"
                             _navigationEvent.emit(destination)
                         }
                     }
@@ -127,6 +127,6 @@ class LobbyViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        btManager.disconnect()
+        // No btManager.disconnect() here — game VMs own the connection lifetime
     }
 }

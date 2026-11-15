@@ -59,8 +59,14 @@ fun BriscolaGameScreen(
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { route ->
-            navController.navigate(route) {
-                popUpTo("game/briscola") { inclusive = true }
+            if (route == "home") {
+                navController.navigate("home") {
+                    popUpTo(0) { inclusive = true }
+                }
+            } else {
+                navController.navigate(route) {
+                    popUpTo("game/briscola") { inclusive = true }
+                }
             }
         }
     }

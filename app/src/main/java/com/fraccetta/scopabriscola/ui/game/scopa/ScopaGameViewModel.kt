@@ -196,15 +196,21 @@ class ScopaGameViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        btManager.disconnect()
         GameSession.isServer = false
         GameSession.localPlayer = 1
         GameSession.opponentName = null
+        GameSession.lastDevice = null
+        GameSession.lastSessionPoints = 0
+        GameSession.lastSessionScope = 0
     }
 
     private fun checkForSessionEnd(state: ScopaState) {
         if (state.phase == ScopaPhase.SESSION_END) {
             val absoluteWinner = if (state.player1SessionScore >= state.player2SessionScore) 1 else 2
             val relativeWinner = if (absoluteWinner == localPlayer) 1 else 2
+            GameSession.lastSessionPoints = if (localPlayer == 1) state.player1SessionScore else state.player2SessionScore
+            GameSession.lastSessionScope = if (localPlayer == 1) state.player1Scope else state.player2Scope
             viewModelScope.launch {
                 _navigationEvent.emit("result/$relativeWinner/scopa")
             }
