@@ -41,6 +41,7 @@ data class BriscolaUiState(
     val opponentName: String? = null,
     val showDisconnectionDialog: Boolean = false,
     val opponentLastCard: Card? = null,
+    val matchHistory: List<Pair<Int, Int>> = emptyList(),
     val arenaName: String? = null,
     val chatMessages: List<BriscolaChatMessage> = emptyList(),
     val showChat: Boolean = false,
@@ -174,7 +175,22 @@ class BriscolaGameViewModel @Inject constructor(
         } else if (newState.player2Captured.size > prevP2Captured) {
             if (localPlayer == 2) SoundManager.playCapture() else SoundManager.playOpponentCapture()
         }
-        _uiState.update { it.copy(state = newState, opponentLastCard = if (isSolo) null else it.opponentLastCard) }
+        val isMatchEnd = (newState.phase == BriscolaPhase.MATCH_END || newState.phase == BriscolaPhase.GAME_END) &&
+            prevState.phase != BriscolaPhase.MATCH_END && prevState.phase != BriscolaPhase.GAME_END
+        val localMatchPts = if (localPlayer == 1) newState.player1MatchPoints else newState.player2MatchPoints
+        val oppMatchPts = if (localPlayer == 1) newState.player2MatchPoints else newState.player1MatchPoints
+        _uiState.update { prev ->
+            val newHistory = when {
+                action is BriscolaAction.NextGame -> emptyList()
+                isMatchEnd -> prev.matchHistory + Pair(localMatchPts, oppMatchPts)
+                else -> prev.matchHistory
+            }
+            prev.copy(
+                state = newState,
+                opponentLastCard = if (isSolo) null else prev.opponentLastCard,
+                matchHistory = newHistory
+            )
+        }
         if (!isSolo) sendGameState(newState)
         checkForSessionEnd(newState)
         if (isSolo) scheduleCpuTurn(newState)
@@ -238,7 +254,21 @@ class BriscolaGameViewModel @Inject constructor(
                     } else if (newState.player2Captured.size > prevP2Captured) {
                         if (localPlayer == 2) SoundManager.playCapture() else SoundManager.playOpponentCapture()
                     }
-                    _uiState.update { it.copy(state = newState) }
+                    val prevPhaseB = prevState.phase
+                    val isMatchEndB = (newState.phase == BriscolaPhase.MATCH_END || newState.phase == BriscolaPhase.GAME_END) &&
+                        prevPhaseB != BriscolaPhase.MATCH_END && prevPhaseB != BriscolaPhase.GAME_END
+                    val gameResetB = (newState.player1SessionWins + newState.player2SessionWins) >
+                        (prevState.player1SessionWins + prevState.player2SessionWins)
+                    val localMatchPtsB = if (localPlayer == 1) newState.player1MatchPoints else newState.player2MatchPoints
+                    val oppMatchPtsB = if (localPlayer == 1) newState.player2MatchPoints else newState.player1MatchPoints
+                    _uiState.update { prev ->
+                        val newHistory = when {
+                            gameResetB -> emptyList()
+                            isMatchEndB -> prev.matchHistory + Pair(localMatchPtsB, oppMatchPtsB)
+                            else -> prev.matchHistory
+                        }
+                        prev.copy(state = newState, matchHistory = newHistory)
+                    }
                     checkForSessionEnd(newState)
                 }
                 is BtMessage.SetArena -> _uiState.update { it.copy(arenaName = msg.arenaName) }

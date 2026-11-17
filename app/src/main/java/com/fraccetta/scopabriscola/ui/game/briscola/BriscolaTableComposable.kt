@@ -128,24 +128,44 @@ fun BriscolaTableContent(
     val localSessionWins = if (uiState.localPlayer == 1) state.player1SessionWins else state.player2SessionWins
     val opponentSessionWins = if (uiState.localPlayer == 1) state.player2SessionWins else state.player1SessionWins
     val opponentName = uiState.opponentName ?: "Captain"
+    val myName = uiState.localPlayerName ?: "Me"
 
     // ── MATCH END overlay ──────────────────────────────────────────────
     if (state.phase == BriscolaPhase.MATCH_END) {
         val localMatchPts = if (uiState.localPlayer == 1) state.player1MatchPoints else state.player2MatchPoints
         val oppMatchPts = if (uiState.localPlayer == 1) state.player2MatchPoints else state.player1MatchPoints
         GameResultOverlay(
-            isLocalWin = localGamePoints > opponentGamePoints,
-            isDraw = localGamePoints == opponentGamePoints,
+            isLocalWin = localMatchPts > oppMatchPts,
+            isDraw = localMatchPts == oppMatchPts,
             titleText = stringResource(R.string.briscola_match_end_title),
             buttonText = stringResource(R.string.briscola_next_match),
             onContinue = onNextMatch
         ) {
             Text(
-                text = stringResource(R.string.briscola_match_end_scores, localMatchPts, oppMatchPts),
-                color = CardCream
+                text = "Game: $myName $localGamePoints — $opponentName $opponentGamePoints",
+                color = CardCream,
+                fontWeight = FontWeight.Bold
             )
+            val prevRounds = uiState.matchHistory.dropLast(1)
+            if (prevRounds.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                prevRounds.forEachIndexed { idx, (myPts, opPts) ->
+                    val winner = when {
+                        myPts > opPts -> myName
+                        opPts > myPts -> opponentName
+                        else -> "Draw"
+                    }
+                    Text(
+                        text = "Match ${idx + 1}: $winner ($myPts—$opPts)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = CardCream.copy(alpha = 0.8f)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = stringResource(R.string.briscola_score_label, localGamePoints, opponentGamePoints),
+                text = "Match ${uiState.matchHistory.size}: $myName $localMatchPts — $opponentName $oppMatchPts",
+                style = MaterialTheme.typography.bodySmall,
                 color = CardCream
             )
         }
@@ -154,20 +174,33 @@ fun BriscolaTableContent(
     // ── GAME END overlay ───────────────────────────────────────────────
     if (state.phase == BriscolaPhase.GAME_END) {
         GameResultOverlay(
-            isLocalWin = localSessionWins > opponentSessionWins,
-            isDraw = localSessionWins == opponentSessionWins,
+            isLocalWin = localGamePoints > opponentGamePoints,
+            isDraw = localGamePoints == opponentGamePoints,
             titleText = stringResource(R.string.briscola_game_end_title),
             buttonText = stringResource(R.string.briscola_next_game),
             onContinue = onNextGame
         ) {
             Text(
-                text = stringResource(R.string.briscola_game_end_scores, localGamePoints, opponentGamePoints),
-                color = CardCream
+                text = "Game: $myName $localGamePoints — $opponentName $opponentGamePoints",
+                color = CardCream,
+                fontWeight = FontWeight.Bold
             )
-            Text(
-                text = stringResource(R.string.briscola_session_wins, localSessionWins, opponentSessionWins),
-                color = CardCream
-            )
+            val history = uiState.matchHistory
+            if (history.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                history.forEachIndexed { idx, (myPts, opPts) ->
+                    val winner = when {
+                        myPts > opPts -> myName
+                        opPts > myPts -> opponentName
+                        else -> "Draw"
+                    }
+                    Text(
+                        text = "Match ${idx + 1}: $winner ($myPts—$opPts)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = CardCream.copy(alpha = 0.8f)
+                    )
+                }
+            }
         }
     }
 

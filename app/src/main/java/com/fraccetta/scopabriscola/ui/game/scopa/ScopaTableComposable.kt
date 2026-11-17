@@ -142,6 +142,7 @@ fun ScopaTableContent(
     val localScope = if (uiState.localPlayer == 1) state.player1Scope else state.player2Scope
     val opponentScope = if (uiState.localPlayer == 1) state.player2Scope else state.player1Scope
     val opponentName = uiState.opponentName ?: "Captain"
+    val myName = uiState.localPlayerName ?: "Me"
 
     val captureSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
@@ -153,29 +154,61 @@ fun ScopaTableContent(
         val matchScores = uiState.lastMatchScores
         val localRS = if (uiState.localPlayer == 1) matchScores?.first else matchScores?.second
         val oppRS = if (uiState.localPlayer == 1) matchScores?.second else matchScores?.first
+        val localMatchTotal = localRS?.total ?: 0
+        val oppMatchTotal = oppRS?.total ?: 0
         GameResultOverlay(
-            isLocalWin = localGameScore > opponentGameScore,
-            isDraw = localGameScore == opponentGameScore,
+            isLocalWin = localMatchTotal > oppMatchTotal,
+            isDraw = localMatchTotal == oppMatchTotal,
             titleText = stringResource(R.string.scopa_match_end_title),
             buttonText = stringResource(R.string.scopa_next_match),
             onContinue = onNextMatch
         ) {
             Text(
-                text = stringResource(R.string.scopa_match_end_scores, localGameScore, opponentGameScore),
-                color = CardCream
+                text = "Game: $myName $localGameScore — $opponentName $opponentGameScore",
+                color = CardCream,
+                fontWeight = FontWeight.Bold
             )
+            val prevRounds = uiState.matchHistory.dropLast(1)
+            if (prevRounds.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                prevRounds.forEachIndexed { idx, (p1RS, p2RS) ->
+                    val myRS = if (uiState.localPlayer == 1) p1RS else p2RS
+                    val opRS = if (uiState.localPlayer == 1) p2RS else p1RS
+                    val winner = when {
+                        myRS.total > opRS.total -> myName
+                        opRS.total > myRS.total -> opponentName
+                        else -> "Draw"
+                    }
+                    Text(
+                        text = "Round ${idx + 1}: $winner (${myRS.total}—${opRS.total})",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = CardCream.copy(alpha = 0.8f)
+                    )
+                }
+            }
             if (localRS != null && oppRS != null) {
+                val roundNum = uiState.matchHistory.size
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.scopa_round_detail_header),
+                    text = "Round $roundNum",
                     fontWeight = FontWeight.Bold,
                     color = CardCream
                 )
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = " ", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = Color.Transparent)
+                    Text(text = myName, modifier = Modifier.width(40.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = AccentGold, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(text = opponentName, modifier = Modifier.width(40.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = CardCream, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
                 RoundScoreRow(stringResource(R.string.scopa_round_carte), localRS.carte, oppRS.carte)
                 RoundScoreRow(stringResource(R.string.scopa_round_denari), localRS.denari, oppRS.denari)
                 RoundScoreRow(stringResource(R.string.scopa_round_settebello), localRS.settebello, oppRS.settebello)
                 RoundScoreRow(stringResource(R.string.scopa_round_primiera), localRS.primiera, oppRS.primiera)
                 RoundScoreRow(stringResource(R.string.scopa_round_scope), localRS.scope, oppRS.scope)
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "Total", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = CardCream, fontWeight = FontWeight.Bold)
+                    Text(text = "$localMatchTotal", modifier = Modifier.width(40.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = CardCream, fontWeight = if (localMatchTotal > oppMatchTotal) FontWeight.Bold else FontWeight.Normal)
+                    Text(text = "$oppMatchTotal", modifier = Modifier.width(40.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = CardCream, fontWeight = if (oppMatchTotal > localMatchTotal) FontWeight.Bold else FontWeight.Normal)
+                }
             }
         }
     }
@@ -185,33 +218,60 @@ fun ScopaTableContent(
         val matchScores = uiState.lastMatchScores
         val localRS = if (uiState.localPlayer == 1) matchScores?.first else matchScores?.second
         val oppRS = if (uiState.localPlayer == 1) matchScores?.second else matchScores?.first
+        val localMatchTotal = localRS?.total ?: 0
+        val oppMatchTotal = oppRS?.total ?: 0
         GameResultOverlay(
-            isLocalWin = localSessionWins > opponentSessionWins,
-            isDraw = localSessionWins == opponentSessionWins,
+            isLocalWin = localGameScore > opponentGameScore,
+            isDraw = localGameScore == opponentGameScore,
             titleText = stringResource(R.string.scopa_game_end_title),
             buttonText = stringResource(R.string.scopa_next_game),
             onContinue = onNextGame
         ) {
             Text(
-                text = stringResource(R.string.scopa_game_end_scores, localGameScore, opponentGameScore),
-                color = CardCream
+                text = "Game: $myName $localGameScore — $opponentName $opponentGameScore",
+                color = CardCream,
+                fontWeight = FontWeight.Bold
             )
-            Text(
-                text = stringResource(R.string.scopa_session_wins, localSessionWins, opponentSessionWins),
-                color = CardCream
-            )
+            val history = uiState.matchHistory
+            if (history.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                history.forEachIndexed { idx, (p1RS, p2RS) ->
+                    val myRS = if (uiState.localPlayer == 1) p1RS else p2RS
+                    val opRS = if (uiState.localPlayer == 1) p2RS else p1RS
+                    val winner = when {
+                        myRS.total > opRS.total -> myName
+                        opRS.total > myRS.total -> opponentName
+                        else -> "Draw"
+                    }
+                    Text(
+                        text = "Round ${idx + 1}: $winner (${myRS.total}—${opRS.total})",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = CardCream.copy(alpha = 0.8f)
+                    )
+                }
+            }
             if (localRS != null && oppRS != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.scopa_round_detail_header),
+                    text = "Last round",
                     fontWeight = FontWeight.Bold,
                     color = CardCream
                 )
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = " ", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = Color.Transparent)
+                    Text(text = myName, modifier = Modifier.width(40.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = AccentGold, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(text = opponentName, modifier = Modifier.width(40.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = CardCream, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
                 RoundScoreRow(stringResource(R.string.scopa_round_carte), localRS.carte, oppRS.carte)
                 RoundScoreRow(stringResource(R.string.scopa_round_denari), localRS.denari, oppRS.denari)
                 RoundScoreRow(stringResource(R.string.scopa_round_settebello), localRS.settebello, oppRS.settebello)
                 RoundScoreRow(stringResource(R.string.scopa_round_primiera), localRS.primiera, oppRS.primiera)
                 RoundScoreRow(stringResource(R.string.scopa_round_scope), localRS.scope, oppRS.scope)
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "Total", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = CardCream, fontWeight = FontWeight.Bold)
+                    Text(text = "$localMatchTotal", modifier = Modifier.width(40.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = CardCream, fontWeight = if (localMatchTotal > oppMatchTotal) FontWeight.Bold else FontWeight.Normal)
+                    Text(text = "$oppMatchTotal", modifier = Modifier.width(40.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = CardCream, fontWeight = if (oppMatchTotal > localMatchTotal) FontWeight.Bold else FontWeight.Normal)
+                }
             }
         }
     }
@@ -582,13 +642,23 @@ fun ScopaTableContent(
 
 @Composable
 private fun RoundScoreRow(label: String, myValue: Int, oppValue: Int) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = label, style = MaterialTheme.typography.bodySmall, color = CardCream)
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Text(text = label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = CardCream)
         Text(
-            text = "$myValue — $oppValue",
+            text = "$myValue",
+            modifier = Modifier.width(40.dp),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall,
             color = CardCream,
             fontWeight = if (myValue > oppValue) FontWeight.Bold else FontWeight.Normal
+        )
+        Text(
+            text = "$oppValue",
+            modifier = Modifier.width(40.dp),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall,
+            color = CardCream,
+            fontWeight = if (oppValue > myValue) FontWeight.Bold else FontWeight.Normal
         )
     }
 }

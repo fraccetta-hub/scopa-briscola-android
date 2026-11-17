@@ -45,6 +45,7 @@ data class ScopaUiState(
     val showDisconnectionDialog: Boolean = false,
     val opponentLastCard: Card? = null,
     val lastMatchScores: Pair<RoundScore, RoundScore>? = null,
+    val matchHistory: List<Pair<RoundScore, RoundScore>> = emptyList(),
     val arenaName: String? = null,
     val showScopaFlash: Boolean = false,
     val chatMessages: List<ChatMessage> = emptyList(),
@@ -229,9 +230,15 @@ class ScopaGameViewModel @Inject constructor(
 
         val clearOpponentCard = action is ScopaAction.NextMatch || action is ScopaAction.NextGame
         _uiState.update { prev ->
+            val newHistory = when {
+                action is ScopaAction.NextGame -> emptyList()
+                matchScores != null -> prev.matchHistory + matchScores
+                else -> prev.matchHistory
+            }
             prev.copy(
                 state = newState,
                 lastMatchScores = matchScores ?: prev.lastMatchScores,
+                matchHistory = newHistory,
                 opponentLastCard = if (clearOpponentCard || isSolo) null else prev.opponentLastCard
             )
         }
@@ -325,7 +332,20 @@ class ScopaGameViewModel @Inject constructor(
                             newState.player2Captured, newState.player2Scope
                         )
                     } else null
-                    _uiState.update { it.copy(state = newState, lastMatchScores = matchScores ?: it.lastMatchScores) }
+                    _uiState.update { prev ->
+                        val gameReset = (newState.player1SessionWins + newState.player2SessionWins) >
+                            (prev.state.player1SessionWins + prev.state.player2SessionWins)
+                        val newHistory = when {
+                            gameReset -> emptyList()
+                            matchScores != null -> prev.matchHistory + matchScores
+                            else -> prev.matchHistory
+                        }
+                        prev.copy(
+                            state = newState,
+                            lastMatchScores = matchScores ?: prev.lastMatchScores,
+                            matchHistory = newHistory
+                        )
+                    }
                     checkForSessionEnd(newState)
                 }
                 is BtMessage.SetArena -> _uiState.update { it.copy(arenaName = msg.arenaName) }
