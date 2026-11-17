@@ -225,6 +225,16 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
+                onClick = { navController.navigate("guide") },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = AccentGold)
+            ) {
+                Text("Guida ai giochi", color = CardCream)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
                 onClick = { viewModel.checkForUpdate() },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = updateCheckState !is UpdateCheckState.Checking,

@@ -12,6 +12,7 @@ import com.fraccetta.scopabriscola.ui.screens.HomeScreen
 import com.fraccetta.scopabriscola.ui.result.ResultScreen
 import com.fraccetta.scopabriscola.ui.game.scopa.ScopaGameScreen
 import com.fraccetta.scopabriscola.ui.stats.StatsScreen
+import com.fraccetta.scopabriscola.ui.screens.guide.GuideScreen
 import com.fraccetta.scopabriscola.ui.screens.settings.SettingsScreen
 
 @Composable
@@ -47,6 +48,9 @@ fun AppNavGraph(
         }
         composable("settings") {
             SettingsScreen(navController = navController)
+        }
+        composable("guide") {
+            GuideScreen(navController = navController)
         }
     }
 }
