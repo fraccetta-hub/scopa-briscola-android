@@ -3,118 +3,118 @@
     <string name="app_name">Giochi di Bordo</string>
 
     <!-- Home Screen -->
-    <string name="home_welcome">Benvenuto, %1$s!</string>
-    <string name="home_play_scopa">Gioca a Scopa</string>
+    <string name="home_welcome">Welcome, %1$s!</string>
+    <string name="home_play_scopa">Play Scopa</string>
     <string name="home_play_scopa_cpu">Scopa vs CPU</string>
-    <string name="home_play_briscola">Gioca a Briscola</string>
+    <string name="home_play_briscola">Play Briscola</string>
     <string name="home_play_briscola_cpu">Briscola vs CPU</string>
-    <string name="home_stats">Statistiche</string>
-    <string name="home_settings">Impostazioni</string>
+    <string name="home_stats">Statistics</string>
+    <string name="home_settings">Settings</string>
 
     <!-- Settings Screen -->
-    <string name="settings_title">Impostazioni</string>
-    <string name="settings_player_name_label">Nome giocatore</string>
-    <string name="settings_player_name_hint">Inserisci il tuo nome</string>
-    <string name="settings_save_name">Salva nome</string>
-    <string name="settings_change_card_back">Cambia dorso</string>
-    <string name="settings_sound_label">Suoni</string>
-    <string name="settings_target_score_label">Punteggio vittoria Scopa (default: 11)</string>
-    <string name="settings_target_score_hint">Es. 11, 15, 21…</string>
-    <string name="settings_save_target_score">Salva punteggio</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_player_name_label">Player name</string>
+    <string name="settings_player_name_hint">Enter your name</string>
+    <string name="settings_save_name">Save name</string>
+    <string name="settings_change_card_back">Change card back</string>
+    <string name="settings_sound_label">Sounds</string>
+    <string name="settings_target_score_label">Scopa winning score (default: 11)</string>
+    <string name="settings_target_score_hint">E.g. 11, 15, 21…</string>
+    <string name="settings_save_target_score">Save score</string>
 
     <!-- Navigation -->
-    <string name="nav_back">Indietro</string>
+    <string name="nav_back">Back</string>
 
     <!-- Lobby Screen -->
-    <string name="lobby_title_scopa">Lobby Scopa</string>
-    <string name="lobby_title_briscola">Lobby Briscola</string>
-    <string name="lobby_choose_role">Scegli il tuo ruolo</string>
-    <string name="lobby_host">Ospita partita</string>
-    <string name="lobby_scan">Cerca partita</string>
-    <string name="lobby_hosting">In attesa di un avversario…</string>
-    <string name="lobby_scanning">Ricerca partite in corso…</string>
-    <string name="lobby_no_devices">Nessuna partita trovata</string>
-    <string name="lobby_select_device">Seleziona una partita</string>
-    <string name="lobby_unknown_device">Dispositivo sconosciuto</string>
-    <string name="lobby_connected_to">Connesso a %1$s</string>
-    <string name="lobby_waiting_handshake">Connessione in corso…</string>
-    <string name="lobby_starting">Avvio partita…</string>
-    <string name="lobby_disconnected">Connessione interrotta</string>
-    <string name="lobby_connection_lost">Connessione persa</string>
-    <string name="lobby_bt_permission_denied">Permesso Bluetooth negato</string>
-    <string name="lobby_default_player_name">Giocatore</string>
-    <string name="lobby_retry">Riprova</string>
+    <string name="lobby_title_scopa">Scopa Lobby</string>
+    <string name="lobby_title_briscola">Briscola Lobby</string>
+    <string name="lobby_choose_role">Choose your role</string>
+    <string name="lobby_host">Host game</string>
+    <string name="lobby_scan">Find game</string>
+    <string name="lobby_hosting">Waiting for an opponent…</string>
+    <string name="lobby_scanning">Searching for games…</string>
+    <string name="lobby_no_devices">No games found</string>
+    <string name="lobby_select_device">Select a game</string>
+    <string name="lobby_unknown_device">Unknown device</string>
+    <string name="lobby_connected_to">Connected to %1$s</string>
+    <string name="lobby_waiting_handshake">Connecting…</string>
+    <string name="lobby_starting">Starting game…</string>
+    <string name="lobby_disconnected">Connection lost</string>
+    <string name="lobby_connection_lost">Connection lost</string>
+    <string name="lobby_bt_permission_denied">Bluetooth permission denied</string>
+    <string name="lobby_default_player_name">Player</string>
+    <string name="lobby_retry">Retry</string>
 
     <!-- Scopa Game Screen -->
-    <string name="scopa_your_turn">Turno tuo</string>
-    <string name="scopa_opponent_turn">Turno avversario</string>
-    <string name="scopa_score_label">Punteggio: %1$d — %2$d</string>
-    <string name="scopa_on_table">Sul tavolo</string>
-    <string name="scopa_your_hand">La tua mano</string>
-    <string name="scopa_choose_capture">Scegli la presa</string>
-    <string name="scopa_capture_option">Opzione %1$d</string>
-    <string name="scopa_match_end_title">Fine manche</string>
-    <string name="scopa_match_end_scores">Punteggio partita: Tu %1$d — Avversario %2$d</string>
-    <string name="scopa_next_match">Prossima manche</string>
-    <string name="scopa_game_end_title">Fine partita</string>
-    <string name="scopa_game_end_scores">Punteggio: Tu %1$d — Avversario %2$d</string>
-    <string name="scopa_next_game">Prossima partita</string>
-    <string name="scopa_session_wins">Partite vinte: Tu %1$d — Avv %2$d</string>
-    <string name="scopa_you_win">Hai vinto!</string>
-    <string name="scopa_opponent_wins">Ha vinto l\'avversario</string>
+    <string name="scopa_your_turn">Your turn</string>
+    <string name="scopa_opponent_turn">Opponent\'s turn</string>
+    <string name="scopa_score_label">Score: %1$d — %2$d</string>
+    <string name="scopa_on_table">On table</string>
+    <string name="scopa_your_hand">Your hand</string>
+    <string name="scopa_choose_capture">Choose capture</string>
+    <string name="scopa_capture_option">Option %1$d</string>
+    <string name="scopa_match_end_title">Round over</string>
+    <string name="scopa_match_end_scores">Game score: You %1$d — Opponent %2$d</string>
+    <string name="scopa_next_match">Next round</string>
+    <string name="scopa_game_end_title">Game over</string>
+    <string name="scopa_game_end_scores">Score: You %1$d — Opponent %2$d</string>
+    <string name="scopa_next_game">Next game</string>
+    <string name="scopa_session_wins">Games won: You %1$d — Opp %2$d</string>
+    <string name="scopa_you_win">You win!</string>
+    <string name="scopa_opponent_wins">Opponent wins</string>
     <string name="scopa_card_fallback">%1$s</string>
-    <string name="scopa_deck_remaining">Mazzo: %1$d</string>
+    <string name="scopa_deck_remaining">Deck: %1$d</string>
     <string name="scopa_scope_label">Scope: %1$d</string>
-    <string name="scopa_scope_live">Scope: Tu %1$d — Avv %2$d</string>
-    <string name="scopa_round_detail_header">Dettaglio manche:</string>
-    <string name="scopa_round_carte">Carte</string>
-    <string name="scopa_round_denari">Denari</string>
+    <string name="scopa_scope_live">Scope: You %1$d — Opp %2$d</string>
+    <string name="scopa_round_detail_header">Round details:</string>
+    <string name="scopa_round_carte">Cards</string>
+    <string name="scopa_round_denari">Coins</string>
     <string name="scopa_round_settebello">Settebello</string>
     <string name="scopa_round_primiera">Primiera</string>
     <string name="scopa_round_scope">Scope</string>
-    <string name="scopa_waiting_server">In attesa del server…</string>
+    <string name="scopa_waiting_server">Waiting for server…</string>
 
     <!-- Briscola Game Screen -->
-    <string name="briscola_your_turn">Turno tuo</string>
-    <string name="briscola_opponent_turn">Turno avversario</string>
-    <string name="briscola_score_label">Punti: %1$d — %2$d</string>
-    <string name="briscola_trump_label">Briscola</string>
-    <string name="briscola_deck_remaining">Mazzo: %1$d</string>
-    <string name="briscola_your_hand">La tua mano</string>
-    <string name="briscola_trick_played">Carta giocata</string>
-    <string name="briscola_match_end_title">Fine manche</string>
-    <string name="briscola_match_end_scores">Punti manche: Tu %1$d — Avversario %2$d</string>
-    <string name="briscola_next_match">Prossima manche</string>
-    <string name="briscola_game_end_title">Fine partita</string>
-    <string name="briscola_game_end_scores">Punti totali: Tu %1$d — Avversario %2$d</string>
-    <string name="briscola_next_game">Prossima partita</string>
-    <string name="briscola_session_wins">Partite vinte: Tu %1$d — Avv %2$d</string>
+    <string name="briscola_your_turn">Your turn</string>
+    <string name="briscola_opponent_turn">Opponent\'s turn</string>
+    <string name="briscola_score_label">Points: %1$d — %2$d</string>
+    <string name="briscola_trump_label">Trump</string>
+    <string name="briscola_deck_remaining">Deck: %1$d</string>
+    <string name="briscola_your_hand">Your hand</string>
+    <string name="briscola_trick_played">Card played</string>
+    <string name="briscola_match_end_title">Round over</string>
+    <string name="briscola_match_end_scores">Round points: You %1$d — Opponent %2$d</string>
+    <string name="briscola_next_match">Next round</string>
+    <string name="briscola_game_end_title">Game over</string>
+    <string name="briscola_game_end_scores">Total points: You %1$d — Opponent %2$d</string>
+    <string name="briscola_next_game">Next game</string>
+    <string name="briscola_session_wins">Games won: You %1$d — Opp %2$d</string>
     <string name="briscola_card_fallback">%1$s</string>
-    <string name="briscola_waiting_server">In attesa del server…</string>
+    <string name="briscola_waiting_server">Waiting for server…</string>
 
     <!-- Result Screen -->
-    <string name="result_back_to_menu">Torna al menu</string>
-    <string name="result_player_label">Giocatore: %1$s</string>
+    <string name="result_back_to_menu">Back to menu</string>
+    <string name="result_player_label">Player: %1$s</string>
     <string name="result_game_type_scopa">Scopa</string>
     <string name="result_game_type_briscola">Briscola</string>
 
     <!-- Disconnection Dialog -->
-    <string name="disconnection_title">Connessione persa</string>
-    <string name="disconnection_message">La connessione con l\'avversario è stata interrotta. Vuoi riprovare?</string>
-    <string name="disconnection_retry">Riprova</string>
-    <string name="disconnection_abandon">Abbandona</string>
+    <string name="disconnection_title">Connection lost</string>
+    <string name="disconnection_message">The connection with the opponent was interrupted. Retry?</string>
+    <string name="disconnection_retry">Retry</string>
+    <string name="disconnection_abandon">Quit</string>
 
     <!-- Stats Screen -->
-    <string name="stats_title">Statistiche</string>
+    <string name="stats_title">Statistics</string>
     <string name="stats_tab_scopa">Scopa</string>
     <string name="stats_tab_briscola">Briscola</string>
     <string name="stats_player_name">%1$s</string>
-    <string name="stats_sessions">Partite: %1$d (V:%2$d P:%3$d)</string>
-    <string name="stats_win_percent">Vittorie: %1$d%%</string>
-    <string name="stats_total_points">Punti totali: %1$d</string>
-    <string name="stats_total_scope">Scope totali: %1$d</string>
-    <string name="stats_empty">Nessuna statistica</string>
-    <string name="stats_back">Indietro</string>
+    <string name="stats_sessions">Games: %1$d (W:%2$d L:%3$d)</string>
+    <string name="stats_win_percent">Wins: %1$d%%</string>
+    <string name="stats_total_points">Total points: %1$d</string>
+    <string name="stats_total_scope">Total scope: %1$d</string>
+    <string name="stats_empty">No statistics yet</string>
+    <string name="stats_back">Back</string>
     <string name="stats_mode_cpu">vs CPU</string>
     <string name="stats_mode_bt">vs BT</string>
 

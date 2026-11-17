@@ -45,7 +45,7 @@ import com.fraccetta.scopabriscola.ui.theme.CardCream
 @Composable
 fun GuideScreen(navController: NavHostController) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Scopa", "Briscola")
+    val tabs = listOf("Scopa", "Briscola", "Bluetooth")
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -67,12 +67,12 @@ fun GuideScreen(navController: NavHostController) {
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
-                    title = { Text("Guida ai giochi", color = CardCream) },
+                    title = { Text("Game Guide", color = CardCream) },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Indietro",
+                                contentDescription = "Back",
                                 tint = CardCream
                             )
                         }
@@ -115,6 +115,7 @@ fun GuideScreen(navController: NavHostController) {
                 when (selectedTab) {
                     0 -> ScopaGuide()
                     1 -> BriscolaGuide()
+                    2 -> BluetoothGuide()
                 }
             }
         }
@@ -130,42 +131,42 @@ private fun ScopaGuide() {
             .padding(16.dp)
     ) {
         GuideSection(
-            title = "Obiettivo",
-            content = "Raggiungere per primi 11 punti (o il punteggio scelto nelle impostazioni) vincendo più partite."
+            title = "Objective",
+            content = "Be the first to reach 11 points (or the score set in Settings) by winning multiple rounds."
         )
         GuideSection(
-            title = "Il mazzo",
-            content = "Si gioca con un mazzo napoletano da 40 carte, suddiviso in 4 semi: Coppe, Denari, Spade e Bastoni. I valori delle carte sono da 1 (Asso) a 7, poi Fante (8), Cavallo (9) e Re (10)."
+            title = "The deck",
+            content = "Played with a 40-card Neapolitan deck divided into 4 suits: Cups, Coins, Swords and Clubs. Card values run from 1 (Ace) to 7, then Jack (8), Horse (9) and King (10)."
         )
         GuideSection(
-            title = "Distribuzione iniziale",
-            content = "All'inizio di ogni mano, ogni giocatore riceve 3 carte in mano. Altre 4 carte vengono poste scoperte sul tavolo."
+            title = "Initial deal",
+            content = "At the start of each hand, each player receives 3 cards. 4 more cards are placed face-up on the table."
         )
         GuideSection(
-            title = "Turno di gioco",
-            content = "A turno, ogni giocatore deve giocare una carta dalla propria mano.\n\n" +
-                    "• Se la carta giocata ha lo stesso valore di una o più carte sul tavolo, si prendono quelle carte.\n\n" +
-                    "• Se la carta giocata è uguale alla somma di più carte sul tavolo, si possono prendere quelle carte (si sceglie la combinazione se ce ne sono più d'una).\n\n" +
-                    "• Se non è possibile prendere nulla, la carta rimane sul tavolo.\n\n" +
-                    "Quando entrambi i giocatori hanno esaurito le carte in mano, vengono distribuite altre 3 carte a testa, finché il mazzo è esaurito.\n\n" +
-                    "Al termine del mazzo, le eventuali carte rimaste sul tavolo vanno all'ultimo giocatore che ha preso."
+            title = "Turn",
+            content = "On your turn, play one card from your hand.\n\n" +
+                    "• If the card matches the value of one or more table cards, capture them.\n\n" +
+                    "• If the card equals the sum of several table cards, you may capture that group (you choose if multiple options exist).\n\n" +
+                    "• If no capture is possible, the card stays on the table.\n\n" +
+                    "When both players run out of cards, 3 more are dealt each, until the deck is empty.\n\n" +
+                    "At the end of the deck, any cards remaining on the table go to the last player who captured."
         )
         GuideSection(
             title = "Scopa!",
-            content = "Se con la tua presa lasci il tavolo completamente vuoto, fai «scopa»: vale 1 punto immediato. Non si fa scopa sull'ultima presa della mano (il tavolo si svuota normalmente)."
+            content = "If your capture leaves the table completely empty, you score a «scopa»: 1 immediate point. Scopa cannot be scored on the very last capture of a hand."
         )
         GuideSection(
-            title = "Conteggio punti a fine mano",
-            content = "Alla fine di ogni mano si contano i punti:\n\n" +
-                    "• Carte: 1 punto a chi ha preso più carte (25+). In caso di parità nessuno prende il punto.\n\n" +
-                    "• Denari: 1 punto a chi ha preso più carte di Denari (6+). In caso di parità nessuno prende il punto.\n\n" +
-                    "• Settebello: 1 punto a chi ha il 7 di Denari.\n\n" +
-                    "• Primiera: 1 punto a chi ha il punteggio di primiera più alto. Si prende la carta di valore più alto per ogni seme (il 7 vale 21, il 6 vale 18, l'1 vale 16, il 5 vale 15, il 4 vale 14, il 3 vale 13, il 2 vale 12, Fante/Cavallo/Re valgono 10). Chi ha la somma maggiore vince il punto.\n\n" +
-                    "• Scope: ogni scopa fatta durante la mano vale 1 punto."
+            title = "Scoring at round end",
+            content = "At the end of each hand, points are tallied:\n\n" +
+                    "• Cards: 1 point to whoever captured more cards (21+). Tie = no point.\n\n" +
+                    "• Coins: 1 point to whoever captured more Coins cards (6+). Tie = no point.\n\n" +
+                    "• Settebello: 1 point to whoever holds the 7 of Coins.\n\n" +
+                    "• Primiera: 1 point to whoever has the highest primiera score. Take the highest-value card per suit (7=21, 6=18, Ace=16, 5=15, 4=14, 3=13, 2=12, face cards=10). Highest total wins.\n\n" +
+                    "• Scope: each scopa scored during the hand is worth 1 point."
         )
         GuideSection(
-            title = "Fine partita",
-            content = "Vince chi raggiunge o supera per primo il punteggio obiettivo (default 11). Se entrambi lo raggiungono nella stessa mano, vince chi ha il punteggio più alto. In caso di parità si gioca un'altra mano."
+            title = "End of game",
+            content = "The first player to reach or exceed the target score wins. If both reach it in the same hand, the higher score wins. Exact tie means another hand is played."
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -180,38 +181,77 @@ private fun BriscolaGuide() {
             .padding(16.dp)
     ) {
         GuideSection(
-            title = "Obiettivo",
-            content = "Accumulare più punti dell'avversario prendendo carte durante la partita. Chi arriva a 61 punti (su 120 totali) vince la mano. La partita si gioca al meglio di 3 mani."
+            title = "Objective",
+            content = "Accumulate more points than your opponent by capturing cards. Reaching 61 points (out of 120 total) wins the hand. The match is best of 3 hands."
         )
         GuideSection(
-            title = "Il mazzo",
-            content = "Si gioca con un mazzo napoletano da 40 carte, suddiviso in 4 semi: Coppe, Denari, Spade e Bastoni."
+            title = "The deck",
+            content = "Played with a 40-card Neapolitan deck divided into 4 suits: Cups, Coins, Swords and Clubs."
         )
         GuideSection(
-            title = "La briscola",
-            content = "All'inizio della partita viene girata una carta dal mazzo: il suo seme diventa la «briscola», il seme vincente. La carta girata rimiene visibile e sarà l'ultima carta pescata dal mazzo."
+            title = "The trump (Briscola)",
+            content = "At the start, one card is turned face-up from the deck: its suit becomes the «briscola», the trump suit. That card stays visible and will be the last card drawn from the deck."
         )
         GuideSection(
-            title = "Valore delle carte",
-            content = "Asso: 11 punti\nTre: 10 punti\nRe: 4 punti\nCavallo: 3 punti\nFante: 2 punti\n7, 6, 5, 4, 2: 0 punti\n\nTotale punti nel mazzo: 120."
+            title = "Card values",
+            content = "Ace: 11 pts\nThree: 10 pts\nKing: 4 pts\nHorse: 3 pts\nJack: 2 pts\n7, 6, 5, 4, 2: 0 pts\n\nTotal points in the deck: 120."
         )
         GuideSection(
-            title = "Distribuzione e pescata",
-            content = "All'inizio ogni giocatore riceve 3 carte. Dopo ogni turno, chi ha giocato pesca una carta dal mazzo (prima il vincente, poi il perdente), finché il mazzo è esaurito."
+            title = "Deal and draw",
+            content = "Each player starts with 3 cards. After each trick, the winner draws first, then the loser, until the deck is empty."
         )
         GuideSection(
-            title = "Turno di gioco",
-            content = "Il giocatore di mano gioca una carta scoperta. L'avversario risponde con un'altra carta.\n\n" +
-                    "Regole di presa:\n\n" +
-                    "• Vince la carta dello stesso seme con valore più alto.\n\n" +
-                    "• Una carta di briscola batte sempre una carta di qualsiasi altro seme.\n\n" +
-                    "• Se si giocano due briscole, vince quella di valore più alto.\n\n" +
-                    "• Se nessuno gioca lo stesso seme né la briscola, vince chi ha giocato per primo.\n\n" +
-                    "Chi vince il turno prende entrambe le carte e guida il turno successivo."
+            title = "Turn",
+            content = "The leading player plays a card face-up. The opponent responds with one card.\n\n" +
+                    "Trick rules:\n\n" +
+                    "• The highest card of the same suit wins.\n\n" +
+                    "• A trump card beats any non-trump card.\n\n" +
+                    "• If both play trump, the higher trump wins.\n\n" +
+                    "• If neither player matches the suit or plays trump, the first card played wins.\n\n" +
+                    "The trick winner takes both cards and leads the next trick."
         )
         GuideSection(
-            title = "Fine mano",
-            content = "Quando le carte sono esaurite si contano i punti. Chi ha 61+ vince la mano. Con esattamente 60 punti a testa è pareggio (si gioca un'altra mano). La partita si vince al meglio di 3 mani."
+            title = "End of hand",
+            content = "When all cards are played, points are counted. 61+ wins the hand. Exactly 60 each is a draw (another hand is played). First to win 2 hands wins the match."
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun BluetoothGuide() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        GuideSection(
+            title = "How multiplayer works",
+            content = "One player hosts the game, the other joins. The host's device broadcasts a Bluetooth Low Energy signal so the other player can find the game."
+        )
+        GuideSection(
+            title = "Hosting a game",
+            content = "Tap «Host game» on the game mode screen. Your device will start advertising via BLE. Wait for your opponent to find and connect to your game.\n\nMake sure Bluetooth is enabled and the app has Bluetooth permissions."
+        )
+        GuideSection(
+            title = "Finding a game",
+            content = "Tap «Find game». The app scans for nearby BLE signals from devices actively hosting.\n\n" +
+                    "• Devices with an active game appear highlighted — tap one to connect.\n\n" +
+                    "• Previously paired devices that are NOT hosting appear greyed out with «not in game».\n\n" +
+                    "Only connect to highlighted devices. Grey entries are not hosting a game right now."
+        )
+        GuideSection(
+            title = "Pairing for the first time",
+            content = "BLE discovery works between devices that have already been paired via Android's Bluetooth settings. If a friend's device does not appear in the list, go to Android Settings → Bluetooth and pair their device first, then come back and scan."
+        )
+        GuideSection(
+            title = "Connection problems",
+            content = "If the connection fails or drops:\n\n" +
+                    "• Make sure both devices have Bluetooth on and are within ~10 m of each other.\n\n" +
+                    "• The host should still be on the «Waiting for opponent» screen.\n\n" +
+                    "• The app will retry the connection automatically up to 3 times.\n\n" +
+                    "• If retries fail, go back and start over."
         )
         Spacer(modifier = Modifier.height(16.dp))
     }

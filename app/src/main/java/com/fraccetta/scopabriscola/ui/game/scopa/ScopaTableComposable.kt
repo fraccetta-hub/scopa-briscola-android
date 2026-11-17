@@ -452,7 +452,7 @@ fun ScopaTableContent(
         }
         // ── Chat UI (multiplayer only) ────────────────────────────────
         if (!uiState.isSolo) {
-            val predefinedMessages = listOf("Bella mossa!", "Nooo!", "Buona fortuna!", "Grande!", "Peccato...", "Ci siamo quasi")
+            val predefinedMessages = listOf("Nice move!", "Nooo!", "Good luck!", "Great!", "Too bad...", "Almost there")
             val chatListState = rememberLazyListState()
             var chatInput by remember { mutableStateOf("") }
             LaunchedEffect(uiState.chatMessages.size) {

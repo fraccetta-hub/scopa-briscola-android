@@ -204,7 +204,7 @@ private fun WinLossChart(results: List<GameResultEntity>) {
     val barSpacing = 4f
 
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Text(text = "Ultime partite", fontSize = 11.sp, color = CardCream.copy(alpha = 0.6f), modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
+        Text(text = "Recent games", fontSize = 11.sp, color = CardCream.copy(alpha = 0.6f), modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()

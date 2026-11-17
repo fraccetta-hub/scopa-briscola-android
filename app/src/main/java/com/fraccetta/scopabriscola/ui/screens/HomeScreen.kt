@@ -56,16 +56,16 @@ fun HomeScreen(
     updateInfo?.let { info ->
         AlertDialog(
             onDismissRequest = { viewModel.dismissUpdate() },
-            title = { Text(text = "Aggiornamento disponibile") },
-            text = { Text(text = "Versione ${info.version} disponibile. Vuoi scaricarla?") },
+            title = { Text(text = "Update available") },
+            text = { Text(text = "Version ${info.version} is available. Download it?") },
             confirmButton = {
                 TextButton(onClick = {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(info.downloadUrl)))
                     viewModel.dismissUpdate()
-                }) { Text(text = "Scarica") }
+                }) { Text(text = "Download") }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.dismissUpdate() }) { Text(text = "Non ora") }
+                TextButton(onClick = { viewModel.dismissUpdate() }) { Text(text = "Not now") }
             }
         )
     }

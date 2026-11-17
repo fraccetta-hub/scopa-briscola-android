@@ -77,24 +77,24 @@ fun SettingsScreen(
         is UpdateCheckState.UpdateAvailable -> {
             AlertDialog(
                 onDismissRequest = { viewModel.dismissUpdateCheck() },
-                title = { Text("Aggiornamento disponibile") },
-                text = { Text("Versione ${state.info.version} disponibile. Vuoi scaricarla?") },
+                title = { Text("Update available") },
+                text = { Text("Version ${state.info.version} is available. Download it?") },
                 confirmButton = {
                     Button(onClick = {
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(state.info.downloadUrl)))
                         viewModel.dismissUpdateCheck()
-                    }) { Text("Scarica") }
+                    }) { Text("Download") }
                 },
                 dismissButton = {
-                    TextButton(onClick = { viewModel.dismissUpdateCheck() }) { Text("Non ora") }
+                    TextButton(onClick = { viewModel.dismissUpdateCheck() }) { Text("Not now") }
                 }
             )
         }
         is UpdateCheckState.UpToDate -> {
             AlertDialog(
                 onDismissRequest = { viewModel.dismissUpdateCheck() },
-                title = { Text("App aggiornata") },
-                text = { Text("Hai già l'ultima versione.") },
+                title = { Text("Up to date") },
+                text = { Text("You already have the latest version.") },
                 confirmButton = {
                     Button(onClick = { viewModel.dismissUpdateCheck() }) { Text("OK") }
                 }
@@ -103,8 +103,8 @@ fun SettingsScreen(
         is UpdateCheckState.Error -> {
             AlertDialog(
                 onDismissRequest = { viewModel.dismissUpdateCheck() },
-                title = { Text("Errore") },
-                text = { Text("Impossibile controllare aggiornamenti. Verifica la connessione.") },
+                title = { Text("Error") },
+                text = { Text("Could not check for updates. Check your connection.") },
                 confirmButton = {
                     Button(onClick = { viewModel.dismissUpdateCheck() }) { Text("OK") }
                 }
@@ -167,7 +167,7 @@ fun SettingsScreen(
                 Text(text = stringResource(R.string.settings_save_name), color = CardCream)
             }
             if (nameSaved) {
-                Text(text = "✓ Nome salvato", color = AccentGold)
+                Text(text = "✓ Name saved", color = AccentGold)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -219,7 +219,7 @@ fun SettingsScreen(
                 Text(text = stringResource(R.string.settings_save_target_score), color = CardCream)
             }
             if (scoreSaved) {
-                Text(text = "✓ Punteggio salvato", color = AccentGold)
+                Text(text = "✓ Score saved", color = AccentGold)
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -229,7 +229,7 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = AccentGold)
             ) {
-                Text("Guida ai giochi", color = CardCream)
+                Text("Game Guide", color = CardCream)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -247,7 +247,7 @@ fun SettingsScreen(
                         color = CardCream
                     )
                 } else {
-                    Text("Controlla aggiornamenti", color = CardCream)
+                    Text("Check for updates", color = CardCream)
                 }
             }
         }

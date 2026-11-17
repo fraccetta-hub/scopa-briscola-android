@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class DiscoveredHost(val device: BluetoothDevice, val playerName: String)
+data class DiscoveredHost(val device: BluetoothDevice, val playerName: String, val isHosting: Boolean = false)
 
 data class LobbyUiState(
     val btState: BtState = BtState.Idle,
@@ -113,12 +113,25 @@ class LobbyViewModel @Inject constructor(
         _uiState.update { it.copy(errorResId = null, discoveredHosts = emptyList()) }
         btManager.startScanning()
 
+        // Pre-populate with paired devices (isHosting=false until BLE confirms)
+        val paired = bleDiscovery.getPairedDevices().map { device ->
+            DiscoveredHost(device, device.name ?: device.address, isHosting = false)
+        }
+        if (paired.isNotEmpty()) {
+            _uiState.update { it.copy(discoveredHosts = paired) }
+        }
+
         bleDiscovery.startScanning(
             onFound = { device, name ->
-                val host = DiscoveredHost(device, name)
                 _uiState.update { state ->
-                    if (state.discoveredHosts.any { it.device.address == device.address }) state
-                    else state.copy(discoveredHosts = state.discoveredHosts + host)
+                    val existing = state.discoveredHosts.toMutableList()
+                    val idx = existing.indexOfFirst { it.device.address == device.address }
+                    if (idx >= 0) {
+                        existing[idx] = existing[idx].copy(playerName = name, isHosting = true)
+                    } else {
+                        existing.add(DiscoveredHost(device, name, isHosting = true))
+                    }
+                    state.copy(discoveredHosts = existing)
                 }
             },
             onError = {

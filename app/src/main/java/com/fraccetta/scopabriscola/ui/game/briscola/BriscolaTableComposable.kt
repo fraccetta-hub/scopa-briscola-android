@@ -267,7 +267,7 @@ fun BriscolaTableContent(
 
             // Trick area
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "In gioco", style = MaterialTheme.typography.labelSmall, color = CardCream, modifier = Modifier.padding(bottom = 4.dp))
+                Text(text = "In play", style = MaterialTheme.typography.labelSmall, color = CardCream, modifier = Modifier.padding(bottom = 4.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     state.firstCardPlayed?.let { firstCard ->
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -323,7 +323,7 @@ fun BriscolaTableContent(
 
         // ── Chat UI (multiplayer only) ────────────────────────────────
         if (!uiState.isSolo) {
-            val predefinedMessages = listOf("Bella mossa!", "Nooo!", "Buona fortuna!", "Grande!", "Peccato...", "Ci siamo quasi")
+            val predefinedMessages = listOf("Nice move!", "Nooo!", "Good luck!", "Great!", "Too bad...", "Almost there")
             val chatListState = rememberLazyListState()
             var chatInput by remember { mutableStateOf("") }
             LaunchedEffect(uiState.chatMessages.size) {

@@ -262,7 +262,7 @@ private fun ScanningContent(
                 onClick = { context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) },
                 colors = ButtonDefaults.buttonColors(containerColor = AccentGold)
             ) {
-                Text(text = "Associa nuovo dispositivo", color = Color(0xFF0D1F33))
+                Text(text = "Pair new device", color = Color(0xFF0D1F33))
             }
         } else {
             Text(
@@ -283,18 +283,28 @@ private fun ScanningContent(
 
 @Composable
 private fun HostRow(host: DiscoveredHost, onClick: () -> Unit) {
+    val label = if (host.isHosting) "${host.playerName} is hosting" else host.playerName
+    val textColor = if (host.isHosting) CardCream else CardCream.copy(alpha = 0.4f)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .then(if (host.isHosting) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(vertical = 12.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "${host.playerName} sta ospitando",
+            text = label,
             style = MaterialTheme.typography.bodyLarge,
-            color = CardCream
+            color = textColor
         )
+        if (!host.isHosting) {
+            Text(
+                text = "not in game",
+                style = MaterialTheme.typography.bodySmall,
+                color = CardCream.copy(alpha = 0.35f)
+            )
+        }
     }
 }
 

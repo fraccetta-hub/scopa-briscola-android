@@ -97,7 +97,7 @@ fun GameModeScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = "Ospita partita", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Host game", style = MaterialTheme.typography.titleMedium)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -110,7 +110,7 @@ fun GameModeScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = "Cerca partita", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Find game", style = MaterialTheme.typography.titleMedium)
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
