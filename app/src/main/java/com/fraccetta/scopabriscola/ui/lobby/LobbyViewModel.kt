@@ -79,6 +79,7 @@ class LobbyViewModel @Inject constructor(
                             _uiState.update { it.copy(remoteName = msg.playerName) }
                             GameSession.isServer = isServer
                             GameSession.localPlayer = if (isServer) 1 else 2
+                            GameSession.isSolo = false
                             GameSession.opponentName = msg.playerName
                             val destination = if (gameType.equals("briscola", ignoreCase = true)) "game/briscola" else "game/scopa"
                             _navigationEvent.emit(destination)
