@@ -93,3 +93,4 @@ lint/tmp/
 
 # Kotlin
 .kotlin/
+C*UsersUtenteAppDataLocal*

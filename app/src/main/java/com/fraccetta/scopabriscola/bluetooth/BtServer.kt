@@ -28,7 +28,7 @@ class BtServer(private val context: Context) {
             try {
                 val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
                 val adapter = bluetoothManager.adapter ?: return@launch
-                serverSocket = adapter.listenUsingRfcommWithServiceRecord(
+                serverSocket = adapter.listenUsingInsecureRfcommWithServiceRecord(
                     "ScopaBriscola",
                     BluetoothConstants.SERVICE_UUID
                 )

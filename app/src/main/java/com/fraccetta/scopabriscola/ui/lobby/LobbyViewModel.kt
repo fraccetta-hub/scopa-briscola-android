@@ -112,6 +112,22 @@ class LobbyViewModel @Inject constructor(
         isServer = false
         _uiState.update { it.copy(errorResId = null, discoveredHosts = emptyList()) }
         btManager.startScanning()
+
+        // Seed list with already-paired devices immediately (no BLE required)
+        val pairedDevices = bleDiscovery.getPairedDevices()
+        if (pairedDevices.isNotEmpty()) {
+            _uiState.update { state ->
+                val existing = state.discoveredHosts.map { it.device.address }.toSet()
+                val newHosts = pairedDevices
+                    .filter { it.address !in existing }
+                    .map { device ->
+                        val name = device.name?.takeIf { n -> n.isNotEmpty() } ?: device.address
+                        DiscoveredHost(device, name)
+                    }
+                state.copy(discoveredHosts = state.discoveredHosts + newHosts)
+            }
+        }
+
         bleDiscovery.startScanning(
             onFound = { device, name ->
                 val host = DiscoveredHost(device, name)

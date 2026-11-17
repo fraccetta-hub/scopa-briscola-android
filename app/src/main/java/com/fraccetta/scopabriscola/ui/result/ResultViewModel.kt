@@ -46,7 +46,7 @@ class ResultViewModel @Inject constructor(
             val files = withContext(Dispatchers.IO) {
                 try {
                     context.assets.list("result")
-                        ?.filter { it.startsWith(prefix) && (it.endsWith(".png") || it.endsWith(".jpg")) }
+                        ?.filter { it.startsWith(prefix) && (it.endsWith(".png") || it.endsWith(".jpg") || it.endsWith(".webp")) }
                         ?: emptyList()
                 } catch (e: Exception) {
                     emptyList()

@@ -30,7 +30,7 @@ class BtClient(private val context: Context) {
     fun connect(device: BluetoothDevice, scope: CoroutineScope) {
         scope.launch(Dispatchers.IO) {
             try {
-                val s = device.createRfcommSocketToServiceRecord(BluetoothConstants.SERVICE_UUID)
+                val s = device.createInsecureRfcommSocketToServiceRecord(BluetoothConstants.SERVICE_UUID)
                 s.connect()
                 socket = s
                 outputStream = s.outputStream

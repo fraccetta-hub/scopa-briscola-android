@@ -110,5 +110,13 @@ class BleDiscovery(private val context: Context) {
             try { adapter?.bluetoothLeScanner?.stopScan(it) } catch (_: Exception) {}
         }
         scanCallback = null
+    }
+
+    fun getPairedDevices(): List<BluetoothDevice> {
+        return try {
+            adapter?.bondedDevices?.toList() ?: emptyList()
+        } catch (_: SecurityException) {
+            emptyList()
         }
+    }
 }
