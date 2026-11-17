@@ -153,7 +153,7 @@ fun ScopaTableContent(
         val localRS = if (uiState.localPlayer == 1) matchScores?.first else matchScores?.second
         val oppRS = if (uiState.localPlayer == 1) matchScores?.second else matchScores?.first
         GameResultOverlay(
-            isLocalWin = localGameScore >= opponentGameScore,
+            isLocalWin = localGameScore > opponentGameScore,
             titleText = stringResource(R.string.scopa_match_end_title),
             buttonText = stringResource(R.string.scopa_next_match),
             onContinue = onNextMatch
@@ -184,7 +184,7 @@ fun ScopaTableContent(
         val localRS = if (uiState.localPlayer == 1) matchScores?.first else matchScores?.second
         val oppRS = if (uiState.localPlayer == 1) matchScores?.second else matchScores?.first
         GameResultOverlay(
-            isLocalWin = localSessionWins >= opponentSessionWins,
+            isLocalWin = localSessionWins > opponentSessionWins,
             titleText = stringResource(R.string.scopa_game_end_title),
             buttonText = stringResource(R.string.scopa_next_game),
             onContinue = onNextGame

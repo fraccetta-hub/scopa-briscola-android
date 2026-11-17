@@ -133,7 +133,7 @@ fun BriscolaTableContent(
         val localMatchPts = if (uiState.localPlayer == 1) state.player1MatchPoints else state.player2MatchPoints
         val oppMatchPts = if (uiState.localPlayer == 1) state.player2MatchPoints else state.player1MatchPoints
         GameResultOverlay(
-            isLocalWin = localGamePoints >= opponentGamePoints,
+            isLocalWin = localGamePoints > opponentGamePoints,
             titleText = stringResource(R.string.briscola_match_end_title),
             buttonText = stringResource(R.string.briscola_next_match),
             onContinue = onNextMatch
@@ -152,7 +152,7 @@ fun BriscolaTableContent(
     // ── GAME END overlay ───────────────────────────────────────────────
     if (state.phase == BriscolaPhase.GAME_END) {
         GameResultOverlay(
-            isLocalWin = localSessionWins >= opponentSessionWins,
+            isLocalWin = localSessionWins > opponentSessionWins,
             titleText = stringResource(R.string.briscola_game_end_title),
             buttonText = stringResource(R.string.briscola_next_game),
             onContinue = onNextGame
