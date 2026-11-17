@@ -199,13 +199,21 @@ fun BriscolaTableContent(
             Column {
                 Text(
                     text = stringResource(R.string.briscola_score_label, localGamePoints, opponentGamePoints),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = CardCream
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        shadow = androidx.compose.ui.graphics.Shadow(
+                            color = Color.Black,
+                            offset = androidx.compose.ui.geometry.Offset(1f, 1f),
+                            blurRadius = 4f
+                        )
+                    )
                 )
                 Text(
                     text = stringResource(R.string.briscola_session_wins, localSessionWins, opponentSessionWins),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = CardCream.copy(alpha = 0.7f)
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White.copy(alpha = 0.85f)
                 )
             }
             Text(

@@ -292,23 +292,31 @@ fun ScopaTableContent(
             Column {
                 Text(
                     text = stringResource(R.string.scopa_score_label, localGameScore, opponentGameScore),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = CardCream
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        shadow = androidx.compose.ui.graphics.Shadow(
+                            color = Color.Black,
+                            offset = androidx.compose.ui.geometry.Offset(1f, 1f),
+                            blurRadius = 4f
+                        )
+                    )
                 )
                 Text(
                     text = stringResource(R.string.scopa_scope_live, localScope, opponentScope),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
                     color = AccentGold
                 )
                 Text(
                     text = stringResource(R.string.scopa_session_wins, localSessionWins, opponentSessionWins),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = CardCream.copy(alpha = 0.7f)
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.85f)
                 )
                 Text(
-                    text = "Carte: $localCaptured – $oppCaptured",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = CardCream.copy(alpha = 0.6f)
+                    text = "Cards: $localCaptured – $oppCaptured",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f)
                 )
             }
             Text(

@@ -284,11 +284,11 @@ private fun ScanningContent(
 @Composable
 private fun HostRow(host: DiscoveredHost, onClick: () -> Unit) {
     val label = if (host.isHosting) "${host.playerName} is hosting" else host.playerName
-    val textColor = if (host.isHosting) CardCream else CardCream.copy(alpha = 0.4f)
+    val textColor = if (host.isHosting) CardCream else CardCream.copy(alpha = 0.5f)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (host.isHosting) Modifier.clickable(onClick = onClick) else Modifier)
+            .clickable(onClick = onClick)
             .padding(vertical = 12.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -300,9 +300,9 @@ private fun HostRow(host: DiscoveredHost, onClick: () -> Unit) {
         )
         if (!host.isHosting) {
             Text(
-                text = "not in game",
+                text = "not confirmed",
                 style = MaterialTheme.typography.bodySmall,
-                color = CardCream.copy(alpha = 0.35f)
+                color = CardCream.copy(alpha = 0.4f)
             )
         }
     }
