@@ -39,10 +39,11 @@ data class BriscolaUiState(
     val localPlayer: Int,
     val opponentName: String? = null,
     val showDisconnectionDialog: Boolean = false,
-    val cpuLastCard: Card? = null,
+    val opponentLastCard: Card? = null,
     val arenaName: String? = null,
     val chatMessages: List<BriscolaChatMessage> = emptyList(),
     val showChat: Boolean = false,
+    val chatPinned: Boolean = false,
     val isSolo: Boolean = false
 )
 
@@ -77,6 +78,7 @@ class BriscolaGameViewModel @Inject constructor(
     private val json = Json { ignoreUnknownKeys = true }
     private var eventsJob: Job? = null
     private var chatHideJob: Job? = null
+    private var opponentCardJob: Job? = null
     private var autoRetryCount = 0
 
     init {
@@ -131,7 +133,9 @@ class BriscolaGameViewModel @Inject constructor(
         val localHand = if (localPlayer == 1) current.player1Hand else current.player2Hand
         if (card !in localHand) return
         SoundManager.playCard()
-        _uiState.update { it.copy(cpuLastCard = null) }
+        _uiState.update { it.copy(opponentLastCard = null) }
+        // Server broadcasts its own card to client so client can display it
+        if (isServer && !isSolo) btManager.send(BtMessage.OpponentCard(card.assetName))
         if (isServer || isSolo) applyAndBroadcast(BriscolaAction.PlayCard(card))
         else btManager.send(BtMessage.PlayCard(card.assetName))
     }
@@ -166,7 +170,7 @@ class BriscolaGameViewModel @Inject constructor(
         } else if (newState.player2Captured.size > prevP2Captured) {
             if (localPlayer == 2) SoundManager.playCapture() else SoundManager.playOpponentCapture()
         }
-        _uiState.update { it.copy(state = newState, cpuLastCard = null) }
+        _uiState.update { it.copy(state = newState, opponentLastCard = if (isSolo) null else it.opponentLastCard) }
         if (!isSolo) sendGameState(newState)
         checkForSessionEnd(newState)
         if (isSolo) scheduleCpuTurn(newState)
@@ -181,7 +185,7 @@ class BriscolaGameViewModel @Inject constructor(
             if (current.currentPlayer != 2) return@launch
             if (current.phase != BriscolaPhase.WAITING_FIRST && current.phase != BriscolaPhase.WAITING_SECOND) return@launch
             val card = BriscolaCpuAI.choosePlay(current)
-            _uiState.update { it.copy(cpuLastCard = card) }
+            _uiState.update { it.copy(opponentLastCard = card) }
             delay(700)
             applyAndBroadcast(BriscolaAction.PlayCard(card))
         }
@@ -203,6 +207,7 @@ class BriscolaGameViewModel @Inject constructor(
                     val card = cardLookup[msg.cardAssetName] ?: return
                     if (state.phase != BriscolaPhase.WAITING_FIRST && state.phase != BriscolaPhase.WAITING_SECOND) return
                     if (state.currentPlayer != 2 || card !in state.player2Hand) return
+                    showOpponentCard(card)
                     applyAndBroadcast(BriscolaAction.PlayCard(card))
                 }
                 is BtMessage.NextRound -> {
@@ -212,6 +217,7 @@ class BriscolaGameViewModel @Inject constructor(
                         else -> {}
                     }
                 }
+                is BtMessage.Chat -> receiveChat(msg.messageKey, isMine = false)
                 else -> {}
             }
         } else {
@@ -233,32 +239,58 @@ class BriscolaGameViewModel @Inject constructor(
                 }
                 is BtMessage.SetArena -> _uiState.update { it.copy(arenaName = msg.arenaName) }
                 is BtMessage.Chat -> receiveChat(msg.messageKey, isMine = false)
+                is BtMessage.OpponentCard -> {
+                    val card = cardLookup[msg.cardAssetName] ?: return
+                    showOpponentCard(card)
+                }
                 else -> {}
             }
         }
     }
 
-    fun sendChat(messageKey: String) {
-        btManager.send(BtMessage.Chat(messageKey))
-        receiveChat(messageKey, isMine = true)
+    private fun showOpponentCard(card: Card) {
+        opponentCardJob?.cancel()
+        _uiState.update { it.copy(opponentLastCard = card) }
+        opponentCardJob = viewModelScope.launch {
+            delay(1800)
+            _uiState.update { it.copy(opponentLastCard = null) }
+        }
     }
 
-    private fun receiveChat(messageKey: String, isMine: Boolean) {
+    fun sendChat(text: String) {
+        btManager.send(BtMessage.Chat(text))
+        receiveChat(text, isMine = true)
+    }
+
+    private fun receiveChat(text: String, isMine: Boolean) {
         _uiState.update { state ->
-            val newMsg = BriscolaChatMessage(messageKey, isMine)
+            val newMsg = BriscolaChatMessage(text, isMine)
+            val alreadyOpen = state.showChat
             state.copy(
-                chatMessages = (state.chatMessages + newMsg).takeLast(20),
-                showChat = true
+                chatMessages = (state.chatMessages + newMsg).takeLast(50),
+                showChat = true,
+                chatPinned = alreadyOpen && state.chatPinned
             )
         }
-        chatHideJob?.cancel()
-        chatHideJob = viewModelScope.launch {
-            delay(4000)
-            _uiState.update { it.copy(showChat = false) }
+        // Auto-hide only if user hasn't pinned chat open
+        if (!_uiState.value.chatPinned) {
+            chatHideJob?.cancel()
+            chatHideJob = viewModelScope.launch {
+                delay(8000)
+                if (!_uiState.value.chatPinned) {
+                    _uiState.update { it.copy(showChat = false) }
+                }
+            }
         }
     }
 
-    fun toggleChat() = _uiState.update { it.copy(showChat = !it.showChat) }
+    fun toggleChat() {
+        _uiState.update {
+            val newVisible = !it.showChat
+            it.copy(showChat = newVisible, chatPinned = newVisible)
+        }
+        if (!_uiState.value.showChat) chatHideJob?.cancel()
+    }
 
     override fun onCleared() {
         super.onCleared()

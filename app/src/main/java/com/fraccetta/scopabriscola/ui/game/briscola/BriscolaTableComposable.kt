@@ -279,11 +279,13 @@ fun BriscolaTableContent(
                         }
                     } ?: Box(modifier = Modifier.size(72.dp, 108.dp))
 
-                    val cpuCard = uiState.cpuLastCard
-                    if (cpuCard != null && state.phase == BriscolaPhase.WAITING_SECOND) {
+                    val opponentCard = uiState.opponentLastCard
+                    val showOpponentCard = if (uiState.isSolo) opponentCard != null && state.phase == BriscolaPhase.WAITING_SECOND
+                                          else opponentCard != null
+                    if (showOpponentCard && opponentCard != null) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(text = opponentName, style = MaterialTheme.typography.labelSmall, color = CardCream, fontSize = 9.sp)
-                            BriscolaCardImage(card = cpuCard, modifier = Modifier.size(72.dp, 108.dp))
+                            BriscolaCardImage(card = opponentCard, modifier = Modifier.size(72.dp, 108.dp))
                         }
                     } else if (state.firstCardPlayed == null) {
                         Box(modifier = Modifier.size(72.dp, 108.dp))
@@ -321,11 +323,9 @@ fun BriscolaTableContent(
 
         // ── Chat UI (multiplayer only) ────────────────────────────────
         if (!uiState.isSolo) {
-            val predefinedMessages = listOf(
-                "Bella mossa!", "Nooo!", "Ci siamo quasi",
-                "Buona fortuna!", "Grande!", "Peccato..."
-            )
+            val predefinedMessages = listOf("Bella mossa!", "Nooo!", "Buona fortuna!", "Grande!", "Peccato...", "Ci siamo quasi")
             val chatListState = rememberLazyListState()
+            var chatInput by remember { mutableStateOf("") }
             LaunchedEffect(uiState.chatMessages.size) {
                 if (uiState.chatMessages.isNotEmpty()) {
                     chatListState.animateScrollToItem(uiState.chatMessages.size - 1)
@@ -340,7 +340,7 @@ fun BriscolaTableContent(
             ) {
                 Column(
                     modifier = Modifier
-                        .width(220.dp)
+                        .width(240.dp)
                         .background(Color(0xDD0D1F33), RoundedCornerShape(12.dp))
                         .padding(10.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -348,7 +348,7 @@ fun BriscolaTableContent(
                     if (uiState.chatMessages.isNotEmpty()) {
                         LazyColumn(
                             state = chatListState,
-                            modifier = Modifier.fillMaxWidth().height(80.dp),
+                            modifier = Modifier.fillMaxWidth().height(120.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             items(uiState.chatMessages) { msg ->
@@ -360,7 +360,38 @@ fun BriscolaTableContent(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(2.dp))
+                    }
+                    androidx.compose.foundation.layout.Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        androidx.compose.material3.OutlinedTextField(
+                            value = chatInput,
+                            onValueChange = { chatInput = it },
+                            placeholder = { Text("Scrivi...", fontSize = 11.sp, color = CardCream.copy(alpha = 0.5f)) },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true,
+                            colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = CardCream,
+                                unfocusedTextColor = CardCream,
+                                focusedBorderColor = AccentGold,
+                                unfocusedBorderColor = CardCream.copy(alpha = 0.4f)
+                            ),
+                            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Send),
+                            keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSend = {
+                                if (chatInput.isNotBlank()) { onSendChat(chatInput.trim()); chatInput = "" }
+                            })
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(start = 4.dp)
+                                .size(32.dp)
+                                .background(AccentGold, CircleShape)
+                                .clickable { if (chatInput.isNotBlank()) { onSendChat(chatInput.trim()); chatInput = "" } },
+                            contentAlignment = Alignment.Center
+                        ) { Text("▶", fontSize = 12.sp, color = Color.White) }
                     }
                     predefinedMessages.forEach { msg ->
                         Text(

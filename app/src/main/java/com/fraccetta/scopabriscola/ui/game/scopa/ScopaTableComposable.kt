@@ -348,16 +348,16 @@ fun ScopaTableContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // ── CPU last played card ──────────────────────────────────────
-        val cpuCard = uiState.cpuLastCard
-        if (cpuCard != null) {
+        // ── Opponent last played card ─────────────────────────────────
+        val opponentCard = uiState.opponentLastCard
+        if (opponentCard != null) {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "$opponentName ha giocato:", style = MaterialTheme.typography.labelSmall, color = CardCream)
                 Spacer(modifier = Modifier.height(4.dp))
-                CardImage(card = cpuCard, modifier = Modifier.size(72.dp, 108.dp))
+                CardImage(card = opponentCard, modifier = Modifier.size(72.dp, 108.dp))
             }
         }
 
@@ -452,18 +452,15 @@ fun ScopaTableContent(
         }
         // ── Chat UI (multiplayer only) ────────────────────────────────
         if (!uiState.isSolo) {
-            val predefinedMessages = listOf(
-                "Bella mossa!", "Nooo!", "Ci siamo quasi",
-                "Buona fortuna!", "Grande!", "Peccato..."
-            )
+            val predefinedMessages = listOf("Bella mossa!", "Nooo!", "Buona fortuna!", "Grande!", "Peccato...", "Ci siamo quasi")
             val chatListState = rememberLazyListState()
+            var chatInput by remember { mutableStateOf("") }
             LaunchedEffect(uiState.chatMessages.size) {
                 if (uiState.chatMessages.isNotEmpty()) {
                     chatListState.animateScrollToItem(uiState.chatMessages.size - 1)
                 }
             }
 
-            // Chat panel (slides up from bottom)
             AnimatedVisibility(
                 visible = uiState.showChat,
                 modifier = Modifier.align(Alignment.BottomEnd).padding(end = 8.dp, bottom = 72.dp),
@@ -472,7 +469,7 @@ fun ScopaTableContent(
             ) {
                 Column(
                     modifier = Modifier
-                        .width(220.dp)
+                        .width(240.dp)
                         .background(Color(0xDD0D1F33), RoundedCornerShape(12.dp))
                         .padding(10.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -480,7 +477,7 @@ fun ScopaTableContent(
                     if (uiState.chatMessages.isNotEmpty()) {
                         LazyColumn(
                             state = chatListState,
-                            modifier = Modifier.fillMaxWidth().height(80.dp),
+                            modifier = Modifier.fillMaxWidth().height(120.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             items(uiState.chatMessages) { msg ->
@@ -492,8 +489,41 @@ fun ScopaTableContent(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(2.dp))
                     }
+                    // Free text input
+                    androidx.compose.foundation.layout.Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        androidx.compose.material3.OutlinedTextField(
+                            value = chatInput,
+                            onValueChange = { chatInput = it },
+                            placeholder = { Text("Scrivi...", fontSize = 11.sp, color = CardCream.copy(alpha = 0.5f)) },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true,
+                            colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = CardCream,
+                                unfocusedTextColor = CardCream,
+                                focusedBorderColor = AccentGold,
+                                unfocusedBorderColor = CardCream.copy(alpha = 0.4f)
+                            ),
+                            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp),
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Send),
+                            keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSend = {
+                                if (chatInput.isNotBlank()) { onSendChat(chatInput.trim()); chatInput = "" }
+                            })
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(start = 4.dp)
+                                .size(32.dp)
+                                .background(AccentGold, CircleShape)
+                                .clickable { if (chatInput.isNotBlank()) { onSendChat(chatInput.trim()); chatInput = "" } },
+                            contentAlignment = Alignment.Center
+                        ) { Text("▶", fontSize = 12.sp, color = Color.White) }
+                    }
+                    // Quick messages
                     predefinedMessages.forEach { msg ->
                         Text(
                             text = msg,
@@ -509,7 +539,6 @@ fun ScopaTableContent(
                 }
             }
 
-            // Chat FAB
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

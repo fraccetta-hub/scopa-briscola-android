@@ -32,7 +32,9 @@ data class BriscolaState(
 
     // Session wins (best of 3 games)
     val player1SessionWins: Int = 0,
-    val player2SessionWins: Int = 0
+    val player2SessionWins: Int = 0,
+
+    val matchStarter: Int = 1
 )
 
 @Serializable
@@ -79,12 +81,14 @@ class BriscolaGame {
     }
 
     private fun handleNextMatch(state: BriscolaState): BriscolaState {
+        val nextStarter = if (state.matchStarter == 1) 2 else 1
         return dealNewMatch(
             player1GamePoints = state.player1GamePoints,
             player2GamePoints = state.player2GamePoints,
             matchesPlayedInGame = state.matchesPlayedInGame,
             player1SessionWins = state.player1SessionWins,
-            player2SessionWins = state.player2SessionWins
+            player2SessionWins = state.player2SessionWins,
+            startPlayer = nextStarter
         )
     }
 
@@ -105,12 +109,14 @@ class BriscolaGame {
             )
         }
 
+        val nextStarter = if (state.matchStarter == 1) 2 else 1
         return dealNewMatch(
             player1GamePoints = 0,
             player2GamePoints = 0,
             matchesPlayedInGame = 0,
             player1SessionWins = newP1SessionWins,
-            player2SessionWins = newP2SessionWins
+            player2SessionWins = newP2SessionWins,
+            startPlayer = nextStarter
         )
     }
 
@@ -119,7 +125,8 @@ class BriscolaGame {
         player2GamePoints: Int,
         matchesPlayedInGame: Int,
         player1SessionWins: Int,
-        player2SessionWins: Int
+        player2SessionWins: Int,
+        startPlayer: Int = 1
     ): BriscolaState {
         val deck = Deck.shuffled().toMutableList()
         val p1Hand = deck.take(3).also { repeat(3) { deck.removeAt(0) } }
@@ -134,9 +141,9 @@ class BriscolaGame {
             player2Hand = p2Hand,
             player1Captured = emptyList(),
             player2Captured = emptyList(),
-            currentPlayer = 1,
+            currentPlayer = startPlayer,
             firstCardPlayed = null,
-            firstPlayerOfTrick = 1,
+            firstPlayerOfTrick = startPlayer,
             phase = BriscolaPhase.WAITING_FIRST,
             briscolaCardTaken = false,
             player1MatchPoints = 0,
@@ -145,7 +152,8 @@ class BriscolaGame {
             player2GamePoints = player2GamePoints,
             matchesPlayedInGame = matchesPlayedInGame,
             player1SessionWins = player1SessionWins,
-            player2SessionWins = player2SessionWins
+            player2SessionWins = player2SessionWins,
+            matchStarter = startPlayer
         )
     }
 

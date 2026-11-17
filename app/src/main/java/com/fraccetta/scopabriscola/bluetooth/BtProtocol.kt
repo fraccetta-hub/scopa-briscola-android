@@ -37,6 +37,10 @@ sealed class BtMessage {
     @Serializable
     @SerialName("CHAT")
     data class Chat(val messageKey: String) : BtMessage()
+
+    @Serializable
+    @SerialName("OPPONENT_CARD")
+    data class OpponentCard(val cardAssetName: String) : BtMessage()
 }
 
 object BtProtocol {

@@ -20,6 +20,7 @@ data class ScopaState(
     val phase: ScopaPhase,
     val pendingCaptures: List<List<Card>>,
     val lastCapturerId: Int = 1,
+    val matchStarter: Int = 1,
     @Transient val lastCapture: Pair<Int, List<Card>>? = null,
 
     // Game score (accumulated across matches within current game)
@@ -147,6 +148,7 @@ class ScopaGame {
 
     private fun handleNextMatch(state: ScopaState): ScopaState {
         val (tableCards, p1Hand, p2Hand, deck) = dealInitial()
+        val nextStarter = if (state.matchStarter == 1) 2 else 1
         return state.copy(
             tableCards = tableCards,
             player1Hand = p1Hand,
@@ -155,12 +157,12 @@ class ScopaGame {
             player2Captured = emptyList(),
             player1Scope = 0,
             player2Scope = 0,
-            currentPlayer = 1,
+            currentPlayer = nextStarter,
+            matchStarter = nextStarter,
             phase = ScopaPhase.WAITING_PLAY,
             pendingCaptures = emptyList(),
             lastCapture = null,
             deckCards = deck
-            // player1GameScore, player2GameScore, targetScore, session wins preserved
         )
     }
 
@@ -181,7 +183,8 @@ class ScopaGame {
             )
         }
 
-        // Reset game, start new match
+        // Reset game, start new match — alternate who starts the new game
+        val nextStarter = if (state.matchStarter == 1) 2 else 1
         val (tableCards, p1Hand, p2Hand, deck) = dealInitial()
         return state.copy(
             tableCards = tableCards,
@@ -195,7 +198,8 @@ class ScopaGame {
             player2GameScore = 0,
             player1SessionWins = newP1SessionWins,
             player2SessionWins = newP2SessionWins,
-            currentPlayer = 1,
+            currentPlayer = nextStarter,
+            matchStarter = nextStarter,
             phase = ScopaPhase.WAITING_PLAY,
             pendingCaptures = emptyList(),
             lastCapture = null,

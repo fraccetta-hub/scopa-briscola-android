@@ -42,12 +42,13 @@ data class ScopaUiState(
     val localPlayer: Int,
     val opponentName: String? = null,
     val showDisconnectionDialog: Boolean = false,
-    val cpuLastCard: Card? = null,
+    val opponentLastCard: Card? = null,
     val lastMatchScores: Pair<RoundScore, RoundScore>? = null,
     val arenaName: String? = null,
     val showScopaFlash: Boolean = false,
     val chatMessages: List<ChatMessage> = emptyList(),
     val showChat: Boolean = false,
+    val chatPinned: Boolean = false,
     val isSolo: Boolean = false
 )
 
@@ -82,6 +83,7 @@ class ScopaGameViewModel @Inject constructor(
     private val json = Json { ignoreUnknownKeys = true }
     private var eventsJob: Job? = null
     private var chatHideJob: Job? = null
+    private var opponentCardJob: Job? = null
     private var autoRetryCount = 0
     private var consecutiveScope = 0
     private var maxConsecutiveScope = 0
@@ -142,7 +144,8 @@ class ScopaGameViewModel @Inject constructor(
         val localHand = if (localPlayer == 1) current.player1Hand else current.player2Hand
         if (card !in localHand) return
         SoundManager.playCard()
-        _uiState.update { it.copy(cpuLastCard = null) }
+        _uiState.update { it.copy(opponentLastCard = null) }
+        if (isServer && !isSolo) btManager.send(BtMessage.OpponentCard(card.assetName))
         if (isServer || isSolo) applyAndBroadcast(ScopaAction.PlayCard(card))
         else btManager.send(BtMessage.PlayCard(card.assetName))
     }
@@ -221,12 +224,12 @@ class ScopaGameViewModel @Inject constructor(
             else -> null
         }
 
-        val clearCpuCard = action is ScopaAction.NextMatch || action is ScopaAction.NextGame
+        val clearOpponentCard = action is ScopaAction.NextMatch || action is ScopaAction.NextGame
         _uiState.update { prev ->
             prev.copy(
                 state = newState,
                 lastMatchScores = matchScores ?: prev.lastMatchScores,
-                cpuLastCard = if (clearCpuCard) null else prev.cpuLastCard
+                opponentLastCard = if (clearOpponentCard || !isSolo) null else prev.opponentLastCard
             )
         }
         if (!isSolo) sendGameState(newState)
@@ -242,7 +245,7 @@ class ScopaGameViewModel @Inject constructor(
             when (current.phase) {
                 ScopaPhase.WAITING_PLAY -> {
                     val card = ScopaCpuAI.choosePlay(current)
-                    _uiState.update { it.copy(cpuLastCard = card) }
+                    _uiState.update { it.copy(opponentLastCard = card) }
                     delay(700)
                     applyAndBroadcast(ScopaAction.PlayCard(card))
                 }
@@ -272,6 +275,7 @@ class ScopaGameViewModel @Inject constructor(
                 is BtMessage.PlayCard -> {
                     val card = cardLookup[msg.cardAssetName] ?: return
                     if (state.phase != ScopaPhase.WAITING_PLAY || state.currentPlayer != 2 || card !in state.player2Hand) return
+                    showOpponentCard(card)
                     applyAndBroadcast(ScopaAction.PlayCard(card))
                 }
                 is BtMessage.ChooseCapture -> {
@@ -287,6 +291,7 @@ class ScopaGameViewModel @Inject constructor(
                         else -> {}
                     }
                 }
+                is BtMessage.Chat -> receiveChat(msg.messageKey, isMine = false)
                 else -> {}
             }
         } else {
@@ -316,32 +321,57 @@ class ScopaGameViewModel @Inject constructor(
                 }
                 is BtMessage.SetArena -> _uiState.update { it.copy(arenaName = msg.arenaName) }
                 is BtMessage.Chat -> receiveChat(msg.messageKey, isMine = false)
+                is BtMessage.OpponentCard -> {
+                    val card = cardLookup[msg.cardAssetName] ?: return
+                    showOpponentCard(card)
+                }
                 else -> {}
             }
         }
     }
 
-    fun sendChat(messageKey: String) {
-        btManager.send(BtMessage.Chat(messageKey))
-        receiveChat(messageKey, isMine = true)
+    private fun showOpponentCard(card: Card) {
+        opponentCardJob?.cancel()
+        _uiState.update { it.copy(opponentLastCard = card) }
+        opponentCardJob = viewModelScope.launch {
+            delay(1800)
+            _uiState.update { it.copy(opponentLastCard = null) }
+        }
     }
 
-    private fun receiveChat(messageKey: String, isMine: Boolean) {
+    fun sendChat(text: String) {
+        btManager.send(BtMessage.Chat(text))
+        receiveChat(text, isMine = true)
+    }
+
+    private fun receiveChat(text: String, isMine: Boolean) {
         _uiState.update { state ->
-            val newMsg = ChatMessage(messageKey, isMine)
+            val newMsg = ChatMessage(text, isMine)
+            val alreadyOpen = state.showChat
             state.copy(
-                chatMessages = (state.chatMessages + newMsg).takeLast(20),
-                showChat = true
+                chatMessages = (state.chatMessages + newMsg).takeLast(50),
+                showChat = true,
+                chatPinned = alreadyOpen && state.chatPinned
             )
         }
-        chatHideJob?.cancel()
-        chatHideJob = viewModelScope.launch {
-            delay(4000)
-            _uiState.update { it.copy(showChat = false) }
+        if (!_uiState.value.chatPinned) {
+            chatHideJob?.cancel()
+            chatHideJob = viewModelScope.launch {
+                delay(8000)
+                if (!_uiState.value.chatPinned) {
+                    _uiState.update { it.copy(showChat = false) }
+                }
+            }
         }
     }
 
-    fun toggleChat() = _uiState.update { it.copy(showChat = !it.showChat) }
+    fun toggleChat() {
+        _uiState.update {
+            val newVisible = !it.showChat
+            it.copy(showChat = newVisible, chatPinned = newVisible)
+        }
+        if (!_uiState.value.showChat) chatHideJob?.cancel()
+    }
 
     fun triggerScopaFlash() {
         viewModelScope.launch {
