@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,25 +47,37 @@ import kotlinx.coroutines.withContext
 @Composable
 fun GameResultOverlay(
     isLocalWin: Boolean,
+    isDraw: Boolean = false,
     titleText: String,
     buttonText: String,
     onContinue: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val context = LocalContext.current
+    // rememberSaveable survives rotation; pick filename once, reload bitmap after rotation
+    var pickedFilename by rememberSaveable { mutableStateOf<String?>(null) }
     var resultImage by remember { mutableStateOf<ImageBitmap?>(null) }
 
-    LaunchedEffect(isLocalWin) {
-        val prefix = if (isLocalWin) "win_" else "lose_"
+    val resultKey = if (isDraw) "draw" else if (isLocalWin) "win" else "lose"
+    LaunchedEffect(resultKey) {
+        val prefix = "${resultKey}_"
+        if (pickedFilename == null || !pickedFilename!!.startsWith(prefix)) {
+            val files = withContext(Dispatchers.IO) {
+                val all = context.assets.list("result")
+                    ?.filter { f -> f.endsWith(".jpg") || f.endsWith(".png") || f.endsWith(".webp") }
+                    ?: emptyList()
+                // Try draw_ first; fall back to lose_ if no draw images exist
+                val preferred = all.filter { it.startsWith(prefix) }
+                preferred.ifEmpty {
+                    if (isDraw) all.filter { it.startsWith("lose_") } else emptyList()
+                }
+            }
+            pickedFilename = if (files.isNotEmpty()) files.random() else null
+        }
+        val filename = pickedFilename ?: return@LaunchedEffect
         resultImage = withContext(Dispatchers.IO) {
             try {
-                val files = context.assets.list("result")
-                    ?.filter { f ->
-                        f.startsWith(prefix) && (f.endsWith(".jpg") || f.endsWith(".png") || f.endsWith(".webp"))
-                    }
-                    ?: emptyList()
-                if (files.isEmpty()) return@withContext null
-                context.assets.open("result/${files.random()}").use {
+                context.assets.open("result/$filename").use {
                     BitmapFactory.decodeStream(it)?.asImageBitmap()
                 }
             } catch (e: Exception) { null }
@@ -112,46 +125,50 @@ fun GameResultOverlay(
                     )
             )
 
-            // Content overlay
+            // Title pinned at top
+            Text(
+                text = titleText,
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = CardCream,
+                    shadow = androidx.compose.ui.graphics.Shadow(
+                        color = Color.Black,
+                        offset = androidx.compose.ui.geometry.Offset(2f, 2f),
+                        blurRadius = 6f
+                    )
+                ),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .statusBarsPadding()
+                    .padding(top = 32.dp)
+                    .padding(horizontal = 24.dp)
+            )
+
+            // Scores + button pinned at bottom
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
+                    .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
-                    .padding(horizontal = 24.dp, vertical = 32.dp),
+                    .padding(bottom = 24.dp)
+                    .padding(horizontal = 24.dp)
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Title at top
-                Text(
-                    text = titleText,
-                    style = TextStyle(
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = CardCream,
-                        shadow = androidx.compose.ui.graphics.Shadow(
-                            color = Color.Black,
-                            offset = androidx.compose.ui.geometry.Offset(2f, 2f),
-                            blurRadius = 6f
-                        )
-                    ),
-                    textAlign = TextAlign.Center
-                )
-
-                // Scores in center
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .background(
-                            Color.Black.copy(alpha = 0.45f),
+                            Color.Black.copy(alpha = 0.55f),
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
                         )
                         .padding(16.dp)
+                        .fillMaxWidth()
                 ) {
                     content()
                 }
-
-                // Button at bottom
                 Button(
                     onClick = onContinue,
                     modifier = Modifier.fillMaxWidth()

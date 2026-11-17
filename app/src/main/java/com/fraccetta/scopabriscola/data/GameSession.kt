@@ -2,6 +2,7 @@ package com.fraccetta.scopabriscola.data
 
 object GameSession {
     @Volatile var isServer: Boolean = false
+    @Volatile var localPlayerName: String? = null
     @Volatile var opponentName: String? = null
     @Volatile var localPlayer: Int = 1
     @Volatile var lastDevice: android.bluetooth.BluetoothDevice? = null

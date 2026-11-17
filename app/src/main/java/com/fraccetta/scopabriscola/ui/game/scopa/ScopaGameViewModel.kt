@@ -40,6 +40,7 @@ data class ScopaUiState(
     val state: ScopaState,
     val isServer: Boolean,
     val localPlayer: Int,
+    val localPlayerName: String? = null,
     val opponentName: String? = null,
     val showDisconnectionDialog: Boolean = false,
     val opponentLastCard: Card? = null,
@@ -72,7 +73,7 @@ class ScopaGameViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(
         ScopaUiState(state = initialState, isServer = isServer, localPlayer = localPlayer,
-            opponentName = GameSession.opponentName, isSolo = isSolo)
+            localPlayerName = GameSession.localPlayerName, opponentName = GameSession.opponentName, isSolo = isSolo)
     )
     val uiState: StateFlow<ScopaUiState> = _uiState.asStateFlow()
 
@@ -318,7 +319,13 @@ class ScopaGameViewModel @Inject constructor(
                         localCaptured > prevLocalCaptured -> SoundManager.playCapture()
                         oppCaptured > prevOppCaptured -> SoundManager.playOpponentCapture()
                     }
-                    _uiState.update { it.copy(state = newState) }
+                    val matchScores = if (newState.phase == ScopaPhase.MATCH_END || newState.phase == ScopaPhase.GAME_END) {
+                        ScopaScorer.scoreRound(
+                            newState.player1Captured, newState.player1Scope,
+                            newState.player2Captured, newState.player2Scope
+                        )
+                    } else null
+                    _uiState.update { it.copy(state = newState, lastMatchScores = matchScores ?: it.lastMatchScores) }
                     checkForSessionEnd(newState)
                 }
                 is BtMessage.SetArena -> _uiState.update { it.copy(arenaName = msg.arenaName) }

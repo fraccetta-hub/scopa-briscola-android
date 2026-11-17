@@ -46,7 +46,7 @@ fun GameModeScreen(
     navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val cpuName by viewModel.cpuName.collectAsState(initial = "Il Capitano")
+    val playerName by viewModel.playerName.collectAsState(initial = "")
     val gameTitle = if (gameType.equals("scopa", ignoreCase = true)) "Scopa" else "Briscola"
     val gameRoute = gameType.lowercase()
 
@@ -120,7 +120,8 @@ fun GameModeScreen(
                         GameSession.isSolo = true
                         GameSession.isServer = true
                         GameSession.localPlayer = 1
-                        GameSession.opponentName = cpuName.ifBlank { "Il Capitano" }
+                        GameSession.localPlayerName = playerName.ifBlank { null }
+                        GameSession.opponentName = "Captain"
                         navController.navigate("game/$gameRoute")
                     },
                     modifier = Modifier.fillMaxWidth().height(56.dp),

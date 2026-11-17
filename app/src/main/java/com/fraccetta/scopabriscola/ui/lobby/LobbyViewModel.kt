@@ -71,6 +71,7 @@ class LobbyViewModel @Inject constructor(
                         val playerName = userPrefs.playerName.first()
                             .ifEmpty { context.getString(R.string.lobby_default_player_name) }
                         val role = if (isServer) "SERVER" else "CLIENT"
+                        GameSession.localPlayerName = playerName
                         btManager.send(BtMessage.Handshake(playerName, role))
                     }
                     is ConnectionEvent.MessageReceived -> {

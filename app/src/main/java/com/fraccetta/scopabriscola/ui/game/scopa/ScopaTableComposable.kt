@@ -68,6 +68,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -140,7 +141,7 @@ fun ScopaTableContent(
     val opponentSessionWins = if (uiState.localPlayer == 1) state.player2SessionWins else state.player1SessionWins
     val localScope = if (uiState.localPlayer == 1) state.player1Scope else state.player2Scope
     val opponentScope = if (uiState.localPlayer == 1) state.player2Scope else state.player1Scope
-    val opponentName = uiState.opponentName ?: "Avversario"
+    val opponentName = uiState.opponentName ?: "Captain"
 
     val captureSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
@@ -154,6 +155,7 @@ fun ScopaTableContent(
         val oppRS = if (uiState.localPlayer == 1) matchScores?.second else matchScores?.first
         GameResultOverlay(
             isLocalWin = localGameScore > opponentGameScore,
+            isDraw = localGameScore == opponentGameScore,
             titleText = stringResource(R.string.scopa_match_end_title),
             buttonText = stringResource(R.string.scopa_next_match),
             onContinue = onNextMatch
@@ -185,6 +187,7 @@ fun ScopaTableContent(
         val oppRS = if (uiState.localPlayer == 1) matchScores?.second else matchScores?.first
         GameResultOverlay(
             isLocalWin = localSessionWins > opponentSessionWins,
+            isDraw = localSessionWins == opponentSessionWins,
             titleText = stringResource(R.string.scopa_game_end_title),
             buttonText = stringResource(R.string.scopa_next_game),
             onContinue = onNextGame
@@ -275,6 +278,7 @@ fun ScopaTableContent(
         // ── Score bar ────────────────────────────────────────────────
         val localCaptured = if (uiState.localPlayer == 1) state.player1Captured.size else state.player2Captured.size
         val oppCaptured = if (uiState.localPlayer == 1) state.player2Captured.size else state.player1Captured.size
+        val myName = uiState.localPlayerName ?: "Me"
         val turnPulse = rememberInfiniteTransition(label = "turn")
         val turnScale by turnPulse.animateFloat(
             initialValue = 1f, targetValue = 1.12f,
@@ -285,39 +289,42 @@ fun ScopaTableContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFF0D1F33))
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 12.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Score table: label | myName | oppName
             Column {
-                Text(
-                    text = stringResource(R.string.scopa_score_label, localGameScore, opponentGameScore),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        shadow = androidx.compose.ui.graphics.Shadow(
-                            color = Color.Black,
-                            offset = androidx.compose.ui.geometry.Offset(1f, 1f),
-                            blurRadius = 4f
-                        )
-                    )
-                )
-                Text(
-                    text = stringResource(R.string.scopa_scope_live, localScope, opponentScope),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium,
-                    color = AccentGold
-                )
-                Text(
-                    text = stringResource(R.string.scopa_session_wins, localSessionWins, opponentSessionWins),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.85f)
-                )
-                Text(
-                    text = "Cards: $localCaptured – $oppCaptured",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.7f)
-                )
+                // Header row
+                Row {
+                    Text(text = "        ", style = MaterialTheme.typography.bodySmall, color = Color.Transparent)
+                    Text(text = myName, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = AccentGold, modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                    Text(text = opponentName, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = CardCream, modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                // Score row
+                Row {
+                    Text(text = "Score", style = MaterialTheme.typography.bodySmall, color = Color.White, modifier = Modifier.width(52.dp))
+                    Text(text = "$localGameScore", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                    Text(text = "$opponentGameScore", style = MaterialTheme.typography.bodySmall, color = Color.White, modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                }
+                // Scope row
+                Row {
+                    Text(text = "Scope", style = MaterialTheme.typography.bodySmall, color = AccentGold, modifier = Modifier.width(52.dp))
+                    Text(text = "$localScope", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = AccentGold, modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                    Text(text = "$opponentScope", style = MaterialTheme.typography.bodySmall, color = AccentGold, modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                }
+                // Games row
+                Row {
+                    Text(text = "Games", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f), modifier = Modifier.width(52.dp))
+                    Text(text = "$localSessionWins", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f), modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                    Text(text = "$opponentSessionWins", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f), modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                }
+                // Cards row
+                Row {
+                    Text(text = "Cards", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.6f), modifier = Modifier.width(52.dp))
+                    Text(text = "$localCaptured", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.6f), modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                    Text(text = "$oppCaptured", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.6f), modifier = Modifier.width(52.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                }
             }
             Text(
                 text = if (isMyTurn) stringResource(R.string.scopa_your_turn)
@@ -354,51 +361,61 @@ fun ScopaTableContent(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        // ── Opponent last played card ─────────────────────────────────
+        // ── Opponent last played card — fixed zone below opponent hand ─
         val opponentCard = uiState.opponentLastCard
-        if (opponentCard != null) {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = "$opponentName ha giocato:", style = MaterialTheme.typography.labelSmall, color = CardCream)
-                Spacer(modifier = Modifier.height(4.dp))
-                CardImage(card = opponentCard, modifier = Modifier.size(72.dp, 108.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (opponentCard != null) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "$opponentName played:", style = MaterialTheme.typography.labelSmall, color = CardCream)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    CardImage(card = opponentCard, modifier = Modifier.size(72.dp, 100.dp))
+                }
             }
         }
 
-        // ── Table + deck ──────────────────────────────────────────────
-        Row(
+        // ── Table + deck (flex, takes remaining space) ────────────────
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                if (state.deckCards.isNotEmpty()) {
-                    BackCardImage(modifier = Modifier.size(72.dp, 108.dp))
-                    Text(text = "${state.deckCards.size}", style = MaterialTheme.typography.labelSmall, color = CardCream, modifier = Modifier.padding(top = 2.dp))
-                } else {
-                    Box(modifier = Modifier.size(72.dp, 108.dp))
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(modifier = Modifier.height(16.dp)) // label placeholder — same height as "On table"
+                    if (state.deckCards.isNotEmpty()) {
+                        BackCardImage(modifier = Modifier.size(72.dp, 108.dp))
+                        Text(text = "${state.deckCards.size}", style = MaterialTheme.typography.labelSmall, color = CardCream, modifier = Modifier.padding(top = 2.dp))
+                    } else {
+                        Box(modifier = Modifier.size(72.dp, 108.dp))
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(16.dp))
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = stringResource(R.string.scopa_on_table), style = MaterialTheme.typography.labelSmall, color = CardCream, modifier = Modifier.padding(bottom = 4.dp))
-                if (state.tableCards.isEmpty()) {
-                    Box(modifier = Modifier.size(72.dp, 108.dp).border(1.dp, CardCream.copy(alpha = 0.4f), RoundedCornerShape(4.dp)))
-                } else {
-                    val rows = state.tableCards.chunked(4)
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        rows.forEach { rowCards ->
-                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                rowCards.forEach { card ->
-                                    CardImage(card = card, modifier = Modifier.size(72.dp, 108.dp))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(modifier = Modifier.height(16.dp), contentAlignment = Alignment.Center) {
+                        Text(text = stringResource(R.string.scopa_on_table), style = MaterialTheme.typography.labelSmall, color = CardCream)
+                    }
+                    if (state.tableCards.isEmpty()) {
+                        Box(modifier = Modifier.size(72.dp, 108.dp).border(1.dp, CardCream.copy(alpha = 0.4f), RoundedCornerShape(4.dp)))
+                    } else {
+                        val rows = state.tableCards.chunked(4)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            rows.forEach { rowCards ->
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    rowCards.forEach { card ->
+                                        CardImage(card = card, modifier = Modifier.size(72.dp, 108.dp))
+                                    }
                                 }
                             }
                         }
@@ -406,8 +423,6 @@ fun ScopaTableContent(
                 }
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         // ── Player hand ───────────────────────────────────────────────
         Column(
@@ -418,7 +433,10 @@ fun ScopaTableContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = stringResource(R.string.scopa_your_hand), style = MaterialTheme.typography.labelMedium, color = CardCream, modifier = Modifier.padding(bottom = 6.dp))
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyRow(
+                modifier = Modifier.height(120.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 items(localHand) { card ->
                     val clickable = isMyTurn && state.phase == ScopaPhase.WAITING_PLAY
                     Box(
@@ -565,10 +583,11 @@ fun ScopaTableContent(
 @Composable
 private fun RoundScoreRow(label: String, myValue: Int, oppValue: Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = label, style = MaterialTheme.typography.bodySmall)
+        Text(text = label, style = MaterialTheme.typography.bodySmall, color = CardCream)
         Text(
             text = "$myValue — $oppValue",
             style = MaterialTheme.typography.bodySmall,
+            color = CardCream,
             fontWeight = if (myValue > oppValue) FontWeight.Bold else FontWeight.Normal
         )
     }

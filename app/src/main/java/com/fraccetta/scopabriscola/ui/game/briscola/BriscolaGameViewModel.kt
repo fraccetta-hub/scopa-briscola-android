@@ -37,6 +37,7 @@ data class BriscolaUiState(
     val state: BriscolaState,
     val isServer: Boolean,
     val localPlayer: Int,
+    val localPlayerName: String? = null,
     val opponentName: String? = null,
     val showDisconnectionDialog: Boolean = false,
     val opponentLastCard: Card? = null,
@@ -65,6 +66,7 @@ class BriscolaGameViewModel @Inject constructor(
             state = initialState,
             isServer = isServer,
             localPlayer = localPlayer,
+            localPlayerName = GameSession.localPlayerName,
             opponentName = GameSession.opponentName,
             isSolo = isSolo
         )

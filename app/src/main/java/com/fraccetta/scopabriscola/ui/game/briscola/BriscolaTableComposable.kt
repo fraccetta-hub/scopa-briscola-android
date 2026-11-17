@@ -59,6 +59,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -126,7 +127,7 @@ fun BriscolaTableContent(
     val opponentGamePoints = if (uiState.localPlayer == 1) state.player2GamePoints else state.player1GamePoints
     val localSessionWins = if (uiState.localPlayer == 1) state.player1SessionWins else state.player2SessionWins
     val opponentSessionWins = if (uiState.localPlayer == 1) state.player2SessionWins else state.player1SessionWins
-    val opponentName = uiState.opponentName ?: "Avversario"
+    val opponentName = uiState.opponentName ?: "Captain"
 
     // ── MATCH END overlay ──────────────────────────────────────────────
     if (state.phase == BriscolaPhase.MATCH_END) {
@@ -134,6 +135,7 @@ fun BriscolaTableContent(
         val oppMatchPts = if (uiState.localPlayer == 1) state.player2MatchPoints else state.player1MatchPoints
         GameResultOverlay(
             isLocalWin = localGamePoints > opponentGamePoints,
+            isDraw = localGamePoints == opponentGamePoints,
             titleText = stringResource(R.string.briscola_match_end_title),
             buttonText = stringResource(R.string.briscola_next_match),
             onContinue = onNextMatch
@@ -153,6 +155,7 @@ fun BriscolaTableContent(
     if (state.phase == BriscolaPhase.GAME_END) {
         GameResultOverlay(
             isLocalWin = localSessionWins > opponentSessionWins,
+            isDraw = localSessionWins == opponentSessionWins,
             titleText = stringResource(R.string.briscola_game_end_title),
             buttonText = stringResource(R.string.briscola_next_game),
             onContinue = onNextGame
@@ -182,6 +185,7 @@ fun BriscolaTableContent(
                 .navigationBarsPadding()
         ) {
         // ── Score bar ────────────────────────────────────────────────
+        val myName = uiState.localPlayerName ?: "Me"
         val turnPulse = rememberInfiniteTransition(label = "turn")
         val turnScale by turnPulse.animateFloat(
             initialValue = 1f, targetValue = 1.12f,
@@ -192,29 +196,29 @@ fun BriscolaTableContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFF0D1F33))
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 12.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(
-                    text = stringResource(R.string.briscola_score_label, localGamePoints, opponentGamePoints),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        shadow = androidx.compose.ui.graphics.Shadow(
-                            color = Color.Black,
-                            offset = androidx.compose.ui.geometry.Offset(1f, 1f),
-                            blurRadius = 4f
-                        )
-                    )
-                )
-                Text(
-                    text = stringResource(R.string.briscola_session_wins, localSessionWins, opponentSessionWins),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White.copy(alpha = 0.85f)
-                )
+                // Header row
+                Row {
+                    Text(text = "        ", style = MaterialTheme.typography.bodySmall, color = Color.Transparent)
+                    Text(text = myName, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = AccentGold, modifier = Modifier.width(52.dp), textAlign = TextAlign.Center)
+                    Text(text = opponentName, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = CardCream, modifier = Modifier.width(52.dp), textAlign = TextAlign.Center, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                // Points row
+                Row {
+                    Text(text = "Pts", style = MaterialTheme.typography.bodySmall, color = Color.White, modifier = Modifier.width(52.dp))
+                    Text(text = "$localGamePoints", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.width(52.dp), textAlign = TextAlign.Center)
+                    Text(text = "$opponentGamePoints", style = MaterialTheme.typography.bodySmall, color = Color.White, modifier = Modifier.width(52.dp), textAlign = TextAlign.Center)
+                }
+                // Games row
+                Row {
+                    Text(text = "Games", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f), modifier = Modifier.width(52.dp))
+                    Text(text = "$localSessionWins", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f), modifier = Modifier.width(52.dp), textAlign = TextAlign.Center)
+                    Text(text = "$opponentSessionWins", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f), modifier = Modifier.width(52.dp), textAlign = TextAlign.Center)
+                }
             }
             Text(
                 text = if (isMyTurn) stringResource(R.string.briscola_your_turn)
@@ -247,11 +251,13 @@ fun BriscolaTableContent(
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             // Briscola trump card
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = stringResource(R.string.briscola_trump_label), style = MaterialTheme.typography.labelSmall, color = AccentGold, modifier = Modifier.padding(bottom = 2.dp))
+                Box(modifier = Modifier.height(16.dp), contentAlignment = Alignment.Center) {
+                    Text(text = stringResource(R.string.briscola_trump_label), style = MaterialTheme.typography.labelSmall, color = AccentGold)
+                }
                 if (!state.briscolaCardTaken) {
                     BriscolaCardImage(card = state.briscolaCard, modifier = Modifier.size(72.dp, 108.dp))
                 } else {
@@ -263,6 +269,7 @@ fun BriscolaTableContent(
 
             // Deck pile
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(modifier = Modifier.height(16.dp)) // label placeholder
                 if (state.deckCards.isNotEmpty()) {
                     BriscolaBackCardImage(modifier = Modifier.size(72.dp, 108.dp))
                     Text(text = "${state.deckCards.size}", style = MaterialTheme.typography.labelSmall, color = CardCream, modifier = Modifier.padding(top = 2.dp))
@@ -275,28 +282,33 @@ fun BriscolaTableContent(
 
             // Trick area
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "In play", style = MaterialTheme.typography.labelSmall, color = CardCream, modifier = Modifier.padding(bottom = 4.dp))
+                Box(modifier = Modifier.height(16.dp), contentAlignment = Alignment.Center) {
+                    Text(text = "In play", style = MaterialTheme.typography.labelSmall, color = CardCream)
+                }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    state.firstCardPlayed?.let { firstCard ->
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = if (state.firstPlayerOfTrick == uiState.localPlayer) "Tu" else opponentName,
-                                style = MaterialTheme.typography.labelSmall, color = CardCream, fontSize = 9.sp
-                            )
-                            BriscolaCardImage(card = firstCard, modifier = Modifier.size(72.dp, 108.dp))
+                    // Slot 1: first card played — always reserves same height
+                    Box(modifier = Modifier.size(72.dp, 128.dp), contentAlignment = Alignment.TopCenter) {
+                        state.firstCardPlayed?.let { firstCard ->
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = if (state.firstPlayerOfTrick == uiState.localPlayer) "Tu" else opponentName,
+                                    style = MaterialTheme.typography.labelSmall, color = CardCream, fontSize = 9.sp
+                                )
+                                BriscolaCardImage(card = firstCard, modifier = Modifier.size(72.dp, 108.dp))
+                            }
                         }
-                    } ?: Box(modifier = Modifier.size(72.dp, 108.dp))
-
+                    }
+                    // Slot 2: opponent card — always reserves same height
                     val opponentCard = uiState.opponentLastCard
                     val showOpponentCard = if (uiState.isSolo) opponentCard != null && state.phase == BriscolaPhase.WAITING_SECOND
                                           else opponentCard != null
-                    if (showOpponentCard && opponentCard != null) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = opponentName, style = MaterialTheme.typography.labelSmall, color = CardCream, fontSize = 9.sp)
-                            BriscolaCardImage(card = opponentCard, modifier = Modifier.size(72.dp, 108.dp))
+                    Box(modifier = Modifier.size(72.dp, 128.dp), contentAlignment = Alignment.TopCenter) {
+                        if (showOpponentCard && opponentCard != null) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(text = opponentName, style = MaterialTheme.typography.labelSmall, color = CardCream, fontSize = 9.sp)
+                                BriscolaCardImage(card = opponentCard, modifier = Modifier.size(72.dp, 108.dp))
+                            }
                         }
-                    } else if (state.firstCardPlayed == null) {
-                        Box(modifier = Modifier.size(72.dp, 108.dp))
                     }
                 }
             }
@@ -310,7 +322,10 @@ fun BriscolaTableContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = stringResource(R.string.briscola_your_hand), style = MaterialTheme.typography.labelMedium, color = CardCream, modifier = Modifier.padding(bottom = 6.dp))
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyRow(
+                modifier = Modifier.height(120.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 items(localHand) { card ->
                     val clickable = isMyTurn && (state.phase == BriscolaPhase.WAITING_FIRST || state.phase == BriscolaPhase.WAITING_SECOND)
                     Box(
