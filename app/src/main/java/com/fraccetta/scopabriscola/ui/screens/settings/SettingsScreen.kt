@@ -1,5 +1,7 @@
 package com.fraccetta.scopabriscola.ui.screens.settings
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,11 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +27,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -37,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -56,12 +63,55 @@ fun SettingsScreen(
     val playerName by viewModel.playerName.collectAsState(initial = "")
     val soundEnabled by viewModel.soundEnabled.collectAsState(initial = true)
     val scopaTargetScore by viewModel.scopaTargetScore.collectAsState(initial = 11)
+    val updateCheckState by viewModel.updateCheckState.collectAsState()
 
     var nameInput by remember(playerName) { mutableStateOf(playerName) }
     var targetScoreInput by remember(scopaTargetScore) { mutableStateOf(scopaTargetScore.toString()) }
     var nameSaved by remember { mutableStateOf(false) }
     var scoreSaved by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    // Update check dialogs
+    when (val state = updateCheckState) {
+        is UpdateCheckState.UpdateAvailable -> {
+            AlertDialog(
+                onDismissRequest = { viewModel.dismissUpdateCheck() },
+                title = { Text("Aggiornamento disponibile") },
+                text = { Text("Versione ${state.info.version} disponibile. Vuoi scaricarla?") },
+                confirmButton = {
+                    Button(onClick = {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(state.info.downloadUrl)))
+                        viewModel.dismissUpdateCheck()
+                    }) { Text("Scarica") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.dismissUpdateCheck() }) { Text("Non ora") }
+                }
+            )
+        }
+        is UpdateCheckState.UpToDate -> {
+            AlertDialog(
+                onDismissRequest = { viewModel.dismissUpdateCheck() },
+                title = { Text("App aggiornata") },
+                text = { Text("Hai già l'ultima versione.") },
+                confirmButton = {
+                    Button(onClick = { viewModel.dismissUpdateCheck() }) { Text("OK") }
+                }
+            )
+        }
+        is UpdateCheckState.Error -> {
+            AlertDialog(
+                onDismissRequest = { viewModel.dismissUpdateCheck() },
+                title = { Text("Errore") },
+                text = { Text("Impossibile controllare aggiornamenti. Verifica la connessione.") },
+                confirmButton = {
+                    Button(onClick = { viewModel.dismissUpdateCheck() }) { Text("OK") }
+                }
+            )
+        }
+        else -> {}
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF0D1F33), Color(0xFF1A3A5C), Color(0xFF0D2D4A)))))
@@ -170,6 +220,25 @@ fun SettingsScreen(
             }
             if (scoreSaved) {
                 Text(text = "✓ Punteggio salvato", color = AccentGold)
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = { viewModel.checkForUpdate() },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = updateCheckState !is UpdateCheckState.Checking,
+                colors = ButtonDefaults.buttonColors(containerColor = AccentGold)
+            ) {
+                if (updateCheckState is UpdateCheckState.Checking) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        strokeWidth = 2.dp,
+                        color = CardCream
+                    )
+                } else {
+                    Text("Controlla aggiornamenti", color = CardCream)
+                }
             }
         }
     }
