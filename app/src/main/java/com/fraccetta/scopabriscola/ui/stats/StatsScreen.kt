@@ -1,10 +1,17 @@
 package com.fraccetta.scopabriscola.ui.stats
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -20,6 +27,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,62 +36,204 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.fraccetta.scopabriscola.R
+import com.fraccetta.scopabriscola.data.db.GameResultEntity
 import com.fraccetta.scopabriscola.data.db.StatisticsEntity
+import com.fraccetta.scopabriscola.ui.game.AssetBackground
+import com.fraccetta.scopabriscola.ui.theme.AccentGold
+import com.fraccetta.scopabriscola.ui.theme.CardCream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hiltViewModel()) {
     val scopaStats by viewModel.scopaStats.collectAsState()
     val briscolaStats by viewModel.briscolaStats.collectAsState()
+    val allResults by viewModel.allResults.collectAsState()
+    val opponents by viewModel.opponents.collectAsState()
+    val maxConsecutiveScope by viewModel.maxConsecutiveScope.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.stats_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.stats_back)
-                        )
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-            TabRow(selectedTabIndex = selectedTab) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    text = { Text(text = stringResource(R.string.stats_tab_scopa)) }
-                )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    text = { Text(text = stringResource(R.string.stats_tab_briscola)) }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF0D1F33), Color(0xFF1A3A5C), Color(0xFF0D2D4A)))))
+        AssetBackground(assetPath = "backgrounds/menu_bg.webp", overlayAlpha = 0.45f, modifier = Modifier.fillMaxSize())
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = stringResource(R.string.stats_title), color = CardCream) },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.stats_back),
+                                tint = CardCream
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
                 )
             }
-
-            val currentList = if (selectedTab == 0) scopaStats else briscolaStats
-            val showScope = selectedTab == 0
-
-            if (currentList.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = stringResource(R.string.stats_empty))
+        ) { innerPadding ->
+            Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+                TabRow(selectedTabIndex = selectedTab) {
+                    Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 },
+                        text = { Text(text = stringResource(R.string.stats_tab_scopa)) })
+                    Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 },
+                        text = { Text(text = stringResource(R.string.stats_tab_briscola)) })
+                    Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 },
+                        text = { Text(text = "Avversari") })
                 }
-            } else {
-                LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-                    items(currentList) { stat ->
-                        StatsRow(stat = stat, showScope = showScope)
+
+                when (selectedTab) {
+                    0 -> ScopaStatsTab(scopaStats, allResults.filter { it.gameType == "scopa" }, maxConsecutiveScope)
+                    1 -> GameStatsTab(briscolaStats, allResults.filter { it.gameType == "briscola" }, showScope = false)
+                    2 -> OpponentsTab(opponents, allResults)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScopaStatsTab(stats: List<StatisticsEntity>, results: List<GameResultEntity>, maxConsecutiveScope: Int) {
+    LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+        if (maxConsecutiveScope > 0) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1A2A40))
+                ) {
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "🏆", fontSize = 20.sp)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Record scope consecutive: $maxConsecutiveScope", color = AccentGold, fontWeight = FontWeight.Bold)
                     }
                 }
+            }
+        }
+        if (results.isNotEmpty()) {
+            item {
+                WinLossChart(results = results.takeLast(20))
+            }
+        }
+        if (stats.isEmpty()) {
+            item {
+                Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                    Text(text = stringResource(R.string.stats_empty), color = CardCream)
+                }
+            }
+        } else {
+            items(stats) { stat ->
+                StatsRow(stat = stat, showScope = true)
+            }
+        }
+    }
+}
+
+@Composable
+private fun GameStatsTab(stats: List<StatisticsEntity>, results: List<GameResultEntity>, showScope: Boolean) {
+    LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+        if (results.isNotEmpty()) {
+            item {
+                WinLossChart(results = results.takeLast(20))
+            }
+        }
+        if (stats.isEmpty()) {
+            item {
+                Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                    Text(text = stringResource(R.string.stats_empty), color = CardCream)
+                }
+            }
+        } else {
+            items(stats) { stat ->
+                StatsRow(stat = stat, showScope = showScope)
+            }
+        }
+    }
+}
+
+@Composable
+private fun OpponentsTab(opponents: List<String>, allResults: List<GameResultEntity>) {
+    if (opponents.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(text = "Nessuna partita contro avversari.", color = CardCream)
+        }
+    } else {
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+            items(opponents) { opponent ->
+                val results = allResults.filter { it.opponentName == opponent && !it.isSolo }
+                val wins = results.count { it.won }
+                val losses = results.size - wins
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1A2A40)),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(text = opponent, style = MaterialTheme.typography.titleMedium, color = AccentGold)
+                        Text(text = "Partite: ${results.size}  •  V: $wins  •  S: $losses", color = CardCream)
+                        if (results.isNotEmpty()) {
+                            val pct = wins * 100 / results.size
+                            Text(text = "Vittorie: $pct%", color = CardCream.copy(alpha = 0.8f), fontSize = 12.sp)
+                            Spacer(modifier = Modifier.height(6.dp))
+                            WinLossChart(results = results.takeLast(10))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WinLossChart(results: List<GameResultEntity>) {
+    val winColor = Color(0xFF4CAF50)
+    val lossColor = Color(0xFFF44336)
+    val barWidth = 12f
+    val barSpacing = 4f
+
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Text(text = "Ultime partite", fontSize = 11.sp, color = CardCream.copy(alpha = 0.6f), modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+        ) {
+            val totalWidth = results.size * (barWidth + barSpacing)
+            val startX = (size.width - totalWidth) / 2f
+            results.forEachIndexed { i, result ->
+                val x = startX + i * (barWidth + barSpacing)
+                drawRoundRect(
+                    color = if (result.won) winColor else lossColor,
+                    topLeft = Offset(x, 0f),
+                    size = Size(barWidth, size.height),
+                    cornerRadius = CornerRadius(3f)
+                )
+            }
+        }
+        Row(modifier = Modifier.padding(start = 4.dp, top = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Canvas(modifier = Modifier.width(10.dp).height(10.dp)) {
+                    drawRoundRect(color = winColor, cornerRadius = CornerRadius(2f))
+                }
+                Text(text = "V", fontSize = 10.sp, color = CardCream.copy(alpha = 0.7f))
+            }
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Canvas(modifier = Modifier.width(10.dp).height(10.dp)) {
+                    drawRoundRect(color = lossColor, cornerRadius = CornerRadius(2f))
+                }
+                Text(text = "S", fontSize = 10.sp, color = CardCream.copy(alpha = 0.7f))
             }
         }
     }
@@ -98,8 +248,10 @@ private fun StatsRow(stat: StatisticsEntity, showScope: Boolean) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
+            val modeTag = if (stat.isSolo) stringResource(R.string.stats_mode_cpu)
+                          else stringResource(R.string.stats_mode_bt)
             Text(
-                text = stringResource(R.string.stats_player_name, stat.playerName),
+                text = "${stat.playerName} · $modeTag",
                 style = MaterialTheme.typography.titleMedium
             )
             Text(

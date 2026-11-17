@@ -11,8 +11,8 @@ interface StatisticsDao {
     @Query("SELECT * FROM statistics ORDER BY sessionsWon DESC")
     fun getAllStats(): Flow<List<StatisticsEntity>>
 
-    @Query("SELECT * FROM statistics WHERE playerName=:name AND gameType=:type LIMIT 1")
-    suspend fun getStats(name: String, type: String): StatisticsEntity?
+    @Query("SELECT * FROM statistics WHERE playerName=:name AND gameType=:type AND isSolo=:isSolo LIMIT 1")
+    suspend fun getStats(name: String, type: String, isSolo: Boolean): StatisticsEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: StatisticsEntity)

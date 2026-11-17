@@ -15,11 +15,24 @@ object BriscolaRules {
         else -> 0
     }
 
+    // Briscola trick strength: Asso > Tre > Re > Cavallo > Fante > 7 > 6 > 5 > 4 > 2
+    private fun rankStrength(rank: Rank): Int = when (rank) {
+        Rank.ASSO    -> 10
+        Rank.TRE     -> 9
+        Rank.RE      -> 8
+        Rank.CAVALLO -> 7
+        Rank.FANTE   -> 6
+        Rank.SETTE   -> 5
+        Rank.SEI     -> 4
+        Rank.CINQUE  -> 3
+        Rank.QUATTRO -> 2
+        Rank.DUE     -> 1
+    }
+
     /**
      * Returns 1 or 2 (the winning player).
-     * Rules:
      * - Briscola beats non-briscola.
-     * - If both briscola or both same suit → higher numericValue wins.
+     * - Both briscola or both same suit → higher rankStrength wins.
      * - Different suits, neither briscola → first player wins.
      */
     fun trickWinner(firstCard: Card, secondCard: Card, firstPlayer: Int, briscolaSuit: Suit): Int {
@@ -31,7 +44,7 @@ object BriscolaRules {
             firstIsBriscola && !secondIsBriscola -> firstPlayer
             secondIsBriscola && !firstIsBriscola -> secondPlayer
             firstCard.suit == secondCard.suit -> {
-                if (secondCard.rank.numericValue > firstCard.rank.numericValue) secondPlayer else firstPlayer
+                if (rankStrength(secondCard.rank) > rankStrength(firstCard.rank)) secondPlayer else firstPlayer
             }
             else -> firstPlayer // different suits, no briscola → first player wins
         }

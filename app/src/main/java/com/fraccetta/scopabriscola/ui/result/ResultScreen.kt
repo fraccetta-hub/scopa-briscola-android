@@ -35,7 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import com.fraccetta.scopabriscola.R
+import com.fraccetta.scopabriscola.ui.game.AssetBackground
+import com.fraccetta.scopabriscola.ui.theme.CardCream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -69,6 +74,9 @@ fun ResultScreen(
         }
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF0D1F33), Color(0xFF1A3A5C), Color(0xFF0D2D4A)))))
+        AssetBackground(assetPath = "backgrounds/menu_bg.webp", overlayAlpha = 0.45f, modifier = Modifier.fillMaxSize())
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -109,7 +117,7 @@ fun ResultScreen(
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground
+            color = CardCream
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -119,7 +127,7 @@ fun ResultScreen(
                 text = uiState.message,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                color = CardCream.copy(alpha = 0.8f),
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
@@ -130,7 +138,7 @@ fun ResultScreen(
             Text(
                 text = stringResource(R.string.result_player_label, uiState.playerName),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                color = CardCream.copy(alpha = 0.6f)
             )
         }
 
@@ -146,7 +154,8 @@ fun ResultScreen(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            Text(text = stringResource(R.string.result_back_to_menu))
+            Text(text = stringResource(R.string.result_back_to_menu), color = CardCream)
         }
     }
+    } // end outer Box
 }

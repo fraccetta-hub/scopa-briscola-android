@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.fraccetta.scopabriscola.bluetooth.BtManager
 import com.fraccetta.scopabriscola.data.db.AppDatabase
+import com.fraccetta.scopabriscola.data.db.GameResultDao
 import com.fraccetta.scopabriscola.data.db.StatisticsDao
 import com.fraccetta.scopabriscola.data.prefs.UserPreferences
 import com.fraccetta.scopabriscola.data.repository.StatsRepository
@@ -21,7 +22,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext ctx: Context): AppDatabase =
-        Room.databaseBuilder(ctx, AppDatabase::class.java, "scopa_briscola_db").build()
+        Room.databaseBuilder(ctx, AppDatabase::class.java, "scopa_briscola_db")
+            .addMigrations(AppDatabase.MIGRATION_2_3)
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     @Singleton
@@ -29,11 +33,16 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGameResultDao(db: AppDatabase): GameResultDao = db.gameResultDao()
+
+    @Provides
+    @Singleton
     fun provideUserPreferences(@ApplicationContext ctx: Context) = UserPreferences(ctx)
 
     @Provides
     @Singleton
-    fun provideStatsRepository(dao: StatisticsDao) = StatsRepository(dao)
+    fun provideStatsRepository(dao: StatisticsDao, gameResultDao: GameResultDao) =
+        StatsRepository(dao, gameResultDao)
 
     @Provides
     @Singleton

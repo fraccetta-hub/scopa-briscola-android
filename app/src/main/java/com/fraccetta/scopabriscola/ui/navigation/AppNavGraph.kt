@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fraccetta.scopabriscola.ui.lobby.LobbyScreen
 import com.fraccetta.scopabriscola.ui.game.briscola.BriscolaGameScreen
+import com.fraccetta.scopabriscola.ui.screens.GameModeScreen
 import com.fraccetta.scopabriscola.ui.screens.HomeScreen
 import com.fraccetta.scopabriscola.ui.result.ResultScreen
 import com.fraccetta.scopabriscola.ui.game.scopa.ScopaGameScreen
@@ -21,9 +22,14 @@ fun AppNavGraph(
         composable("home") {
             HomeScreen(navController = navController)
         }
-        composable("lobby/{gameType}") { backStackEntry ->
+        composable("gamemode/{gameType}") { backStackEntry ->
+            val gameType = backStackEntry.arguments?.getString("gameType") ?: "scopa"
+            GameModeScreen(gameType = gameType, navController = navController)
+        }
+        composable("lobby/{gameType}/{role}") { backStackEntry ->
             val gameType = backStackEntry.arguments?.getString("gameType") ?: ""
-            LobbyScreen(gameType = gameType, navController = navController)
+            val role = backStackEntry.arguments?.getString("role") ?: "HOST"
+            LobbyScreen(gameType = gameType, role = role, navController = navController)
         }
         composable("game/scopa") {
             ScopaGameScreen(navController = navController)

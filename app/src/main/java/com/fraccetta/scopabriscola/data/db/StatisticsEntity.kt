@@ -5,9 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "statistics")
 data class StatisticsEntity(
-    @PrimaryKey val id: String, // "$playerName-$gameType"
+    @PrimaryKey val id: String, // "$playerName-$gameType-$mode"
     val playerName: String,
-    val gameType: String, // "SCOPA" | "BRISCOLA"
+    val gameType: String, // "scopa" | "briscola"
+    val isSolo: Boolean = false,
     val sessionsPlayed: Int = 0,
     val sessionsWon: Int = 0,
     val sessionsLost: Int = 0,

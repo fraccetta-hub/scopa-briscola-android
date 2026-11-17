@@ -14,16 +14,23 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
     val playerName: Flow<String> = userPreferences.playerName
     val cardBackPath: Flow<String> = userPreferences.cardBackPath
+    val cpuName: Flow<String> = userPreferences.cpuName
+    val soundEnabled: Flow<Boolean> = userPreferences.soundEnabled
+    val scopaTargetScore: Flow<Int> = userPreferences.scopaTargetScore
 
     fun setPlayerName(name: String) {
-        viewModelScope.launch {
-            userPreferences.setPlayerName(name)
-        }
+        viewModelScope.launch { userPreferences.setPlayerName(name) }
     }
 
     fun setCardBackPath(path: String) {
-        viewModelScope.launch {
-            userPreferences.setCardBackPath(path)
-        }
+        viewModelScope.launch { userPreferences.setCardBackPath(path) }
+    }
+
+    fun setSoundEnabled(enabled: Boolean) {
+        viewModelScope.launch { userPreferences.setSoundEnabled(enabled) }
+    }
+
+    fun setScopaTargetScore(score: Int) {
+        viewModelScope.launch { userPreferences.setScopaTargetScore(score) }
     }
 }

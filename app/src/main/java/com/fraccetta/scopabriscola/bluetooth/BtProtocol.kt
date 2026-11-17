@@ -29,6 +29,14 @@ sealed class BtMessage {
     @Serializable
     @SerialName("PING")
     object Ping : BtMessage()
+
+    @Serializable
+    @SerialName("SET_ARENA")
+    data class SetArena(val arenaName: String) : BtMessage()
+
+    @Serializable
+    @SerialName("CHAT")
+    data class Chat(val messageKey: String) : BtMessage()
 }
 
 object BtProtocol {

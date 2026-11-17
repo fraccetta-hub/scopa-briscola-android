@@ -1,9 +1,5 @@
 package com.fraccetta.scopabriscola.data
 
-/**
- * In-memory singleton that carries the server/client role from the lobby to the game screen.
- * This is set by LobbyViewModel before navigating to the game.
- */
 object GameSession {
     @Volatile var isServer: Boolean = false
     @Volatile var opponentName: String? = null
@@ -11,4 +7,6 @@ object GameSession {
     @Volatile var lastDevice: android.bluetooth.BluetoothDevice? = null
     @Volatile var lastSessionPoints: Int = 0
     @Volatile var lastSessionScope: Int = 0
+    @Volatile var lastMaxConsecutiveScope: Int = 0
+    @Volatile var isSolo: Boolean = false
 }

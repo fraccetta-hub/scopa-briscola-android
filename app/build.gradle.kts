@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.appdistribution)
 }
 
 android {
@@ -15,19 +17,35 @@ android {
         applicationId = "com.fraccetta.scopabriscola"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 5
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../giochi_di_bordo.jks")
+            storePassword = "gdb_keystore_2024"
+            keyAlias = "giochi_di_bordo"
+            keyPassword = "gdb_keystore_2024"
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+            firebaseAppDistribution {
+                serviceCredentialsFile = "$projectDir/service-account.json"
+                releaseNotesFile = "$projectDir/release-notes.txt"
+                groups = "amici"
+            }
         }
     }
     compileOptions {
@@ -39,6 +57,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

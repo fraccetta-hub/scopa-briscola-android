@@ -1,10 +1,12 @@
 package com.fraccetta.scopabriscola.ui.lobby
 
 import android.Manifest
-import android.bluetooth.BluetoothDevice
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -29,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,17 +43,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.fraccetta.scopabriscola.R
 import com.fraccetta.scopabriscola.bluetooth.BtState
+import com.fraccetta.scopabriscola.ui.game.AssetBackground
+import com.fraccetta.scopabriscola.ui.theme.AccentGold
+import com.fraccetta.scopabriscola.ui.theme.CardCream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LobbyScreen(
     gameType: String,
+    role: String = "HOST",
     navController: NavHostController,
     viewModel: LobbyViewModel = hiltViewModel()
 ) {
@@ -68,7 +79,7 @@ fun LobbyScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     val btPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN)
+        arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_ADVERTISE)
     } else {
         arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN)
     }
@@ -89,21 +100,33 @@ fun LobbyScreen(
         pendingBtAction = null
     }
 
+    // Auto-trigger BT action on first composition
+    LaunchedEffect(role) {
+        pendingBtAction = role
+        permLauncher.launch(btPermissions)
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF0D1F33), Color(0xFF1A3A5C), Color(0xFF0D2D4A)))))
+        AssetBackground(assetPath = "backgrounds/menu_bg.webp", overlayAlpha = 0.45f, modifier = Modifier.fillMaxSize())
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
                 title = {
                     val titleRes = if (gameType.equals("briscola", ignoreCase = true)) R.string.lobby_title_briscola else R.string.lobby_title_scopa
-                    Text(stringResource(titleRes))
+                    Text(stringResource(titleRes), color = CardCream)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.nav_back)
+                            contentDescription = stringResource(R.string.nav_back),
+                            tint = CardCream
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { paddingValues ->
@@ -116,24 +139,23 @@ fun LobbyScreen(
         ) {
             when (val state = uiState.btState) {
                 is BtState.Idle -> {
-                    IdleContent(
-                        onHostClick = {
-                            pendingBtAction = "HOST"
-                            permLauncher.launch(btPermissions)
-                        },
-                        onScanClick = {
-                            pendingBtAction = "SCAN"
-                            permLauncher.launch(btPermissions)
-                        }
-                    )
+                    // Auto-triggered via LaunchedEffect — spinner while permissions requested
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Spacer(modifier = Modifier.height(32.dp))
+                        CircularProgressIndicator()
+                    }
                 }
                 is BtState.Hosting -> {
                     HostingContent()
                 }
                 is BtState.Scanning -> {
                     ScanningContent(
-                        pairedDevices = uiState.pairedDevices,
-                        onDeviceClick = { device -> viewModel.connectTo(device) }
+                        discoveredHosts = uiState.discoveredHosts,
+                        onHostClick = { host -> viewModel.connectTo(host.device) }
                     )
                 }
                 is BtState.Connected -> {
@@ -162,6 +184,7 @@ fun LobbyScreen(
             }
         }
     }
+    } // end outer Box
 }
 
 @Composable
@@ -200,45 +223,58 @@ private fun HostingContent() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Spacer(modifier = Modifier.height(32.dp))
-        CircularProgressIndicator()
+        CircularProgressIndicator(color = CardCream)
         Text(
             text = stringResource(R.string.lobby_hosting),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = CardCream
         )
     }
 }
 
 @Composable
 private fun ScanningContent(
-    pairedDevices: List<BluetoothDevice>,
-    onDeviceClick: (BluetoothDevice) -> Unit
+    discoveredHosts: List<DiscoveredHost>,
+    onHostClick: (DiscoveredHost) -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(16.dp))
+        CircularProgressIndicator(color = CardCream)
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.lobby_scanning),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = CardCream
         )
         Spacer(modifier = Modifier.height(8.dp))
-        if (pairedDevices.isEmpty()) {
+        if (discoveredHosts.isEmpty()) {
             Text(
                 text = stringResource(R.string.lobby_no_devices),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = CardCream.copy(alpha = 0.6f)
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) },
+                colors = ButtonDefaults.buttonColors(containerColor = AccentGold)
+            ) {
+                Text(text = "Associa nuovo dispositivo", color = Color(0xFF0D1F33))
+            }
         } else {
             Text(
                 text = stringResource(R.string.lobby_select_device),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = CardCream
             )
             Spacer(modifier = Modifier.height(8.dp))
             LazyColumn {
-                items(pairedDevices) { device ->
-                    DeviceRow(device = device, onClick = { onDeviceClick(device) })
-                    HorizontalDivider()
+                items(discoveredHosts) { host ->
+                    HostRow(host = host, onClick = { onHostClick(host) })
+                    HorizontalDivider(color = CardCream.copy(alpha = 0.2f))
                 }
             }
         }
@@ -246,7 +282,7 @@ private fun ScanningContent(
 }
 
 @Composable
-private fun DeviceRow(device: BluetoothDevice, onClick: () -> Unit) {
+private fun HostRow(host: DiscoveredHost, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -254,18 +290,11 @@ private fun DeviceRow(device: BluetoothDevice, onClick: () -> Unit) {
             .padding(vertical = 12.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
-            val name = try { device.name } catch (e: SecurityException) { null }
-            Text(
-                text = name ?: stringResource(R.string.lobby_unknown_device),
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = device.address,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        Text(
+            text = "${host.playerName} sta ospitando",
+            style = MaterialTheme.typography.bodyLarge,
+            color = CardCream
+        )
     }
 }
 
@@ -280,18 +309,21 @@ private fun ConnectedContent(remoteName: String?, remoteDevice: String) {
         if (remoteName != null) {
             Text(
                 text = stringResource(R.string.lobby_connected_to, remoteName),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = CardCream
             )
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = CardCream)
             Text(
                 text = stringResource(R.string.lobby_starting),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = CardCream
             )
         } else {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = CardCream)
             Text(
                 text = stringResource(R.string.lobby_waiting_handshake),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                color = CardCream
             )
         }
     }

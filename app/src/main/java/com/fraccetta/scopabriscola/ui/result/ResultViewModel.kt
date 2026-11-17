@@ -46,7 +46,7 @@ class ResultViewModel @Inject constructor(
             val files = withContext(Dispatchers.IO) {
                 try {
                     context.assets.list("result")
-                        ?.filter { it.startsWith(prefix) && it.endsWith(".png") }
+                        ?.filter { it.startsWith(prefix) && (it.endsWith(".png") || it.endsWith(".jpg")) }
                         ?: emptyList()
                 } catch (e: Exception) {
                     emptyList()
@@ -67,13 +67,19 @@ class ResultViewModel @Inject constructor(
             val message = if (messagesArray.isNotEmpty()) messagesArray.random() else ""
 
             // Record result in stats
+            val isSolo = com.fraccetta.scopabriscola.data.GameSession.isSolo
             statsRepository.recordResult(
                 playerName = playerName,
                 gameType = gameType,
                 won = winner == "1",
                 points = com.fraccetta.scopabriscola.data.GameSession.lastSessionPoints,
-                scope = com.fraccetta.scopabriscola.data.GameSession.lastSessionScope
+                scope = com.fraccetta.scopabriscola.data.GameSession.lastSessionScope,
+                isSolo = isSolo,
+                opponentName = com.fraccetta.scopabriscola.data.GameSession.opponentName ?: "",
+                maxConsecutiveScope = com.fraccetta.scopabriscola.data.GameSession.lastMaxConsecutiveScope
             )
+            com.fraccetta.scopabriscola.data.GameSession.isSolo = false
+            com.fraccetta.scopabriscola.data.GameSession.lastMaxConsecutiveScope = 0
 
             _uiState.value = ResultUiState(
                 imagePath = imagePath,

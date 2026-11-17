@@ -1,12 +1,12 @@
 package com.fraccetta.scopabriscola.ui.lobby
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fraccetta.scopabriscola.R
+import com.fraccetta.scopabriscola.bluetooth.BleDiscovery
 import com.fraccetta.scopabriscola.bluetooth.BtManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.fraccetta.scopabriscola.bluetooth.BtMessage
@@ -26,9 +26,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class DiscoveredHost(val device: BluetoothDevice, val playerName: String)
+
 data class LobbyUiState(
     val btState: BtState = BtState.Idle,
-    val pairedDevices: List<BluetoothDevice> = emptyList(),
+    val discoveredHosts: List<DiscoveredHost> = emptyList(),
     val remoteName: String? = null,
     @StringRes val errorResId: Int? = null
 )
@@ -49,6 +51,7 @@ class LobbyViewModel @Inject constructor(
     private var isServer = false
     private var gameType = ""
     private var eventsJob: kotlinx.coroutines.Job? = null
+    private val bleDiscovery = BleDiscovery(context)
 
     init {
         viewModelScope.launch {
@@ -96,22 +99,31 @@ class LobbyViewModel @Inject constructor(
     fun startHosting() {
         isServer = true
         _uiState.update { it.copy(errorResId = null) }
+        viewModelScope.launch {
+            val playerName = userPrefs.playerName.first()
+                .ifEmpty { context.getString(R.string.lobby_default_player_name) }
+            bleDiscovery.startAdvertising(playerName)
+        }
         btManager.startHosting()
         subscribeToEvents()
     }
 
     fun startScanning() {
         isServer = false
-        _uiState.update { it.copy(errorResId = null) }
+        _uiState.update { it.copy(errorResId = null, discoveredHosts = emptyList()) }
         btManager.startScanning()
-        val paired: Set<BluetoothDevice>? = try {
-            @Suppress("DEPRECATION")
-            BluetoothAdapter.getDefaultAdapter()?.bondedDevices
-        } catch (e: SecurityException) {
-            _uiState.update { it.copy(errorResId = R.string.lobby_bt_permission_denied) }
-            null
-        }
-        _uiState.update { it.copy(pairedDevices = paired?.toList() ?: emptyList()) }
+        bleDiscovery.startScanning(
+            onFound = { device, name ->
+                val host = DiscoveredHost(device, name)
+                _uiState.update { state ->
+                    if (state.discoveredHosts.any { it.device.address == device.address }) state
+                    else state.copy(discoveredHosts = state.discoveredHosts + host)
+                }
+            },
+            onError = {
+                _uiState.update { state -> state.copy(errorResId = R.string.lobby_bt_permission_denied) }
+            }
+        )
     }
 
     fun onPermissionDenied() {
@@ -119,6 +131,7 @@ class LobbyViewModel @Inject constructor(
     }
 
     fun connectTo(device: BluetoothDevice) {
+        bleDiscovery.stopScanning()
         _uiState.update { it.copy(errorResId = null) }
         GameSession.lastDevice = device
         btManager.connect(device)
@@ -127,6 +140,8 @@ class LobbyViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        bleDiscovery.stopAdvertising()
+        bleDiscovery.stopScanning()
         // No btManager.disconnect() here — game VMs own the connection lifetime
     }
 }
