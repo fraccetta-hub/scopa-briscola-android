@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fraccetta.scopabriscola.R
 import com.fraccetta.scopabriscola.data.prefs.UserPreferences
-import com.fraccetta.scopabriscola.data.repository.StatsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +24,6 @@ data class ResultUiState(
 
 @HiltViewModel
 class ResultViewModel @Inject constructor(
-    private val statsRepository: StatsRepository,
     private val userPrefs: UserPreferences,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
@@ -66,18 +64,6 @@ class ResultViewModel @Inject constructor(
             }
             val message = if (messagesArray.isNotEmpty()) messagesArray.random() else ""
 
-            // Record result in stats
-            val isSolo = com.fraccetta.scopabriscola.data.GameSession.isSolo
-            statsRepository.recordResult(
-                playerName = playerName,
-                gameType = gameType,
-                won = winner == "1",
-                points = com.fraccetta.scopabriscola.data.GameSession.lastSessionPoints,
-                scope = com.fraccetta.scopabriscola.data.GameSession.lastSessionScope,
-                isSolo = isSolo,
-                opponentName = com.fraccetta.scopabriscola.data.GameSession.opponentName ?: "",
-                maxConsecutiveScope = com.fraccetta.scopabriscola.data.GameSession.lastMaxConsecutiveScope
-            )
             com.fraccetta.scopabriscola.data.GameSession.isSolo = false
             com.fraccetta.scopabriscola.data.GameSession.lastMaxConsecutiveScope = 0
 

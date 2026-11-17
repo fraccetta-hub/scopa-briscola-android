@@ -92,7 +92,7 @@ fun StatsScreen(navController: NavHostController, viewModel: StatsViewModel = hi
                     Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 },
                         text = { Text(text = stringResource(R.string.stats_tab_briscola)) })
                     Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 },
-                        text = { Text(text = "Avversari") })
+                        text = { Text(text = "Opponents") })
                 }
 
                 when (selectedTab) {
@@ -117,7 +117,7 @@ private fun ScopaStatsTab(stats: List<StatisticsEntity>, results: List<GameResul
                     Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "🏆", fontSize = 20.sp)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Record scope consecutive: $maxConsecutiveScope", color = AccentGold, fontWeight = FontWeight.Bold)
+                        Text(text = "Consecutive scope record: $maxConsecutiveScope", color = AccentGold, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -167,7 +167,7 @@ private fun GameStatsTab(stats: List<StatisticsEntity>, results: List<GameResult
 private fun OpponentsTab(opponents: List<String>, allResults: List<GameResultEntity>) {
     if (opponents.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = "Nessuna partita contro avversari.", color = CardCream)
+            Text(text = "No games against opponents.", color = CardCream)
         }
     } else {
         LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp)) {
@@ -182,10 +182,10 @@ private fun OpponentsTab(opponents: List<String>, allResults: List<GameResultEnt
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(text = opponent, style = MaterialTheme.typography.titleMedium, color = AccentGold)
-                        Text(text = "Partite: ${results.size}  •  V: $wins  •  S: $losses", color = CardCream)
+                        Text(text = "Games: ${results.size}  •  W: $wins  •  L: $losses", color = CardCream)
                         if (results.isNotEmpty()) {
                             val pct = wins * 100 / results.size
-                            Text(text = "Vittorie: $pct%", color = CardCream.copy(alpha = 0.8f), fontSize = 12.sp)
+                            Text(text = "Win rate: $pct%", color = CardCream.copy(alpha = 0.8f), fontSize = 12.sp)
                             Spacer(modifier = Modifier.height(6.dp))
                             WinLossChart(results = results.takeLast(10))
                         }

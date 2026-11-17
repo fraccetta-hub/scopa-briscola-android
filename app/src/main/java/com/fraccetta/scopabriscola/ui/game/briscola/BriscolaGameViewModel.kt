@@ -7,6 +7,7 @@ import com.fraccetta.scopabriscola.bluetooth.BtMessage
 import com.fraccetta.scopabriscola.bluetooth.ConnectionEvent
 import com.fraccetta.scopabriscola.data.GameSession
 import com.fraccetta.scopabriscola.data.prefs.UserPreferences
+import com.fraccetta.scopabriscola.data.repository.StatsRepository
 import com.fraccetta.scopabriscola.sound.SoundManager
 import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.domain.Deck
@@ -52,7 +53,8 @@ data class BriscolaUiState(
 @HiltViewModel
 class BriscolaGameViewModel @Inject constructor(
     private val btManager: BtManager,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    private val statsRepository: StatsRepository
 ) : ViewModel() {
 
     private val briscolaGame = BriscolaGame()
@@ -338,12 +340,26 @@ class BriscolaGameViewModel @Inject constructor(
     }
 
     private fun checkForSessionEnd(state: BriscolaState) {
+        if (state.phase == BriscolaPhase.GAME_END) {
+            val localWon = if (localPlayer == 1) state.player1GamePoints > state.player2GamePoints
+                           else state.player2GamePoints > state.player1GamePoints
+            val localPoints = if (localPlayer == 1) state.player1GamePoints else state.player2GamePoints
+            viewModelScope.launch {
+                statsRepository.recordResult(
+                    playerName = GameSession.localPlayerName ?: "Me",
+                    gameType = "briscola",
+                    won = localWon,
+                    points = localPoints,
+                    scope = 0,
+                    isSolo = isSolo,
+                    opponentName = GameSession.opponentName ?: ""
+                )
+            }
+        }
         if (state.phase == BriscolaPhase.SESSION_END) {
             val absoluteWinner = if (state.player1SessionWins > state.player2SessionWins) 1 else 2
             val relativeWinner = if (absoluteWinner == localPlayer) 1 else 2
             if (relativeWinner == 1) SoundManager.playWin() else SoundManager.playLose()
-            GameSession.lastSessionPoints = if (localPlayer == 1) state.player1GamePoints else state.player2GamePoints
-            GameSession.lastSessionScope = 0
             viewModelScope.launch { _navigationEvent.emit("result/$relativeWinner/briscola") }
         }
     }

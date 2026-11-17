@@ -7,6 +7,7 @@ import com.fraccetta.scopabriscola.bluetooth.BtMessage
 import com.fraccetta.scopabriscola.bluetooth.ConnectionEvent
 import com.fraccetta.scopabriscola.data.GameSession
 import com.fraccetta.scopabriscola.data.prefs.UserPreferences
+import com.fraccetta.scopabriscola.data.repository.StatsRepository
 import com.fraccetta.scopabriscola.sound.SoundManager
 import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.domain.Deck
@@ -57,7 +58,8 @@ data class ScopaUiState(
 @HiltViewModel
 class ScopaGameViewModel @Inject constructor(
     private val btManager: BtManager,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    private val statsRepository: StatsRepository
 ) : ViewModel() {
 
     private val scopaGame = ScopaGame()
@@ -422,12 +424,28 @@ class ScopaGameViewModel @Inject constructor(
     }
 
     private fun checkForSessionEnd(state: ScopaState) {
+        if (state.phase == ScopaPhase.GAME_END) {
+            val localWon = if (localPlayer == 1) state.player1GameScore > state.player2GameScore
+                           else state.player2GameScore > state.player1GameScore
+            val localPoints = if (localPlayer == 1) state.player1GameScore else state.player2GameScore
+            val localScope = if (localPlayer == 1) state.player1Scope else state.player2Scope
+            viewModelScope.launch {
+                statsRepository.recordResult(
+                    playerName = GameSession.localPlayerName ?: "Me",
+                    gameType = "scopa",
+                    won = localWon,
+                    points = localPoints,
+                    scope = localScope,
+                    isSolo = isSolo,
+                    opponentName = GameSession.opponentName ?: "",
+                    maxConsecutiveScope = maxConsecutiveScope
+                )
+            }
+        }
         if (state.phase == ScopaPhase.SESSION_END) {
             val absoluteWinner = if (state.player1SessionWins >= state.player2SessionWins) 1 else 2
             val relativeWinner = if (absoluteWinner == localPlayer) 1 else 2
             if (relativeWinner == 1) SoundManager.playWin() else SoundManager.playLose()
-            GameSession.lastSessionPoints = if (localPlayer == 1) state.player1GameScore else state.player2GameScore
-            GameSession.lastSessionScope = if (localPlayer == 1) state.player1Scope else state.player2Scope
             GameSession.lastMaxConsecutiveScope = maxConsecutiveScope
             viewModelScope.launch { _navigationEvent.emit("result/$relativeWinner/scopa") }
         }
