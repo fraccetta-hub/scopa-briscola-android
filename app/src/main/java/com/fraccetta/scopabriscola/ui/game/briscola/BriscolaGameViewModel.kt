@@ -136,8 +136,10 @@ class BriscolaGameViewModel @Inject constructor(
         _uiState.update { it.copy(opponentLastCard = null) }
         // Server broadcasts its own card to client so client can display it
         if (isServer && !isSolo) btManager.send(BtMessage.OpponentCard(card.assetName))
-        if (isServer || isSolo) applyAndBroadcast(BriscolaAction.PlayCard(card))
-        else btManager.send(BtMessage.PlayCard(card.assetName))
+        if (isServer || isSolo) {
+            if (!isSolo) viewModelScope.launch { delay(700); applyAndBroadcast(BriscolaAction.PlayCard(card)) }
+            else applyAndBroadcast(BriscolaAction.PlayCard(card))
+        } else btManager.send(BtMessage.PlayCard(card.assetName))
     }
 
     fun setArena(name: String) {
@@ -208,7 +210,7 @@ class BriscolaGameViewModel @Inject constructor(
                     if (state.phase != BriscolaPhase.WAITING_FIRST && state.phase != BriscolaPhase.WAITING_SECOND) return
                     if (state.currentPlayer != 2 || card !in state.player2Hand) return
                     showOpponentCard(card)
-                    applyAndBroadcast(BriscolaAction.PlayCard(card))
+                    viewModelScope.launch { delay(700); applyAndBroadcast(BriscolaAction.PlayCard(card)) }
                 }
                 is BtMessage.NextRound -> {
                     when (state.phase) {

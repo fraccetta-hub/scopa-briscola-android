@@ -146,8 +146,10 @@ class ScopaGameViewModel @Inject constructor(
         SoundManager.playCard()
         _uiState.update { it.copy(opponentLastCard = null) }
         if (isServer && !isSolo) btManager.send(BtMessage.OpponentCard(card.assetName))
-        if (isServer || isSolo) applyAndBroadcast(ScopaAction.PlayCard(card))
-        else btManager.send(BtMessage.PlayCard(card.assetName))
+        if (isServer || isSolo) {
+            if (!isSolo) viewModelScope.launch { delay(700); applyAndBroadcast(ScopaAction.PlayCard(card)) }
+            else applyAndBroadcast(ScopaAction.PlayCard(card))
+        } else btManager.send(BtMessage.PlayCard(card.assetName))
     }
 
     fun onCaptureChosen(group: List<Card>) {
@@ -229,7 +231,7 @@ class ScopaGameViewModel @Inject constructor(
             prev.copy(
                 state = newState,
                 lastMatchScores = matchScores ?: prev.lastMatchScores,
-                opponentLastCard = if (clearOpponentCard || !isSolo) null else prev.opponentLastCard
+                opponentLastCard = if (clearOpponentCard || isSolo) null else prev.opponentLastCard
             )
         }
         if (!isSolo) sendGameState(newState)
@@ -276,7 +278,7 @@ class ScopaGameViewModel @Inject constructor(
                     val card = cardLookup[msg.cardAssetName] ?: return
                     if (state.phase != ScopaPhase.WAITING_PLAY || state.currentPlayer != 2 || card !in state.player2Hand) return
                     showOpponentCard(card)
-                    applyAndBroadcast(ScopaAction.PlayCard(card))
+                    viewModelScope.launch { delay(700); applyAndBroadcast(ScopaAction.PlayCard(card)) }
                 }
                 is BtMessage.ChooseCapture -> {
                     if (state.phase != ScopaPhase.WAITING_CAPTURE_CHOICE || state.currentPlayer != 2) return
