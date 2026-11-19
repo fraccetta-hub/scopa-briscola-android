@@ -61,6 +61,7 @@ class BriscolaGameViewModel @Inject constructor(
     private val isServer: Boolean = GameSession.isServer
     private val localPlayer: Int = GameSession.localPlayer
     private val isSolo: Boolean = GameSession.isSolo
+    private var cardPlayPending = false
 
     private val initialState = briscolaGame.newSession()
 
@@ -132,11 +133,13 @@ class BriscolaGameViewModel @Inject constructor(
     }
 
     fun onCardPlayed(card: Card) {
+        if (cardPlayPending) return
         val current = _uiState.value.state
         if (current.currentPlayer != localPlayer) return
         if (current.phase != BriscolaPhase.WAITING_FIRST && current.phase != BriscolaPhase.WAITING_SECOND) return
         val localHand = if (localPlayer == 1) current.player1Hand else current.player2Hand
         if (card !in localHand) return
+        cardPlayPending = true
         SoundManager.playCard()
         _uiState.update { it.copy(opponentLastCard = null) }
         // Server broadcasts its own card to client so client can display it
@@ -167,6 +170,7 @@ class BriscolaGameViewModel @Inject constructor(
     }
 
     private fun applyAndBroadcast(action: BriscolaAction) {
+        cardPlayPending = false
         val prevState = _uiState.value.state
         val prevP1Captured = prevState.player1Captured.size
         val prevP2Captured = prevState.player2Captured.size
@@ -245,6 +249,7 @@ class BriscolaGameViewModel @Inject constructor(
         } else {
             when (msg) {
                 is BtMessage.GameState -> {
+                    cardPlayPending = false
                     val newState = try {
                         json.decodeFromString(BriscolaState.serializer(), msg.stateJson)
                     } catch (_: Exception) { return }

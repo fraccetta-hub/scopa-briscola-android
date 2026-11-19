@@ -66,6 +66,7 @@ class ScopaGameViewModel @Inject constructor(
     private val isServer: Boolean = GameSession.isServer
     private val localPlayer: Int = GameSession.localPlayer
     private val isSolo: Boolean = GameSession.isSolo
+    private var cardPlayPending = false
 
     private var initialState: ScopaState = ScopaState(
         tableCards = emptyList(), player1Hand = emptyList(), player2Hand = emptyList(),
@@ -142,11 +143,13 @@ class ScopaGameViewModel @Inject constructor(
     }
 
     fun onCardPlayed(card: Card) {
+        if (cardPlayPending) return
         val current = _uiState.value.state
         if (current.currentPlayer != localPlayer) return
         if (current.phase != ScopaPhase.WAITING_PLAY) return
         val localHand = if (localPlayer == 1) current.player1Hand else current.player2Hand
         if (card !in localHand) return
+        cardPlayPending = true
         SoundManager.playCard()
         _uiState.update { it.copy(opponentLastCard = null) }
         if (isServer && !isSolo) btManager.send(BtMessage.OpponentCard(card.assetName))
@@ -186,6 +189,7 @@ class ScopaGameViewModel @Inject constructor(
     }
 
     private fun applyAndBroadcast(action: ScopaAction) {
+        cardPlayPending = false
         val prevState = _uiState.value.state
         val prevScopeTotal = prevState.player1Scope + prevState.player2Scope
         val prevP1Captured = prevState.player1Captured.size
@@ -309,6 +313,7 @@ class ScopaGameViewModel @Inject constructor(
         } else {
             when (msg) {
                 is BtMessage.GameState -> {
+                    cardPlayPending = false
                     val newState = try {
                         json.decodeFromString(ScopaState.serializer(), msg.stateJson)
                     } catch (_: Exception) { return }
