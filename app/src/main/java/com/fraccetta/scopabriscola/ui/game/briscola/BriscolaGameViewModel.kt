@@ -193,7 +193,7 @@ class BriscolaGameViewModel @Inject constructor(
             }
             prev.copy(
                 state = newState,
-                opponentLastCard = if (isSolo) null else prev.opponentLastCard,
+                opponentLastCard = if (isSolo || newState.firstCardPlayed != null) null else prev.opponentLastCard,
                 matchHistory = newHistory
             )
         }
@@ -274,7 +274,11 @@ class BriscolaGameViewModel @Inject constructor(
                             isMatchEndB -> prev.matchHistory + Pair(localMatchPtsB, oppMatchPtsB)
                             else -> prev.matchHistory
                         }
-                        prev.copy(state = newState, matchHistory = newHistory)
+                        prev.copy(
+                            state = newState,
+                            matchHistory = newHistory,
+                            opponentLastCard = if (newState.firstCardPlayed != null) null else prev.opponentLastCard
+                        )
                     }
                     checkForSessionEnd(newState)
                 }

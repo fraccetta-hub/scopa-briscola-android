@@ -17,8 +17,8 @@ android {
         applicationId = "com.fraccetta.scopabriscola"
         minSdk = 26
         targetSdk = 35
-        versionCode = 24
-        versionName = "1.15.2"
+        versionCode = 26
+        versionName = "1.15.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

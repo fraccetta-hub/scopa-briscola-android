@@ -313,36 +313,38 @@ fun BriscolaTableContent(
 
             Spacer(modifier = Modifier.width(24.dp))
 
-            // Trick area
+            // Slot 1: first card played
+            val opponentCard = uiState.opponentLastCard
+            val showOpponentCard = opponentCard != null
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(modifier = Modifier.height(16.dp), contentAlignment = Alignment.Center) {
-                    Text(text = "In play", style = MaterialTheme.typography.labelSmall, color = CardCream)
+                    if (state.firstCardPlayed != null) {
+                        Text(
+                            text = if (state.firstPlayerOfTrick == uiState.localPlayer) "Tu" else opponentName,
+                            style = MaterialTheme.typography.labelSmall, color = CardCream, fontSize = 9.sp
+                        )
+                    }
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    // Slot 1: first card played — always reserves same height
-                    Box(modifier = Modifier.size(72.dp, 128.dp), contentAlignment = Alignment.TopCenter) {
-                        state.firstCardPlayed?.let { firstCard ->
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = if (state.firstPlayerOfTrick == uiState.localPlayer) "Tu" else opponentName,
-                                    style = MaterialTheme.typography.labelSmall, color = CardCream, fontSize = 9.sp
-                                )
-                                BriscolaCardImage(card = firstCard, modifier = Modifier.size(72.dp, 108.dp))
-                            }
-                        }
+                if (state.firstCardPlayed != null) {
+                    BriscolaCardImage(card = state.firstCardPlayed!!, modifier = Modifier.size(72.dp, 108.dp))
+                } else {
+                    Box(modifier = Modifier.size(72.dp, 108.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // Slot 2: opponent card in transit
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(modifier = Modifier.height(16.dp), contentAlignment = Alignment.Center) {
+                    if (showOpponentCard) {
+                        Text(text = opponentName, style = MaterialTheme.typography.labelSmall, color = CardCream, fontSize = 9.sp)
                     }
-                    // Slot 2: opponent card — always reserves same height
-                    val opponentCard = uiState.opponentLastCard
-                    val showOpponentCard = if (uiState.isSolo) opponentCard != null && state.phase == BriscolaPhase.WAITING_SECOND
-                                          else opponentCard != null
-                    Box(modifier = Modifier.size(72.dp, 128.dp), contentAlignment = Alignment.TopCenter) {
-                        if (showOpponentCard && opponentCard != null) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(text = opponentName, style = MaterialTheme.typography.labelSmall, color = CardCream, fontSize = 9.sp)
-                                BriscolaCardImage(card = opponentCard, modifier = Modifier.size(72.dp, 108.dp))
-                            }
-                        }
-                    }
+                }
+                if (showOpponentCard && opponentCard != null) {
+                    BriscolaCardImage(card = opponentCard, modifier = Modifier.size(72.dp, 108.dp))
+                } else {
+                    Box(modifier = Modifier.size(72.dp, 108.dp))
                 }
             }
         }
