@@ -56,7 +56,8 @@ data class ScopaUiState(
     val chatPinned: Boolean = false,
     val isSolo: Boolean = false,
     val lastCaptureResult: ScopaCaptureResult? = null,
-    val lastCaptureDisplay: ScopaCaptureResult? = null
+    val lastCaptureDisplay: ScopaCaptureResult? = null,
+    val matchId: Int = 0
 )
 
 @HiltViewModel
@@ -242,6 +243,7 @@ class ScopaGameViewModel @Inject constructor(
         val captureResult = newState.lastCapture?.let { capture ->
             ScopaCaptureResult(cards = capture.cards, localWon = capture.playerWho == localPlayer)
         }
+        val isNewDeal = prevState.player1Hand.isEmpty() && newState.player1Hand.isNotEmpty()
         _uiState.update { prev ->
             val newHistory = when {
                 action is ScopaAction.NextGame -> emptyList()
@@ -254,7 +256,8 @@ class ScopaGameViewModel @Inject constructor(
                 matchHistory = newHistory,
                 opponentLastCard = if (clearOpponentCard || isSolo) null else prev.opponentLastCard,
                 lastCaptureResult = captureResult ?: prev.lastCaptureResult,
-                lastCaptureDisplay = if (clearOpponentCard) null else captureResult ?: prev.lastCaptureDisplay
+                lastCaptureDisplay = if (clearOpponentCard) null else captureResult ?: prev.lastCaptureDisplay,
+                matchId = if (isNewDeal) prev.matchId + 1 else prev.matchId
             )
         }
         if (!isSolo) sendGameState(newState)
@@ -351,6 +354,7 @@ class ScopaGameViewModel @Inject constructor(
                     val captureResultBt = newState.lastCapture?.let { capture ->
                         ScopaCaptureResult(cards = capture.cards, localWon = capture.playerWho == localPlayer)
                     }
+                    val isNewDealBt = prevState.player1Hand.isEmpty() && newState.player1Hand.isNotEmpty()
                     _uiState.update { prev ->
                         val gameReset = (newState.player1SessionWins + newState.player2SessionWins) >
                             (prev.state.player1SessionWins + prev.state.player2SessionWins)
@@ -364,7 +368,8 @@ class ScopaGameViewModel @Inject constructor(
                             lastMatchScores = matchScores ?: prev.lastMatchScores,
                             matchHistory = newHistory,
                             lastCaptureResult = captureResultBt ?: prev.lastCaptureResult,
-                            lastCaptureDisplay = captureResultBt ?: prev.lastCaptureDisplay
+                            lastCaptureDisplay = captureResultBt ?: prev.lastCaptureDisplay,
+                            matchId = if (isNewDealBt) prev.matchId + 1 else prev.matchId
                         )
                     }
                     checkForSessionEnd(newState)

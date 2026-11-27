@@ -41,6 +41,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -126,6 +127,9 @@ private fun ScopaStatsTab(stats: List<StatisticsEntity>, results: List<GameResul
             item {
                 WinLossChart(results = results.takeLast(20))
             }
+            item {
+                PointsHistoryChart(results = results.takeLast(20))
+            }
         }
         if (stats.isEmpty()) {
             item {
@@ -147,6 +151,9 @@ private fun GameStatsTab(stats: List<StatisticsEntity>, results: List<GameResult
         if (results.isNotEmpty()) {
             item {
                 WinLossChart(results = results.takeLast(20))
+            }
+            item {
+                PointsHistoryChart(results = results.takeLast(20))
             }
         }
         if (stats.isEmpty()) {
@@ -235,6 +242,58 @@ private fun WinLossChart(results: List<GameResultEntity>) {
                 }
                 Text(text = "S", fontSize = 10.sp, color = CardCream.copy(alpha = 0.7f))
             }
+        }
+    }
+}
+
+@Composable
+private fun PointsHistoryChart(results: List<GameResultEntity>) {
+    if (results.size < 2) return
+    val winColor = Color(0xFF4CAF50)
+    val lossColor = Color(0xFFF44336)
+    val lineColor = Color(0xFFD4AF37).copy(alpha = 0.6f)
+    val maxPts = results.maxOf { it.points }.coerceAtLeast(1)
+    val minPts = results.minOf { it.points }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Text(text = "Punti per partita", fontSize = 11.sp, color = CardCream.copy(alpha = 0.6f), modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
+        Canvas(modifier = Modifier.fillMaxWidth().height(60.dp)) {
+            val w = size.width
+            val h = size.height
+            val range = (maxPts - minPts).toFloat().coerceAtLeast(1f)
+            val stepX = w / (results.size - 1).coerceAtLeast(1)
+
+            // area fill
+            val path = Path()
+            results.forEachIndexed { i, r ->
+                val x = i * stepX
+                val y = h - ((r.points - minPts) / range) * (h * 0.85f) - h * 0.05f
+                if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+            }
+            path.lineTo((results.size - 1) * stepX, h)
+            path.lineTo(0f, h)
+            path.close()
+            drawPath(path, color = lineColor.copy(alpha = 0.15f))
+
+            // line
+            results.forEachIndexed { i, r ->
+                if (i == 0) return@forEachIndexed
+                val x0 = (i - 1) * stepX
+                val y0 = h - ((results[i - 1].points - minPts) / range) * (h * 0.85f) - h * 0.05f
+                val x1 = i * stepX
+                val y1 = h - ((r.points - minPts) / range) * (h * 0.85f) - h * 0.05f
+                drawLine(color = lineColor, start = Offset(x0, y0), end = Offset(x1, y1), strokeWidth = 2f)
+            }
+
+            // dots
+            results.forEachIndexed { i, r ->
+                val x = i * stepX
+                val y = h - ((r.points - minPts) / range) * (h * 0.85f) - h * 0.05f
+                drawCircle(color = if (r.won) winColor else lossColor, radius = 5f, center = Offset(x, y))
+            }
+        }
+        Row(modifier = Modifier.padding(start = 4.dp, top = 2.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(text = "min $minPts  max $maxPts pts", fontSize = 10.sp, color = CardCream.copy(alpha = 0.5f))
         }
     }
 }

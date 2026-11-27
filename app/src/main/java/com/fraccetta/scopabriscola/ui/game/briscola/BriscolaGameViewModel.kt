@@ -51,7 +51,8 @@ data class BriscolaUiState(
     val chatPinned: Boolean = false,
     val isSolo: Boolean = false,
     val lastTrickResult: TrickResult? = null,
-    val lastTrickDisplay: TrickResult? = null
+    val lastTrickDisplay: TrickResult? = null,
+    val matchId: Int = 0
 )
 
 @HiltViewModel
@@ -196,6 +197,7 @@ class BriscolaGameViewModel @Inject constructor(
             prevState.phase != BriscolaPhase.MATCH_END && prevState.phase != BriscolaPhase.GAME_END
         val localMatchPts = if (localPlayer == 1) newState.player1MatchPoints else newState.player2MatchPoints
         val oppMatchPts = if (localPlayer == 1) newState.player2MatchPoints else newState.player1MatchPoints
+        val isNewDeal = prevState.player1Hand.isEmpty() && newState.player1Hand.isNotEmpty()
         _uiState.update { prev ->
             val newHistory = when {
                 action is BriscolaAction.NextGame -> emptyList()
@@ -208,7 +210,8 @@ class BriscolaGameViewModel @Inject constructor(
                 opponentLastCard = if (isSolo || newState.firstCardPlayed != null) null else prev.opponentLastCard,
                 matchHistory = newHistory,
                 lastTrickResult = trickResult ?: prev.lastTrickResult,
-                lastTrickDisplay = if (clearDisplay) null else trickResult ?: prev.lastTrickDisplay
+                lastTrickDisplay = if (clearDisplay) null else trickResult ?: prev.lastTrickDisplay,
+                matchId = if (isNewDeal) prev.matchId + 1 else prev.matchId
             )
         }
         if (!isSolo) sendGameState(newState)
@@ -290,6 +293,7 @@ class BriscolaGameViewModel @Inject constructor(
                         (prevState.player1SessionWins + prevState.player2SessionWins)
                     val localMatchPtsB = if (localPlayer == 1) newState.player1MatchPoints else newState.player2MatchPoints
                     val oppMatchPtsB = if (localPlayer == 1) newState.player2MatchPoints else newState.player1MatchPoints
+                    val isNewDealBt = prevState.player1Hand.isEmpty() && newState.player1Hand.isNotEmpty()
                     _uiState.update { prev ->
                         val newHistory = when {
                             gameResetB -> emptyList()
@@ -301,7 +305,8 @@ class BriscolaGameViewModel @Inject constructor(
                             matchHistory = newHistory,
                             opponentLastCard = if (newState.firstCardPlayed != null) null else prev.opponentLastCard,
                             lastTrickResult = trickResultBt ?: prev.lastTrickResult,
-                            lastTrickDisplay = trickResultBt ?: prev.lastTrickDisplay
+                            lastTrickDisplay = trickResultBt ?: prev.lastTrickDisplay,
+                            matchId = if (isNewDealBt) prev.matchId + 1 else prev.matchId
                         )
                     }
                     checkForSessionEnd(newState)

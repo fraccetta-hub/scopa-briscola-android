@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -42,6 +43,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -57,13 +59,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -138,6 +143,14 @@ fun ScopaTableContent(
     val state = uiState.state
     val isMyTurn = state.currentPlayer == uiState.localPlayer
     val localHand = if (uiState.localPlayer == 1) state.player1Hand else state.player2Hand
+    var dealtCount by remember { mutableIntStateOf(0) }
+    LaunchedEffect(uiState.matchId) {
+        dealtCount = 0
+        localHand.indices.forEach { i ->
+            kotlinx.coroutines.delay(160L)
+            dealtCount = i + 1
+        }
+    }
     val opponentHandSize = if (uiState.localPlayer == 1) state.player2Hand.size else state.player1Hand.size
     val localGameScore = if (uiState.localPlayer == 1) state.player1GameScore else state.player2GameScore
     val opponentGameScore = if (uiState.localPlayer == 1) state.player2GameScore else state.player1GameScore
@@ -501,12 +514,19 @@ fun ScopaTableContent(
                 modifier = Modifier.height(120.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(localHand) { card ->
+                itemsIndexed(localHand) { index, card ->
                     val clickable = isMyTurn && state.phase == ScopaPhase.WAITING_PLAY
+                    val dealt = index < dealtCount
+                    val dealScale by animateFloatAsState(if (dealt) 1f else 0.3f, tween(220))
+                    val dealAlpha by animateFloatAsState(if (dealt) 1f else 0f, tween(220))
                     Box(
                         modifier = Modifier
                             .size(80.dp, 120.dp)
-                            .then(if (!isMyTurn) Modifier.alpha(0.5f) else Modifier)
+                            .graphicsLayer {
+                                alpha = dealAlpha * if (!isMyTurn) 0.5f else 1f
+                                scaleX = dealScale
+                                scaleY = dealScale
+                            }
                             .then(
                                 if (clickable) Modifier.border(2.dp, AccentGold, RoundedCornerShape(4.dp)).clickable { onCardPlayed(card) }
                                 else Modifier
