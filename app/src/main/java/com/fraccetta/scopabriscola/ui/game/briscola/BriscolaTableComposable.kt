@@ -132,10 +132,10 @@ fun BriscolaTableContent(
     val state = uiState.state
     val isMyTurn = state.currentPlayer == uiState.localPlayer
     val localHand = if (uiState.localPlayer == 1) state.player1Hand else state.player2Hand
-    var dealtCount by remember { mutableIntStateOf(0) }
+    var dealtCount by remember { mutableIntStateOf(3) }
     LaunchedEffect(uiState.matchId) {
         dealtCount = 0
-        localHand.indices.forEach { i ->
+        repeat(3) { i ->
             kotlinx.coroutines.delay(160L)
             dealtCount = i + 1
         }
