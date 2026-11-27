@@ -50,7 +50,8 @@ data class BriscolaUiState(
     val showChat: Boolean = false,
     val chatPinned: Boolean = false,
     val isSolo: Boolean = false,
-    val lastTrickResult: TrickResult? = null
+    val lastTrickResult: TrickResult? = null,
+    val lastTrickDisplay: TrickResult? = null
 )
 
 @HiltViewModel
@@ -201,11 +202,13 @@ class BriscolaGameViewModel @Inject constructor(
                 isMatchEnd -> prev.matchHistory + Pair(localMatchPts, oppMatchPts)
                 else -> prev.matchHistory
             }
+            val clearDisplay = action is BriscolaAction.NextMatch || action is BriscolaAction.NextGame
             prev.copy(
                 state = newState,
                 opponentLastCard = if (isSolo || newState.firstCardPlayed != null) null else prev.opponentLastCard,
                 matchHistory = newHistory,
-                lastTrickResult = trickResult ?: prev.lastTrickResult
+                lastTrickResult = trickResult ?: prev.lastTrickResult,
+                lastTrickDisplay = if (clearDisplay) null else trickResult ?: prev.lastTrickDisplay
             )
         }
         if (!isSolo) sendGameState(newState)
@@ -297,7 +300,8 @@ class BriscolaGameViewModel @Inject constructor(
                             state = newState,
                             matchHistory = newHistory,
                             opponentLastCard = if (newState.firstCardPlayed != null) null else prev.opponentLastCard,
-                            lastTrickResult = trickResultBt ?: prev.lastTrickResult
+                            lastTrickResult = trickResultBt ?: prev.lastTrickResult,
+                            lastTrickDisplay = trickResultBt ?: prev.lastTrickDisplay
                         )
                     }
                     checkForSessionEnd(newState)

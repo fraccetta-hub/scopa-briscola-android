@@ -540,6 +540,57 @@ fun ScopaTableContent(
                 )
             }
         }
+        // ── Last capture replay button ────────────────────────────────
+        var showLastCaptureDialog by remember { mutableStateOf(false) }
+        val lastCapture = uiState.lastCaptureDisplay
+        if (lastCapture != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 8.dp, bottom = 160.dp)
+                    .size(40.dp)
+                    .background(Color(0xBB0D1F33), androidx.compose.foundation.shape.CircleShape)
+                    .clickable { showLastCaptureDialog = true },
+                contentAlignment = Alignment.Center
+            ) {
+                Text("👁", fontSize = 18.sp)
+            }
+        }
+        if (showLastCaptureDialog && lastCapture != null) {
+            val winnerName = if (lastCapture.localWon) (uiState.localPlayerName ?: "Tu") else (uiState.opponentName ?: "Captain")
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { showLastCaptureDialog = false },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(onClick = { showLastCaptureDialog = false }) {
+                        Text("OK", color = AccentGold)
+                    }
+                },
+                title = { Text("Ultima presa", color = CardCream) },
+                text = {
+                    androidx.compose.foundation.layout.Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "$winnerName ha preso ${lastCapture.cards.size} ${if (lastCapture.cards.size == 1) "carta" else "carte"}",
+                            color = CardCream,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        val cardSize = if (lastCapture.cards.size > 3) 48.dp to 72.dp else 60.dp to 90.dp
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            lastCapture.cards.take(5).forEach { card ->
+                                CardImage(card = card, modifier = Modifier.size(cardSize.first, cardSize.second))
+                            }
+                        }
+                    }
+                },
+                containerColor = Color(0xFF0D1F33),
+                titleContentColor = CardCream,
+                textContentColor = CardCream
+            )
+        }
+
         // ── Capture animation ─────────────────────────────────────────
         val captureAnim = remember { Animatable(0f) }
         var animatingCapture by remember { mutableStateOf<ScopaCaptureResult?>(null) }

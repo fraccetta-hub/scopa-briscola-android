@@ -68,6 +68,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.fraccetta.scopabriscola.R
 import com.fraccetta.scopabriscola.domain.Card
+import com.fraccetta.scopabriscola.domain.Suit
 import com.fraccetta.scopabriscola.game.briscola.BriscolaPhase
 import com.fraccetta.scopabriscola.ui.game.GameResultOverlay
 import com.fraccetta.scopabriscola.ui.game.RandomArenaBackground
@@ -298,7 +299,22 @@ fun BriscolaTableContent(
                 if (!state.briscolaCardTaken) {
                     BriscolaCardImage(card = state.briscolaCard, modifier = Modifier.size(72.dp, 108.dp))
                 } else {
-                    Box(modifier = Modifier.size(72.dp, 108.dp))
+                    Box(modifier = Modifier.size(72.dp, 108.dp), contentAlignment = Alignment.Center) {
+                        val suitEmoji = when (state.briscolaSuit) {
+                            Suit.DENARI -> "💰"
+                            Suit.COPPE -> "🏆"
+                            Suit.SPADE -> "⚔️"
+                            Suit.BASTONI -> "🌿"
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .background(Color(0xBB0D1F33), androidx.compose.foundation.shape.CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(suitEmoji, fontSize = 24.sp)
+                        }
+                    }
                 }
             }
 
@@ -382,6 +398,47 @@ fun BriscolaTableContent(
             }
         }
         } // end Column
+
+        // ── Last trick replay button ──────────────────────────────────
+        var showLastTrickDialog by remember { mutableStateOf(false) }
+        val lastTrick = uiState.lastTrickDisplay
+        if (lastTrick != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 8.dp, bottom = 160.dp)
+                    .size(40.dp)
+                    .background(Color(0xBB0D1F33), androidx.compose.foundation.shape.CircleShape)
+                    .clickable { showLastTrickDialog = true },
+                contentAlignment = Alignment.Center
+            ) {
+                Text("👁", fontSize = 18.sp)
+            }
+        }
+        if (showLastTrickDialog && lastTrick != null) {
+            val winnerName = if (lastTrick.localWon) (uiState.localPlayerName ?: "Tu") else (uiState.opponentName ?: "Captain")
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { showLastTrickDialog = false },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(onClick = { showLastTrickDialog = false }) {
+                        Text("OK", color = AccentGold)
+                    }
+                },
+                title = { Text("Ultima presa", color = CardCream) },
+                text = {
+                    androidx.compose.foundation.layout.Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Presa da: $winnerName", color = CardCream, modifier = Modifier.padding(bottom = 12.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            BriscolaCardImage(card = lastTrick.card1, modifier = Modifier.size(72.dp, 108.dp))
+                            BriscolaCardImage(card = lastTrick.card2, modifier = Modifier.size(72.dp, 108.dp))
+                        }
+                    }
+                },
+                containerColor = Color(0xFF0D1F33),
+                titleContentColor = CardCream,
+                textContentColor = CardCream
+            )
+        }
 
         // ── Trick capture animation ──────────────────────────────────
         val trickAnim = remember { Animatable(0f) }

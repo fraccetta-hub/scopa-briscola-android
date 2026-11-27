@@ -55,7 +55,8 @@ data class ScopaUiState(
     val showChat: Boolean = false,
     val chatPinned: Boolean = false,
     val isSolo: Boolean = false,
-    val lastCaptureResult: ScopaCaptureResult? = null
+    val lastCaptureResult: ScopaCaptureResult? = null,
+    val lastCaptureDisplay: ScopaCaptureResult? = null
 )
 
 @HiltViewModel
@@ -252,7 +253,8 @@ class ScopaGameViewModel @Inject constructor(
                 lastMatchScores = matchScores ?: prev.lastMatchScores,
                 matchHistory = newHistory,
                 opponentLastCard = if (clearOpponentCard || isSolo) null else prev.opponentLastCard,
-                lastCaptureResult = captureResult ?: prev.lastCaptureResult
+                lastCaptureResult = captureResult ?: prev.lastCaptureResult,
+                lastCaptureDisplay = if (clearOpponentCard) null else captureResult ?: prev.lastCaptureDisplay
             )
         }
         if (!isSolo) sendGameState(newState)
@@ -361,7 +363,8 @@ class ScopaGameViewModel @Inject constructor(
                             state = newState,
                             lastMatchScores = matchScores ?: prev.lastMatchScores,
                             matchHistory = newHistory,
-                            lastCaptureResult = captureResultBt ?: prev.lastCaptureResult
+                            lastCaptureResult = captureResultBt ?: prev.lastCaptureResult,
+                            lastCaptureDisplay = captureResultBt ?: prev.lastCaptureDisplay
                         )
                     }
                     checkForSessionEnd(newState)
