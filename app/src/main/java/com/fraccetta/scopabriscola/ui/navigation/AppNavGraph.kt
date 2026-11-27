@@ -9,8 +9,10 @@ import com.fraccetta.scopabriscola.ui.lobby.LobbyScreen
 import com.fraccetta.scopabriscola.ui.game.briscola.BriscolaGameScreen
 import com.fraccetta.scopabriscola.ui.screens.GameModeScreen
 import com.fraccetta.scopabriscola.ui.screens.HomeScreen
+import com.fraccetta.scopabriscola.ui.screens.ScoponeGameModeScreen
 import com.fraccetta.scopabriscola.ui.result.ResultScreen
 import com.fraccetta.scopabriscola.ui.game.scopa.ScopaGameScreen
+import com.fraccetta.scopabriscola.ui.game.scopone.ScoponeGameScreen
 import com.fraccetta.scopabriscola.ui.stats.StatsScreen
 import com.fraccetta.scopabriscola.ui.screens.guide.GuideScreen
 import com.fraccetta.scopabriscola.ui.screens.settings.SettingsScreen
@@ -37,6 +39,12 @@ fun AppNavGraph(
         }
         composable("game/briscola") {
             BriscolaGameScreen(navController = navController)
+        }
+        composable("game/scopone") {
+            ScoponeGameScreen(navController = navController)
+        }
+        composable("scoponemode") {
+            ScoponeGameModeScreen(navController = navController)
         }
         composable("result/{winner}/{gameType}") { backStackEntry ->
             val winner = backStackEntry.arguments?.getString("winner") ?: ""

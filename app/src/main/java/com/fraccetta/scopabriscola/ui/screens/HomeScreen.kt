@@ -125,6 +125,19 @@ fun HomeScreen(
                 Text(text = "Briscola", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { navController.navigate("scoponemode") },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF1A5276),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = "Scopone Scientifico", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(

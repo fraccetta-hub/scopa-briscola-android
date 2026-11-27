@@ -79,10 +79,31 @@ class LobbyViewModel @Inject constructor(
                         if (msg is BtMessage.Handshake) {
                             _uiState.update { it.copy(remoteName = msg.playerName) }
                             GameSession.isServer = isServer
-                            GameSession.localPlayer = if (isServer) 1 else 2
                             GameSession.isSolo = false
                             GameSession.opponentName = msg.playerName
-                            val destination = if (gameType.equals("briscola", ignoreCase = true)) "game/briscola" else "game/scopa"
+                            val destination = when {
+                                gameType.equals("briscola", ignoreCase = true) -> {
+                                    GameSession.localPlayer = if (isServer) 1 else 2
+                                    "game/briscola"
+                                }
+                                gameType.equals("SCOPONE_TEAM", ignoreCase = true) -> {
+                                    // 2 humans + 2 AI: server=p0, client=p2
+                                    GameSession.scoponeBtMode = 1
+                                    GameSession.scoponeLocalPlayer = if (isServer) 0 else 2
+                                    GameSession.partnerName = msg.playerName
+                                    "game/scopone"
+                                }
+                                gameType.equals("SCOPONE_MIX", ignoreCase = true) -> {
+                                    // user+AI vs BT human+AI: server=p0, client=p1
+                                    GameSession.scoponeBtMode = 2
+                                    GameSession.scoponeLocalPlayer = if (isServer) 0 else 1
+                                    "game/scopone"
+                                }
+                                else -> {
+                                    GameSession.localPlayer = if (isServer) 1 else 2
+                                    "game/scopa"
+                                }
+                            }
                             _navigationEvent.emit(destination)
                         }
                     }
