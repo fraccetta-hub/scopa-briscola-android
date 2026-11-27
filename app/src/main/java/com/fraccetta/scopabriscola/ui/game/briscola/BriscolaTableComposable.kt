@@ -3,6 +3,7 @@ package com.fraccetta.scopabriscola.ui.game.briscola
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.compose.foundation.background
 import androidx.compose.ui.draw.alpha
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -98,7 +100,8 @@ fun BriscolaGameScreen(
         onNextGame = viewModel::onNextGame,
         onArenaSelected = { if (uiState.isServer) viewModel.setArena(it) },
         onSendChat = viewModel::sendChat,
-        onToggleChat = viewModel::toggleChat
+        onToggleChat = viewModel::toggleChat,
+        onClearTrickResult = viewModel::clearTrickResult
     )
 
     if (uiState.showDisconnectionDialog) {
@@ -117,7 +120,8 @@ fun BriscolaTableContent(
     onNextGame: () -> Unit,
     onArenaSelected: (String) -> Unit = {},
     onSendChat: (String) -> Unit = {},
-    onToggleChat: () -> Unit = {}
+    onToggleChat: () -> Unit = {},
+    onClearTrickResult: () -> Unit = {}
 ) {
     val state = uiState.state
     val isMyTurn = state.currentPlayer == uiState.localPlayer
@@ -378,6 +382,40 @@ fun BriscolaTableContent(
             }
         }
         } // end Column
+
+        // ── Trick capture animation ──────────────────────────────────
+        val trickAnim = remember { Animatable(0f) }
+        var animatingTrick by remember { mutableStateOf<TrickResult?>(null) }
+        val scope = androidx.compose.runtime.rememberCoroutineScope()
+        LaunchedEffect(uiState.lastTrickResult) {
+            val result = uiState.lastTrickResult ?: return@LaunchedEffect
+            animatingTrick = result
+            trickAnim.snapTo(0f)
+            scope.launch {
+                trickAnim.animateTo(1f, tween(600, easing = FastOutSlowInEasing))
+                onClearTrickResult()
+                animatingTrick = null
+            }
+        }
+        val atr = animatingTrick
+        if (atr != null) {
+            val moveYDp = (trickAnim.value * (if (atr.localWon) 320f else -320f)).dp
+            val alpha = (1f - trickAnim.value * 1.4f).coerceIn(0f, 1f)
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    modifier = Modifier
+                        .offset(y = moveYDp)
+                        .alpha(alpha),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    BriscolaCardImage(card = atr.card1, modifier = Modifier.size(72.dp, 108.dp))
+                    BriscolaCardImage(card = atr.card2, modifier = Modifier.size(72.dp, 108.dp))
+                }
+            }
+        }
 
         // ── Chat UI (multiplayer only) ────────────────────────────────
         if (!uiState.isSolo) {

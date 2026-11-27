@@ -34,6 +34,8 @@ import javax.inject.Inject
 
 data class BriscolaChatMessage(val text: String, val isMine: Boolean)
 
+data class TrickResult(val card1: Card, val card2: Card, val localWon: Boolean)
+
 data class BriscolaUiState(
     val state: BriscolaState,
     val isServer: Boolean,
@@ -47,7 +49,8 @@ data class BriscolaUiState(
     val chatMessages: List<BriscolaChatMessage> = emptyList(),
     val showChat: Boolean = false,
     val chatPinned: Boolean = false,
-    val isSolo: Boolean = false
+    val isSolo: Boolean = false,
+    val lastTrickResult: TrickResult? = null
 )
 
 @HiltViewModel
@@ -175,12 +178,19 @@ class BriscolaGameViewModel @Inject constructor(
         val prevP1Captured = prevState.player1Captured.size
         val prevP2Captured = prevState.player2Captured.size
         val newState = briscolaGame.apply(prevState, action)
+        val newP1Captured = newState.player1Captured.size
+        val newP2Captured = newState.player2Captured.size
         // Trick completed: detect who won
-        if (newState.player1Captured.size > prevP1Captured) {
+        if (newP1Captured > prevP1Captured) {
             if (localPlayer == 1) SoundManager.playCapture() else SoundManager.playOpponentCapture()
-        } else if (newState.player2Captured.size > prevP2Captured) {
+        } else if (newP2Captured > prevP2Captured) {
             if (localPlayer == 2) SoundManager.playCapture() else SoundManager.playOpponentCapture()
         }
+        val trickResult = if (newP1Captured + newP2Captured > prevP1Captured + prevP2Captured &&
+                              prevState.firstCardPlayed != null && action is BriscolaAction.PlayCard) {
+            val localWon = if (localPlayer == 1) newP1Captured > prevP1Captured else newP2Captured > prevP2Captured
+            TrickResult(card1 = prevState.firstCardPlayed!!, card2 = action.card, localWon = localWon)
+        } else null
         val isMatchEnd = (newState.phase == BriscolaPhase.MATCH_END || newState.phase == BriscolaPhase.GAME_END) &&
             prevState.phase != BriscolaPhase.MATCH_END && prevState.phase != BriscolaPhase.GAME_END
         val localMatchPts = if (localPlayer == 1) newState.player1MatchPoints else newState.player2MatchPoints
@@ -194,7 +204,8 @@ class BriscolaGameViewModel @Inject constructor(
             prev.copy(
                 state = newState,
                 opponentLastCard = if (isSolo || newState.firstCardPlayed != null) null else prev.opponentLastCard,
-                matchHistory = newHistory
+                matchHistory = newHistory,
+                lastTrickResult = trickResult ?: prev.lastTrickResult
             )
         }
         if (!isSolo) sendGameState(newState)
@@ -256,11 +267,19 @@ class BriscolaGameViewModel @Inject constructor(
                     val prevState = _uiState.value.state
                     val prevP1Captured = prevState.player1Captured.size
                     val prevP2Captured = prevState.player2Captured.size
-                    if (newState.player1Captured.size > prevP1Captured) {
+                    val newP1Captured = newState.player1Captured.size
+                    val newP2Captured = newState.player2Captured.size
+                    if (newP1Captured > prevP1Captured) {
                         if (localPlayer == 1) SoundManager.playCapture() else SoundManager.playOpponentCapture()
-                    } else if (newState.player2Captured.size > prevP2Captured) {
+                    } else if (newP2Captured > prevP2Captured) {
                         if (localPlayer == 2) SoundManager.playCapture() else SoundManager.playOpponentCapture()
                     }
+                    val trickResultBt = if (newP1Captured + newP2Captured > prevP1Captured + prevP2Captured &&
+                                            prevState.firstCardPlayed != null) {
+                        val localWon = if (localPlayer == 1) newP1Captured > prevP1Captured else newP2Captured > prevP2Captured
+                        val card2 = _uiState.value.opponentLastCard ?: prevState.firstCardPlayed!!
+                        TrickResult(card1 = prevState.firstCardPlayed!!, card2 = card2, localWon = localWon)
+                    } else null
                     val prevPhaseB = prevState.phase
                     val isMatchEndB = (newState.phase == BriscolaPhase.MATCH_END || newState.phase == BriscolaPhase.GAME_END) &&
                         prevPhaseB != BriscolaPhase.MATCH_END && prevPhaseB != BriscolaPhase.GAME_END
@@ -277,7 +296,8 @@ class BriscolaGameViewModel @Inject constructor(
                         prev.copy(
                             state = newState,
                             matchHistory = newHistory,
-                            opponentLastCard = if (newState.firstCardPlayed != null) null else prev.opponentLastCard
+                            opponentLastCard = if (newState.firstCardPlayed != null) null else prev.opponentLastCard,
+                            lastTrickResult = trickResultBt ?: prev.lastTrickResult
                         )
                     }
                     checkForSessionEnd(newState)
@@ -300,6 +320,10 @@ class BriscolaGameViewModel @Inject constructor(
             delay(1800)
             _uiState.update { it.copy(opponentLastCard = null) }
         }
+    }
+
+    fun clearTrickResult() {
+        _uiState.update { it.copy(lastTrickResult = null) }
     }
 
     fun sendChat(text: String) {
