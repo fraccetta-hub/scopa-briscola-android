@@ -37,6 +37,8 @@ import javax.inject.Inject
 
 data class ChatMessage(val text: String, val isMine: Boolean)
 
+data class ScopaCaptureResult(val cards: List<Card>, val localWon: Boolean)
+
 data class ScopaUiState(
     val state: ScopaState,
     val isServer: Boolean,
@@ -52,7 +54,8 @@ data class ScopaUiState(
     val chatMessages: List<ChatMessage> = emptyList(),
     val showChat: Boolean = false,
     val chatPinned: Boolean = false,
-    val isSolo: Boolean = false
+    val isSolo: Boolean = false,
+    val lastCaptureResult: ScopaCaptureResult? = null
 )
 
 @HiltViewModel
@@ -235,6 +238,9 @@ class ScopaGameViewModel @Inject constructor(
         }
 
         val clearOpponentCard = action is ScopaAction.NextMatch || action is ScopaAction.NextGame
+        val captureResult = newState.lastCapture?.let { capture ->
+            ScopaCaptureResult(cards = capture.cards, localWon = capture.playerWho == localPlayer)
+        }
         _uiState.update { prev ->
             val newHistory = when {
                 action is ScopaAction.NextGame -> emptyList()
@@ -245,7 +251,8 @@ class ScopaGameViewModel @Inject constructor(
                 state = newState,
                 lastMatchScores = matchScores ?: prev.lastMatchScores,
                 matchHistory = newHistory,
-                opponentLastCard = if (clearOpponentCard || isSolo) null else prev.opponentLastCard
+                opponentLastCard = if (clearOpponentCard || isSolo) null else prev.opponentLastCard,
+                lastCaptureResult = captureResult ?: prev.lastCaptureResult
             )
         }
         if (!isSolo) sendGameState(newState)
@@ -339,6 +346,9 @@ class ScopaGameViewModel @Inject constructor(
                             newState.player2Captured, newState.player2Scope
                         )
                     } else null
+                    val captureResultBt = newState.lastCapture?.let { capture ->
+                        ScopaCaptureResult(cards = capture.cards, localWon = capture.playerWho == localPlayer)
+                    }
                     _uiState.update { prev ->
                         val gameReset = (newState.player1SessionWins + newState.player2SessionWins) >
                             (prev.state.player1SessionWins + prev.state.player2SessionWins)
@@ -350,7 +360,8 @@ class ScopaGameViewModel @Inject constructor(
                         prev.copy(
                             state = newState,
                             lastMatchScores = matchScores ?: prev.lastMatchScores,
-                            matchHistory = newHistory
+                            matchHistory = newHistory,
+                            lastCaptureResult = captureResultBt ?: prev.lastCaptureResult
                         )
                     }
                     checkForSessionEnd(newState)
@@ -364,6 +375,10 @@ class ScopaGameViewModel @Inject constructor(
                 else -> {}
             }
         }
+    }
+
+    fun clearCaptureResult() {
+        _uiState.update { it.copy(lastCaptureResult = null) }
     }
 
     private fun showOpponentCard(card: Card) {

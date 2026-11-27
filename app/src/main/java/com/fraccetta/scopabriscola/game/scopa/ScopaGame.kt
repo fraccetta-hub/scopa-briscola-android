@@ -3,7 +3,9 @@ package com.fraccetta.scopabriscola.game.scopa
 import com.fraccetta.scopabriscola.domain.Card
 import com.fraccetta.scopabriscola.domain.Deck
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+
+@Serializable
+data class ScopaCapture(val playerWho: Int, val cards: List<Card>)
 
 @Serializable
 data class ScopaState(
@@ -21,7 +23,7 @@ data class ScopaState(
     val pendingCaptures: List<List<Card>>,
     val lastCapturerId: Int = 1,
     val matchStarter: Int = 1,
-    @Transient val lastCapture: Pair<Int, List<Card>>? = null,
+    val lastCapture: ScopaCapture? = null,
 
     // Game score (accumulated across matches within current game)
     val player1GameScore: Int = 0,
@@ -226,7 +228,7 @@ class ScopaGame {
             player2Scope = newP2Scope,
             currentPlayer = if (state.currentPlayer == 1) 2 else 1,
             lastCapturerId = state.currentPlayer,
-            lastCapture = Pair(state.currentPlayer, capturedCards),
+            lastCapture = ScopaCapture(playerWho = state.currentPlayer, cards = capturedCards),
             phase = ScopaPhase.WAITING_PLAY,
             pendingCaptures = emptyList()
         )

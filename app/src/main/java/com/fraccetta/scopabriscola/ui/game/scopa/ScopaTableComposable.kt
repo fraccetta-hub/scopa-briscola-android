@@ -3,6 +3,7 @@ package com.fraccetta.scopabriscola.ui.game.scopa
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.compose.foundation.background
 import androidx.compose.ui.draw.alpha
@@ -36,6 +37,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -108,7 +110,8 @@ fun ScopaGameScreen(
         onNextGame = viewModel::onNextGame,
         onArenaSelected = { if (uiState.isServer) viewModel.setArena(it) },
         onSendChat = viewModel::sendChat,
-        onToggleChat = viewModel::toggleChat
+        onToggleChat = viewModel::toggleChat,
+        onClearCaptureResult = viewModel::clearCaptureResult
     )
 
     if (uiState.showDisconnectionDialog) {
@@ -129,6 +132,7 @@ fun ScopaTableContent(
     onNextGame: () -> Unit,
     onArenaSelected: (String) -> Unit = {},
     onSendChat: (String) -> Unit = {},
+    onClearCaptureResult: () -> Unit = {},
     onToggleChat: () -> Unit = {}
 ) {
     val state = uiState.state
@@ -536,6 +540,42 @@ fun ScopaTableContent(
                 )
             }
         }
+        // ── Capture animation ─────────────────────────────────────────
+        val captureAnim = remember { Animatable(0f) }
+        var animatingCapture by remember { mutableStateOf<ScopaCaptureResult?>(null) }
+        val captureScope = androidx.compose.runtime.rememberCoroutineScope()
+        LaunchedEffect(uiState.lastCaptureResult) {
+            val result = uiState.lastCaptureResult ?: return@LaunchedEffect
+            animatingCapture = result
+            captureAnim.snapTo(0f)
+            captureScope.launch {
+                captureAnim.animateTo(1f, tween(600, easing = FastOutSlowInEasing))
+                onClearCaptureResult()
+                animatingCapture = null
+            }
+        }
+        val acr = animatingCapture
+        if (acr != null) {
+            val moveYDp = (captureAnim.value * (if (acr.localWon) 320f else -320f)).dp
+            val alpha = (1f - captureAnim.value * 1.4f).coerceIn(0f, 1f)
+            val cardSize = if (acr.cards.size > 3) 48.dp to 72.dp else 60.dp to 90.dp
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    modifier = Modifier
+                        .offset(y = moveYDp)
+                        .alpha(alpha),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    acr.cards.take(5).forEach { card ->
+                        CardImage(card = card, modifier = Modifier.size(cardSize.first, cardSize.second))
+                    }
+                }
+            }
+        }
+
         // ── Chat UI (multiplayer only) ────────────────────────────────
         if (!uiState.isSolo) {
             val predefinedMessages = listOf("Nice move!", "Nooo!", "Good luck!", "Great!", "Too bad...", "Almost there")
