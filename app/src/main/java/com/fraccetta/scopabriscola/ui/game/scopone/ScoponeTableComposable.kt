@@ -131,6 +131,22 @@ private fun ScoponeTableContent(
     // Capture replay dialog
     var showReplayDialog by remember { mutableStateOf(false) }
 
+    // Capture toast
+    var captureToast by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(state.lastCapture) {
+        val cap = state.lastCapture ?: return@LaunchedEffect
+        if (cap.cards.size < 2) return@LaunchedEffect
+        val name = when (cap.playerWho) {
+            localPlayer -> uiState.localPlayerName ?: "Tu"
+            partnerPlayer -> if (uiState.btMode == 1) uiState.partnerName ?: "Partner" else "Captain"
+            else -> "AI ${cap.playerWho + 1}"
+        }
+        val n = cap.cards.size
+        captureToast = "$name ha preso $n ${if (n == 1) "carta" else "carte"}"
+        delay(1800L)
+        captureToast = null
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         RandomArenaBackground()
 
@@ -212,6 +228,23 @@ private fun ScoponeTableContent(
                             TeamScoreChip(label = "Loro", score = state.teamGameScore[1 - myTeam], highlight = false)
                         }
 
+                        // Currently played card by AI/partner
+                        if (uiState.opponentLastCard != null) {
+                            val playingName = when (state.currentPlayer) {
+                                partnerPlayer -> if (uiState.btMode == 1) uiState.partnerName ?: "Partner" else "Captain"
+                                else -> "AI ${state.currentPlayer + 1}"
+                            }
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text("$playingName gioca:", color = AccentGold, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Box(modifier = Modifier.size(48.dp, 72.dp)) {
+                                    CardImage(card = uiState.opponentLastCard, modifier = Modifier.fillMaxSize())
+                                }
+                            }
+                        }
+
                         // Table cards
                         if (state.tableCards.isEmpty()) {
                             Box(
@@ -223,36 +256,59 @@ private fun ScoponeTableContent(
                                 Text("Tavolo\nvuoto", color = CardCream.copy(alpha = 0.5f), fontSize = 11.sp, textAlign = TextAlign.Center)
                             }
                         } else {
-                            LazyRow(
-                                horizontalArrangement = Arrangement.spacedBy((-24).dp),
-                                modifier = Modifier.fillMaxWidth()
+                            val isChoosingCapture = phase == ScoponePhase.WAITING_CAPTURE_CHOICE && state.currentPlayer == localPlayer
+                            val multiGroup = isChoosingCapture && state.pendingCaptures.size > 1
+                            val groupColors = listOf(AccentGold, Color(0xFF00BCD4), Color(0xFF66BB6A), Color(0xFFFF7043))
+                            if (multiGroup) {
+                                Text(
+                                    "Scegli quale gruppo prendere",
+                                    color = AccentGold,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            val chunks = state.tableCards.chunked(5)
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                itemsIndexed(state.tableCards) { idx, card ->
-                                    val selectable = phase == ScoponePhase.WAITING_CAPTURE_CHOICE && state.currentPlayer == localPlayer
-                                    val inPending = state.pendingCaptures.any { it.contains(card) }
-                                    Box(
-                                        modifier = Modifier
-                                            .size(60.dp, 90.dp)
-                                            .then(if (selectable && inPending) Modifier.border(2.dp, AccentGold, RoundedCornerShape(6.dp)) else Modifier)
-                                            .then(if (selectable && inPending) Modifier.clickable {
-                                                val group = state.pendingCaptures.firstOrNull { it.contains(card) }
-                                                if (group != null) onCaptureChosen(group)
-                                            } else Modifier)
-                                    ) {
-                                        CardImage(card = card, modifier = Modifier.fillMaxSize())
+                                chunks.forEach { rowCards ->
+                                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        rowCards.forEach { card ->
+                                            val groupIndex = if (isChoosingCapture) state.pendingCaptures.indexOfFirst { it.contains(card) } else -1
+                                            val inPending = groupIndex >= 0
+                                            val borderColor = groupColors.getOrElse(groupIndex) { AccentGold }
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(52.dp, 78.dp)
+                                                    .then(if (inPending) Modifier.border(3.dp, borderColor, RoundedCornerShape(6.dp)) else Modifier)
+                                                    .then(if (inPending) Modifier.clickable {
+                                                        val group = state.pendingCaptures.getOrNull(groupIndex)
+                                                        if (group != null) onCaptureChosen(group)
+                                                    } else Modifier)
+                                            ) {
+                                                CardImage(card = card, modifier = Modifier.fillMaxSize())
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
 
                         // Turn indicator
+                        val currentName = when (state.currentPlayer) {
+                            localPlayer -> uiState.localPlayerName ?: "Tu"
+                            partnerPlayer -> if (uiState.btMode == 1) uiState.partnerName ?: "Partner" else "Captain"
+                            else -> "AI ${state.currentPlayer + 1}"
+                        }
                         Text(
                             text = when {
                                 phase == ScoponePhase.MATCH_END -> "Fine mano"
                                 phase == ScoponePhase.GAME_END -> "Fine partita"
+                                phase == ScoponePhase.WAITING_CAPTURE_CHOICE && isMyTurn -> "→ tocca una carta colorata"
+                                phase == ScoponePhase.WAITING_CAPTURE_CHOICE -> "Sceglie $currentName…"
                                 isMyTurn -> "Tocca a te"
-                                state.currentPlayer == partnerPlayer -> "Pensa partner…"
-                                else -> "Pensa avversario…"
+                                else -> "Gioca $currentName…"
                             },
                             color = if (isMyTurn) AccentGold else CardCream.copy(alpha = 0.6f),
                             fontSize = 12.sp,
@@ -326,6 +382,20 @@ private fun ScoponeTableContent(
                         }
                     }
                 }
+            }
+        }
+
+        // Capture toast
+        captureToast?.let { msg ->
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .statusBarsPadding()
+                    .padding(top = 56.dp)
+                    .background(Color(0xDD1A2A40), RoundedCornerShape(12.dp))
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            ) {
+                Text(msg, color = CardCream, fontSize = 13.sp, fontWeight = FontWeight.Medium)
             }
         }
 
@@ -532,11 +602,12 @@ private fun ScoponeScoreDetail(
     )
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         items.forEach { (label, mine, theirs) ->
+            val isCount = label == "Scope"
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("$label: ", color = CardCream.copy(alpha = 0.6f), fontSize = 11.sp, modifier = Modifier.width(70.dp))
-                Text(if (mine > 0) "✓" else "—", color = if (mine > 0) Color(0xFF4CAF50) else CardCream.copy(alpha = 0.4f), fontSize = 11.sp)
+                Text(if (mine > 0) (if (isCount) "$mine" else "✓") else "—", color = if (mine > 0) Color(0xFF4CAF50) else CardCream.copy(alpha = 0.4f), fontSize = 11.sp)
                 Text(" / ", color = CardCream.copy(alpha = 0.4f), fontSize = 11.sp)
-                Text(if (theirs > 0) "✓" else "—", color = if (theirs > 0) Color(0xFFF44336) else CardCream.copy(alpha = 0.4f), fontSize = 11.sp)
+                Text(if (theirs > 0) (if (isCount) "$theirs" else "✓") else "—", color = if (theirs > 0) Color(0xFFF44336) else CardCream.copy(alpha = 0.4f), fontSize = 11.sp)
             }
         }
     }

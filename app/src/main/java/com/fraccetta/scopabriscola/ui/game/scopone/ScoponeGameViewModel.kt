@@ -236,6 +236,7 @@ class ScoponeGameViewModel @Inject constructor(
         _uiState.update { prev ->
             prev.copy(
                 state = newState,
+                opponentLastCard = null,
                 lastMatchScores = matchScores ?: prev.lastMatchScores,
                 lastCaptureResult = captureResult ?: prev.lastCaptureResult,
                 lastCaptureDisplay = if (clearDisplay) null else captureResult ?: prev.lastCaptureDisplay,
