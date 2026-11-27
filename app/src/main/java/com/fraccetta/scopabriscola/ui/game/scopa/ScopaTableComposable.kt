@@ -45,6 +45,7 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -143,7 +144,7 @@ fun ScopaTableContent(
     val state = uiState.state
     val isMyTurn = state.currentPlayer == uiState.localPlayer
     val localHand = if (uiState.localPlayer == 1) state.player1Hand else state.player2Hand
-    var dealtCount by remember { mutableIntStateOf(3) }
+    var dealtCount by remember { mutableIntStateOf(0) }
     LaunchedEffect(uiState.matchId) {
         dealtCount = 0
         repeat(3) { i ->
@@ -517,8 +518,8 @@ fun ScopaTableContent(
                 itemsIndexed(localHand) { index, card ->
                     val clickable = isMyTurn && state.phase == ScopaPhase.WAITING_PLAY
                     val dealt = index < dealtCount
-                    val dealScale by animateFloatAsState(if (dealt) 1f else 0.3f, tween(220))
-                    val dealAlpha by animateFloatAsState(if (dealt) 1f else 0f, tween(220))
+                    val dealScale by animateFloatAsState(if (dealt) 1f else 0.3f, if (dealt) tween(220) else snap())
+                    val dealAlpha by animateFloatAsState(if (dealt) 1f else 0f, if (dealt) tween(220) else snap())
                     Box(
                         modifier = Modifier
                             .size(80.dp, 120.dp)
