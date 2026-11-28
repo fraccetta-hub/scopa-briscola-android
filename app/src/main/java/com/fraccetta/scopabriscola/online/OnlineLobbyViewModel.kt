@@ -39,22 +39,24 @@ class OnlineLobbyViewModel @Inject constructor(
             GameSession.isOnline = true
             GameSession.localPlayerName = name
             applyGameTypeSession(gameType, isServer = true)
-            onlineManager.startHosting(gameType, name)
-            _state.value = OnlineLobbyState.Hosting(name)
-
-            onlineManager.events.collect { event ->
-                when (event) {
-                    is ConnectionEvent.Connected -> {
-                        _state.value = OnlineLobbyState.Connected
-                        return@collect
+            // Start collecting BEFORE startHosting to avoid missing Connected event
+            val collectJob = launch {
+                onlineManager.events.collect { event ->
+                    when (event) {
+                        is ConnectionEvent.Connected -> {
+                            _state.value = OnlineLobbyState.Connected
+                            return@collect
+                        }
+                        is ConnectionEvent.Lost -> {
+                            _state.value = OnlineLobbyState.Error
+                            return@collect
+                        }
+                        else -> {}
                     }
-                    is ConnectionEvent.Lost -> {
-                        _state.value = OnlineLobbyState.Error
-                        return@collect
-                    }
-                    else -> {}
                 }
             }
+            onlineManager.startHosting(gameType, name)
+            _state.value = OnlineLobbyState.Hosting(name)
         }
     }
 
@@ -77,7 +79,7 @@ class OnlineLobbyViewModel @Inject constructor(
             onlineManager.stopListeningForRooms()
 
             onlineManager.connect(room.code, name,
-                onRoomNotFound = { _state.value = OnlineLobbyState.BrowsingRooms(emptyList()) }
+                onRoomNotFound = { startBrowsing(gameType) }
             )
 
             onlineManager.events.collect { event ->

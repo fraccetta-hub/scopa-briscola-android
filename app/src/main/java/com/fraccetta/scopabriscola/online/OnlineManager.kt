@@ -58,6 +58,7 @@ class OnlineManager : GameTransport {
             mapOf("code" to code, "hostName" to hostName, "game" to gameType, "timestamp" to System.currentTimeMillis())
         )
         openRoomRef.onDisconnect().removeValue()
+        roomRef.onDisconnect().removeValue()
 
         // Listen for client joining
         clientJoinListener = object : ValueEventListener {
@@ -107,9 +108,9 @@ class OnlineManager : GameTransport {
     // Real-time room browser — filtered by gameType family
     fun listenForOpenRooms(gameType: String, onUpdate: (List<RoomInfo>) -> Unit) {
         stopListeningForRooms()
-        val staleThreshold = System.currentTimeMillis() - 5 * 60 * 1000L
         openRoomsListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                val staleThreshold = System.currentTimeMillis() - 5 * 60 * 1000L
                 val rooms = mutableListOf<RoomInfo>()
                 for (child in snapshot.children) {
                     val code = child.child("code").getValue(String::class.java) ?: continue
