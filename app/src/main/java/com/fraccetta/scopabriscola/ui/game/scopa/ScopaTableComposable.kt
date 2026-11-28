@@ -783,7 +783,7 @@ fun BackCardImage(modifier: Modifier = Modifier) {
     LaunchedEffect(Unit) {
         bitmap = withContext(Dispatchers.IO) {
             try {
-                context.assets.open("backs/default_back.png").use { stream ->
+                context.assets.open("backs/default_back.webp").use { stream ->
                     BitmapFactory.decodeStream(stream)?.asImageBitmap()
                 }
             } catch (_: Exception) { null }
@@ -806,7 +806,7 @@ fun CardImage(card: Card, modifier: Modifier = Modifier) {
     LaunchedEffect(card.assetName) {
         bitmap = withContext(Dispatchers.IO) {
             try {
-                context.assets.open("cards/${card.assetName}.png").use { stream ->
+                context.assets.open("cards/${card.assetName}.webp").use { stream ->
                     BitmapFactory.decodeStream(stream)?.asImageBitmap()
                 }
             } catch (_: Exception) { null }
