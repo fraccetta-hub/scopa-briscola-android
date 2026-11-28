@@ -15,10 +15,9 @@ import javax.inject.Inject
 
 sealed class OnlineLobbyState {
     object Idle : OnlineLobbyState()
-    data class Hosting(val code: String) : OnlineLobbyState()
-    object WaitingForOpponent : OnlineLobbyState()
+    data class Hosting(val playerName: String) : OnlineLobbyState()
+    data class BrowsingRooms(val rooms: List<RoomInfo>) : OnlineLobbyState()
     object Connecting : OnlineLobbyState()
-    object RoomNotFound : OnlineLobbyState()
     object Connected : OnlineLobbyState()
     object Error : OnlineLobbyState()
 }
@@ -40,8 +39,8 @@ class OnlineLobbyViewModel @Inject constructor(
             GameSession.isOnline = true
             GameSession.localPlayerName = name
             applyGameTypeSession(gameType, isServer = true)
-            val code = onlineManager.startHosting(gameType, name)
-            _state.value = OnlineLobbyState.Hosting(code)
+            onlineManager.startHosting(gameType, name)
+            _state.value = OnlineLobbyState.Hosting(name)
 
             onlineManager.events.collect { event ->
                 when (event) {
@@ -59,7 +58,14 @@ class OnlineLobbyViewModel @Inject constructor(
         }
     }
 
-    fun joinGame(code: String, gameType: String) {
+    fun startBrowsing(gameType: String) {
+        _state.value = OnlineLobbyState.BrowsingRooms(emptyList())
+        onlineManager.listenForOpenRooms(gameType) { rooms ->
+            _state.value = OnlineLobbyState.BrowsingRooms(rooms)
+        }
+    }
+
+    fun joinRoom(room: RoomInfo, gameType: String) {
         viewModelScope.launch {
             val name = userPreferences.playerName.first().ifBlank { "Guest" }
             _state.value = OnlineLobbyState.Connecting
@@ -68,9 +74,10 @@ class OnlineLobbyViewModel @Inject constructor(
             GameSession.isOnline = true
             GameSession.localPlayerName = name
             applyGameTypeSession(gameType, isServer = false)
+            onlineManager.stopListeningForRooms()
 
-            onlineManager.connect(code.uppercase().trim(), name,
-                onRoomNotFound = { _state.value = OnlineLobbyState.RoomNotFound }
+            onlineManager.connect(room.code, name,
+                onRoomNotFound = { _state.value = OnlineLobbyState.BrowsingRooms(emptyList()) }
             )
 
             onlineManager.events.collect { event ->
@@ -89,25 +96,23 @@ class OnlineLobbyViewModel @Inject constructor(
         }
     }
 
+    fun reset() {
+        onlineManager.disconnect()
+        _state.value = OnlineLobbyState.Idle
+    }
+
     private fun applyGameTypeSession(gameType: String, isServer: Boolean) {
         when (gameType.uppercase()) {
             "SCOPA" -> {
                 GameSession.localPlayer = if (isServer) 1 else 2
-                GameSession.opponentName = if (isServer) "Opponent" else "Host"
             }
             "BRISCOLA" -> {
                 GameSession.localPlayer = if (isServer) 1 else 2
-                GameSession.opponentName = if (isServer) "Opponent" else "Host"
             }
             "SCOPONE_TEAM" -> {
                 GameSession.scoponeBtMode = 1
                 GameSession.scoponeLocalPlayer = if (isServer) 0 else 2
             }
         }
-    }
-
-    fun reset() {
-        onlineManager.disconnect()
-        _state.value = OnlineLobbyState.Idle
     }
 }

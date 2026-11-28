@@ -1,16 +1,21 @@
 package com.fraccetta.scopabriscola.ui.screens.online
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -19,8 +24,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -29,21 +32,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.fraccetta.scopabriscola.online.OnlineLobbyState
 import com.fraccetta.scopabriscola.online.OnlineLobbyViewModel
+import com.fraccetta.scopabriscola.online.RoomInfo
 import com.fraccetta.scopabriscola.ui.game.AssetBackground
 import com.fraccetta.scopabriscola.ui.theme.AccentGold
 import com.fraccetta.scopabriscola.ui.theme.CardCream
@@ -75,6 +75,14 @@ fun OnlineLobbyScreen(
 
     LaunchedEffect(isHost) {
         if (isHost) viewModel.hostGame(gameType)
+        else viewModel.startBrowsing(gameType)
+    }
+
+    val gameLabel = when (gameType.uppercase()) {
+        "SCOPA" -> "Scopa"
+        "BRISCOLA" -> "Briscola"
+        "SCOPONE_TEAM", "SCOPONE_MIX" -> "Scopone Scientifico"
+        else -> gameType.replaceFirstChar { it.uppercase() }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -89,7 +97,7 @@ fun OnlineLobbyScreen(
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
-                    title = { Text("Online — ${gameType.replaceFirstChar { it.uppercase() }}", color = CardCream) },
+                    title = { Text("$gameLabel — Online", color = CardCream) },
                     navigationIcon = {
                         IconButton(onClick = { viewModel.reset(); navController.popBackStack() }) {
                             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = CardCream)
@@ -121,17 +129,21 @@ fun OnlineLobbyScreen(
 private fun HostContent(state: OnlineLobbyState) {
     when (state) {
         is OnlineLobbyState.Hosting -> {
-            Text("Room code", color = CardCream, fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(12.dp))
+            Text("Your room", color = CardCream, fontSize = 15.sp)
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = state.code,
+                text = state.playerName,
                 color = AccentGold,
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 8.sp
+                fontSize = 36.sp,
+                fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(24.dp))
-            Text("Share this code with your friend", color = CardCream.copy(alpha = 0.7f), fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "Tell your friend to open «Find game» and tap your name",
+                color = CardCream.copy(alpha = 0.65f),
+                fontSize = 13.sp,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
             Spacer(modifier = Modifier.height(32.dp))
             CircularProgressIndicator(color = AccentGold, modifier = Modifier.size(32.dp))
             Spacer(modifier = Modifier.height(12.dp))
@@ -152,38 +164,54 @@ private fun JoinContent(
     gameType: String,
     viewModel: OnlineLobbyViewModel
 ) {
-    var codeInput by remember { mutableStateOf("") }
-
     when (state) {
-        OnlineLobbyState.Idle, OnlineLobbyState.RoomNotFound -> {
-            Text("Enter room code", color = CardCream, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = codeInput,
-                onValueChange = { codeInput = it.uppercase().take(6) },
-                label = { Text("6-character code", color = CardCream.copy(alpha = 0.7f)) },
+        is OnlineLobbyState.BrowsingRooms -> {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = CardCream,
-                    unfocusedTextColor = CardCream,
-                    focusedBorderColor = AccentGold,
-                    unfocusedBorderColor = CardCream.copy(alpha = 0.5f)
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Open rooms",
+                    color = CardCream,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
                 )
-            )
-            if (state == OnlineLobbyState.RoomNotFound) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Room not found. Check the code.", color = Color.Red, fontSize = 13.sp)
+                Text(
+                    text = "${state.rooms.size} found",
+                    color = CardCream.copy(alpha = 0.5f),
+                    fontSize = 13.sp
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = { viewModel.joinGame(codeInput, gameType) },
-                enabled = codeInput.length == 6,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = AccentGold)
-            ) {
-                Text("Join", color = CardCream, fontWeight = FontWeight.Bold)
+            if (state.rooms.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0x22FFFFFF), RoundedCornerShape(12.dp))
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("No open rooms yet", color = CardCream, fontSize = 15.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Ask your friend to tap «Host online» first",
+                            color = CardCream.copy(alpha = 0.5f),
+                            fontSize = 12.sp,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    items(state.rooms) { room ->
+                        RoomRow(room = room, onClick = { viewModel.joinRoom(room, gameType) })
+                    }
+                }
             }
         }
         OnlineLobbyState.Connecting -> {
@@ -194,12 +222,48 @@ private fun JoinContent(
         OnlineLobbyState.Error -> {
             Text("Connection error", color = Color.Red)
             Spacer(modifier = Modifier.height(12.dp))
-            Button(onClick = { viewModel.reset() }, colors = ButtonDefaults.buttonColors(containerColor = AccentGold)) {
-                Text("Try again", color = CardCream)
+            Button(
+                onClick = { viewModel.startBrowsing(gameType) },
+                colors = ButtonDefaults.buttonColors(containerColor = AccentGold)
+            ) {
+                Text("Try again", color = Color(0xFF0D1F33))
             }
         }
         else -> {
             CircularProgressIndicator(color = AccentGold)
         }
+    }
+}
+
+@Composable
+private fun RoomRow(room: RoomInfo, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0x22FFFFFF), RoundedCornerShape(12.dp))
+            .border(1.dp, Color(0x44FFFFFF), RoundedCornerShape(12.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 20.dp, vertical = 14.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                text = room.hostName,
+                color = AccentGold,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = when (room.gameType.uppercase()) {
+                    "SCOPA" -> "Scopa"
+                    "BRISCOLA" -> "Briscola"
+                    else -> "Scopone Scientifico"
+                },
+                color = CardCream.copy(alpha = 0.6f),
+                fontSize = 12.sp
+            )
+        }
+        Text("Join →", color = AccentGold, fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
 }

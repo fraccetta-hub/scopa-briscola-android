@@ -18,6 +18,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
+data class RoomInfo(
+    val code: String,
+    val hostName: String,
+    val gameType: String,
+    val timestamp: Long
+)
+
 class OnlineManager : GameTransport {
 
     private val db = Firebase.database.reference
@@ -28,19 +35,29 @@ class OnlineManager : GameTransport {
 
     private var roomCode: String? = null
     private var isServer: Boolean = false
+    private var hostPlayerName: String? = null
     private var incomingListener: ChildEventListener? = null
     private var clientJoinListener: ValueEventListener? = null
+    private var openRoomsListener: ValueEventListener? = null
 
-    // Host: creates room, returns code, waits for client to join
+    // Host: creates room, writes to open_rooms list
     fun startHosting(gameType: String, hostName: String): String {
         val code = generateCode()
         roomCode = code
         isServer = true
+        hostPlayerName = hostName
 
         val roomRef = db.child("rooms").child(code)
         roomRef.child("meta").setValue(
             mapOf("game" to gameType, "hostName" to hostName, "state" to "WAITING")
         )
+
+        // Publish to open rooms; auto-remove on host disconnect
+        val openRoomRef = db.child("open_rooms").child(hostName)
+        openRoomRef.setValue(
+            mapOf("code" to code, "hostName" to hostName, "game" to gameType, "timestamp" to System.currentTimeMillis())
+        )
+        openRoomRef.onDisconnect().removeValue()
 
         // Listen for client joining
         clientJoinListener = object : ValueEventListener {
@@ -49,6 +66,7 @@ class OnlineManager : GameTransport {
                 if (clientName != null) {
                     roomRef.removeEventListener(this)
                     clientJoinListener = null
+                    openRoomRef.removeValue()
                     GameSession.opponentName = clientName
                     GameSession.partnerName = clientName
                     scope.launch { _events.emit(ConnectionEvent.Connected) }
@@ -64,7 +82,7 @@ class OnlineManager : GameTransport {
         return code
     }
 
-    // Client: joins an existing room by code
+    // Client: connects by joining a room from the browser
     fun connect(code: String, clientName: String, onRoomNotFound: () -> Unit) {
         roomCode = code
         isServer = false
@@ -86,12 +104,41 @@ class OnlineManager : GameTransport {
         }
     }
 
+    // Real-time room browser — filtered by gameType family
+    fun listenForOpenRooms(gameType: String, onUpdate: (List<RoomInfo>) -> Unit) {
+        stopListeningForRooms()
+        val staleThreshold = System.currentTimeMillis() - 5 * 60 * 1000L
+        openRoomsListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val rooms = mutableListOf<RoomInfo>()
+                for (child in snapshot.children) {
+                    val code = child.child("code").getValue(String::class.java) ?: continue
+                    val hostName = child.child("hostName").getValue(String::class.java) ?: continue
+                    val game = child.child("game").getValue(String::class.java) ?: continue
+                    val ts = child.child("timestamp").getValue(Long::class.java) ?: 0L
+                    if (ts < staleThreshold) continue
+                    val sameFamily = gameType.uppercase().let { gt ->
+                        game.uppercase() == gt ||
+                        (gt.startsWith("SCOPONE") && game.uppercase().startsWith("SCOPONE"))
+                    }
+                    if (sameFamily) rooms.add(RoomInfo(code, hostName, game, ts))
+                }
+                onUpdate(rooms.sortedByDescending { it.timestamp })
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        db.child("open_rooms").addValueEventListener(openRoomsListener!!)
+    }
+
+    fun stopListeningForRooms() {
+        openRoomsListener?.let { db.child("open_rooms").removeEventListener(it) }
+        openRoomsListener = null
+    }
+
     private fun listenForMessages(code: String, isServerSide: Boolean) {
-        // Server listens on c2s, client listens on s2c
         val channel = if (isServerSide) "c2s" else "s2c"
         val channelRef = db.child("rooms").child(code).child(channel)
 
-        // skip existing messages — only listen to newly added
         var initialized = false
         incomingListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
@@ -110,14 +157,12 @@ class OnlineManager : GameTransport {
                 scope.launch { _events.emit(ConnectionEvent.Lost) }
             }
         }
-        // Add a sentinel so the first real message is not skipped
         channelRef.push().setValue("__init__")
         channelRef.addChildEventListener(incomingListener!!)
     }
 
     override fun send(msg: BtMessage) {
         val code = roomCode ?: return
-        // Server sends on s2c, client sends on c2s
         val channel = if (isServer) "s2c" else "c2s"
         val msgJson = BtProtocol.encode(msg).trim()
         db.child("rooms").child(code).child(channel).push().setValue(msgJson)
@@ -132,10 +177,14 @@ class OnlineManager : GameTransport {
         clientJoinListener?.let {
             db.child("rooms").child(code).removeEventListener(it)
         }
+        hostPlayerName?.let { db.child("open_rooms").child(it).removeValue() }
         if (isServer) {
             db.child("rooms").child(code).removeValue()
         }
+        stopListeningForRooms()
         roomCode = null
+        isServer = false
+        hostPlayerName = null
         incomingListener = null
         clientJoinListener = null
     }
