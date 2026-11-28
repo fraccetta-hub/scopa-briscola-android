@@ -21,6 +21,7 @@ class UserPreferences(private val context: Context) {
         private val CPU_NAME_KEY = stringPreferencesKey("cpu_name")
         private val SOUND_ENABLED_KEY = booleanPreferencesKey("sound_enabled")
         private val SCOPA_TARGET_SCORE_KEY = intPreferencesKey("scopa_target_score")
+        private val SCOPONE_TARGET_SCORE_KEY = intPreferencesKey("scopone_target_score")
     }
 
     val playerName: Flow<String> = context.dataStore.data.map { prefs ->
@@ -43,6 +44,10 @@ class UserPreferences(private val context: Context) {
         prefs[SCOPA_TARGET_SCORE_KEY] ?: 11
     }
 
+    val scoponeTargetScore: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[SCOPONE_TARGET_SCORE_KEY] ?: 11
+    }
+
     suspend fun setPlayerName(name: String) {
         context.dataStore.edit { prefs -> prefs[PLAYER_NAME_KEY] = name }
     }
@@ -57,5 +62,9 @@ class UserPreferences(private val context: Context) {
 
     suspend fun setScopaTargetScore(score: Int) {
         context.dataStore.edit { prefs -> prefs[SCOPA_TARGET_SCORE_KEY] = score }
+    }
+
+    suspend fun setScoponeTargetScore(score: Int) {
+        context.dataStore.edit { prefs -> prefs[SCOPONE_TARGET_SCORE_KEY] = score }
     }
 }

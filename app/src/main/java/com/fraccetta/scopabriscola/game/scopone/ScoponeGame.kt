@@ -61,7 +61,8 @@ class ScoponeGame {
             currentPlayer = 0,
             phase = ScoponePhase.WAITING_PLAY,
             pendingCaptures = emptyList(),
-            matchStarter = 0
+            matchStarter = 0,
+            targetScore = targetScore
         )
     }
 

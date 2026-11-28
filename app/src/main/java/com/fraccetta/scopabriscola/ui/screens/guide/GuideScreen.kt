@@ -295,32 +295,32 @@ private fun ScoponeGuide() {
             .padding(16.dp)
     ) {
         GuideSection(
-            title = "Obiettivo",
-            content = "Essere la prima squadra a raggiungere 11 punti (o il punteggio impostato nelle impostazioni). Si gioca in 4, divisi in 2 squadre: i giocatori 1 e 3 contro i giocatori 2 e 4."
+            title = "Objective",
+            content = "Be the first team to reach the target score (set in Settings, default 11). Played by 4 players in 2 teams: players 1 & 3 versus players 2 & 4."
         )
         GuideSection(
-            title = "Il mazzo",
-            content = "Mazzo napoletano da 40 carte, 4 semi: Denari, Coppe, Spade, Bastoni. Valori dall'Asso (1) al 7, poi Fante (8), Cavallo (9), Re (10)."
+            title = "The deck",
+            content = "Played with a 40-card Neapolitan deck, 4 suits: Coins, Cups, Swords, Clubs. Values from Ace (1) to 7, then Jack (8), Horse (9), King (10)."
         )
         GuideSection(
-            title = "La distribuzione",
-            content = "Ciascun giocatore riceve 10 carte. Il tavolo inizia vuoto (variante Scientifico). Non ci sono carte scoperte all'inizio."
+            title = "The deal",
+            content = "Each player receives 10 cards. The table starts empty (Scientifico variant). No cards are placed face-up at the start."
         )
         GuideSection(
-            title = "Il turno",
-            content = "Si gioca in senso antiorario (1→4→3→2→1→…). A ogni turno il giocatore butta una carta:\n• Se la carta ha lo stesso valore di una o più carte sul tavolo, può prendere.\n• Se esistono più combinazioni possibili (es. 5=2+3 oppure 5=5), compaiono i gruppi evidenziati in colori diversi — tocca una carta colorata per scegliere quale gruppo prendere.\n• Se non ci sono prese possibili, la carta resta sul tavolo."
+            title = "Turn",
+            content = "Play order is counter-clockwise (1→4→3→2→1→…). On your turn play one card:\n\n• If the card matches the value of one or more table cards, you capture them.\n• If multiple capture combinations exist (e.g. 5=2+3 or 5=5), the groups appear highlighted in different colours — tap a coloured card to choose which group to take.\n• If no capture is possible, the card stays on the table."
         )
         GuideSection(
-            title = "La scopa",
-            content = "Se dopo la presa il tavolo rimane vuoto, si segna una scopa. Nell'ultima presa di ogni mano il tavolo si svuota: anche questa vale scopa (a differenza della Scopa tradizionale)."
+            title = "Scopa!",
+            content = "If your capture leaves the table empty, you score a scopa. On the very last capture of a hand the table empties too — this also counts as a scopa (unlike classic Scopa)."
         )
         GuideSection(
-            title = "Fine mano e punteggio",
-            content = "Quando tutti hanno esaurito le carte, si contano i punti per squadra combinando le carte di entrambi i compagni:\n• Carte: la squadra con più di 20 carte prende 1 punto\n• Denari: la squadra con più carte di Denari prende 1 punto\n• Settebello: chi ha il 7 di Denari prende 1 punto\n• Primiera: vince chi ha il punteggio più alto (7=21, 6=18, A=16, 5=15, 4=14, 3=13, 2=12, figure=10) contando la carta migliore per ogni seme\n• Scope: 1 punto per ogni scopa fatta"
+            title = "End of hand and scoring",
+            content = "When all cards are played, points are tallied per team by combining both teammates' captures:\n\n• Cards: team with more than 20 cards scores 1 point\n• Coins: team with more Coins cards scores 1 point\n• Settebello: team holding the 7 of Coins scores 1 point\n• Primiera: highest score wins (7=21, 6=18, A=16, 5=15, 4=14, 3=13, 2=12, face cards=10) — best card per suit counts\n• Scope: 1 point per scopa scored"
         )
         GuideSection(
-            title = "Modalità Bluetooth",
-            content = "• 2 Umani vs 2 PC: tu e il tuo compagno BT giocate insieme contro 2 AI\n• Umano+AI vs Umano+AI: tu con un AI vs il tuo avversario BT con un AI\n\nUno dei due fa Host, l'altro trova la partita con Find game."
+            title = "Bluetooth mode",
+            content = "• 2 Humans vs 2 CPU: you and your BT partner play together against 2 AI\n• Human+AI vs Human+AI: you with an AI vs your BT opponent with an AI\n\nOne player hosts, the other finds the game with Find game."
         )
     }
 }

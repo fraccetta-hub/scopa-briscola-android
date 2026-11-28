@@ -63,12 +63,15 @@ fun SettingsScreen(
     val playerName by viewModel.playerName.collectAsState(initial = "")
     val soundEnabled by viewModel.soundEnabled.collectAsState(initial = true)
     val scopaTargetScore by viewModel.scopaTargetScore.collectAsState(initial = 11)
+    val scoponeTargetScore by viewModel.scoponeTargetScore.collectAsState(initial = 11)
     val updateCheckState by viewModel.updateCheckState.collectAsState()
 
     var nameInput by remember(playerName) { mutableStateOf(playerName) }
     var targetScoreInput by remember(scopaTargetScore) { mutableStateOf(scopaTargetScore.toString()) }
+    var scoponeTargetScoreInput by remember(scoponeTargetScore) { mutableStateOf(scoponeTargetScore.toString()) }
     var nameSaved by remember { mutableStateOf(false) }
     var scoreSaved by remember { mutableStateOf(false) }
+    var scoponeScoreSaved by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -219,6 +222,41 @@ fun SettingsScreen(
                 Text(text = stringResource(R.string.settings_save_target_score), color = CardCream)
             }
             if (scoreSaved) {
+                Text(text = "✓ Score saved", color = AccentGold)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(text = "Scopone winning score (default: 11)", color = CardCream)
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = scoponeTargetScoreInput,
+                onValueChange = { scoponeTargetScoreInput = it },
+                label = { Text("E.g. 11, 15, 21…", color = CardCream.copy(alpha = 0.7f)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = CardCream,
+                    unfocusedTextColor = CardCream,
+                    focusedBorderColor = CardCream,
+                    unfocusedBorderColor = CardCream.copy(alpha = 0.5f)
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                    val score = scoponeTargetScoreInput.toIntOrNull()?.coerceIn(1, 100) ?: 11
+                    scoponeTargetScoreInput = score.toString()
+                    viewModel.setScoponeTargetScore(score)
+                    scope.launch { scoponeScoreSaved = true; delay(2000); scoponeScoreSaved = false }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = AccentGold)
+            ) {
+                Text(text = "Save Scopone score", color = CardCream)
+            }
+            if (scoponeScoreSaved) {
                 Text(text = "✓ Score saved", color = AccentGold)
             }
 

@@ -31,6 +31,7 @@ class SettingsViewModel @Inject constructor(
     val cpuName: Flow<String> = userPreferences.cpuName
     val soundEnabled: Flow<Boolean> = userPreferences.soundEnabled
     val scopaTargetScore: Flow<Int> = userPreferences.scopaTargetScore
+    val scoponeTargetScore: Flow<Int> = userPreferences.scoponeTargetScore
 
     private val _updateCheckState = MutableStateFlow<UpdateCheckState>(UpdateCheckState.Idle)
     val updateCheckState = _updateCheckState.asStateFlow()
@@ -49,6 +50,10 @@ class SettingsViewModel @Inject constructor(
 
     fun setScopaTargetScore(score: Int) {
         viewModelScope.launch { userPreferences.setScopaTargetScore(score) }
+    }
+
+    fun setScoponeTargetScore(score: Int) {
+        viewModelScope.launch { userPreferences.setScoponeTargetScore(score) }
     }
 
     fun checkForUpdate() {

@@ -103,7 +103,7 @@ class ScoponeGameViewModel @Inject constructor(
             userPreferences.soundEnabled.collect { SoundManager.enabled = it }
         }
         viewModelScope.launch {
-            val targetScore = userPreferences.scopaTargetScore.first()
+            val targetScore = userPreferences.scoponeTargetScore.first()
             val initialState = scoponeGame.newSession(targetScore)
             _uiState.update { it.copy(state = initialState) }
             if (isServer && !isSolo) sendGameState(initialState)
