@@ -80,14 +80,7 @@ fun GameModeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = gameTitle,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = CardCream,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(56.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = { navController.navigate("lobby/${gameType.uppercase()}/HOST") },

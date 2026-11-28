@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -70,23 +72,13 @@ fun ScoponeGameModeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 32.dp),
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 32.dp)
+                    .padding(vertical = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top
             ) {
-                Text(
-                    text = "Scopone Scientifico",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = CardCream,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "4 players • 2 teams",
-                    color = CardCream.copy(alpha = 0.6f),
-                    fontSize = 14.sp
-                )
-
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // VS CPU (offline)
                 Button(
@@ -106,7 +98,7 @@ fun ScoponeGameModeScreen(
                 }
                 Text("You + Captain vs 2 AI", color = CardCream.copy(alpha = 0.5f), fontSize = 11.sp)
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // BT Mode 1: 2 umani vs 2 AI
                 ModeSection(title = "2 Humans vs 2 AI (BT)", subtitle = "You + BT partner vs 2 AI") {
@@ -136,7 +128,7 @@ fun ScoponeGameModeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Online Mode
-                ModeSection(title = "Online (Internet)", subtitle = "2 umani vs 2 AI su internet") {
+                ModeSection(title = "Online (Internet)", subtitle = "You + partner vs 2 AI") {
                     Button(
                         onClick = {
                             GameSession.isSolo = false
