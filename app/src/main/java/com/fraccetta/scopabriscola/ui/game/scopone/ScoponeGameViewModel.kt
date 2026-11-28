@@ -246,6 +246,34 @@ class ScoponeGameViewModel @Inject constructor(
         if (!isSolo) sendGameState(newState)
         checkForSessionEnd(newState)
         if (isSolo) scheduleCpuTurns(newState)
+        else if (isServer && btMode > 0) scheduleCpuBtTurns(newState)
+    }
+
+    private fun scheduleCpuBtTurns(state: ScoponeState) {
+        val clientPlayer = when (btMode) { 1 -> 2; 2 -> 1; else -> 2 }
+        if (state.currentPlayer == localPlayer || state.currentPlayer == clientPlayer) return
+        if (state.phase != ScoponePhase.WAITING_PLAY && state.phase != ScoponePhase.WAITING_CAPTURE_CHOICE) return
+        viewModelScope.launch {
+            delay(600)
+            val current = _uiState.value.state
+            val cp = current.currentPlayer
+            if (cp == localPlayer || cp == clientPlayer) return@launch
+            when (current.phase) {
+                ScoponePhase.WAITING_PLAY -> {
+                    val card = ScoponeCpuAI.choosePlay(current, cp)
+                    _uiState.update { it.copy(opponentLastCard = card) }
+                    delay(700)
+                    applyAndBroadcast(ScoponeAction.PlayCard(card))
+                }
+                ScoponePhase.WAITING_CAPTURE_CHOICE -> {
+                    val group = ScoponeCpuAI.chooseCapture(current, cp)
+                    if (group.isEmpty()) return@launch
+                    delay(400)
+                    applyAndBroadcast(ScoponeAction.ChooseCapture(group))
+                }
+                else -> {}
+            }
+        }
     }
 
     private fun scheduleCpuTurns(state: ScoponeState) {

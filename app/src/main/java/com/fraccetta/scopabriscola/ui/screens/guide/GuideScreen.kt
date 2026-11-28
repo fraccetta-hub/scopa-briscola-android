@@ -45,7 +45,7 @@ import com.fraccetta.scopabriscola.ui.theme.CardCream
 @Composable
 fun GuideScreen(navController: NavHostController) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Scopa", "Briscola", "Bluetooth")
+    val tabs = listOf("Scopa", "Briscola", "Scopone", "Bluetooth")
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -115,7 +115,8 @@ fun GuideScreen(navController: NavHostController) {
                 when (selectedTab) {
                     0 -> ScopaGuide()
                     1 -> BriscolaGuide()
-                    2 -> BluetoothGuide()
+                    2 -> ScoponeGuide()
+                    3 -> BluetoothGuide()
                 }
             }
         }
@@ -282,5 +283,44 @@ private fun GuideSection(title: String, content: String) {
                 lineHeight = 21.sp
             )
         }
+    }
+}
+
+@Composable
+private fun ScoponeGuide() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        GuideSection(
+            title = "Obiettivo",
+            content = "Essere la prima squadra a raggiungere 11 punti (o il punteggio impostato nelle impostazioni). Si gioca in 4, divisi in 2 squadre: i giocatori 1 e 3 contro i giocatori 2 e 4."
+        )
+        GuideSection(
+            title = "Il mazzo",
+            content = "Mazzo napoletano da 40 carte, 4 semi: Denari, Coppe, Spade, Bastoni. Valori dall'Asso (1) al 7, poi Fante (8), Cavallo (9), Re (10)."
+        )
+        GuideSection(
+            title = "La distribuzione",
+            content = "Ciascun giocatore riceve 10 carte. Il tavolo inizia vuoto (variante Scientifico). Non ci sono carte scoperte all'inizio."
+        )
+        GuideSection(
+            title = "Il turno",
+            content = "Si gioca in senso antiorario (1→4→3→2→1→…). A ogni turno il giocatore butta una carta:\n• Se la carta ha lo stesso valore di una o più carte sul tavolo, può prendere.\n• Se esistono più combinazioni possibili (es. 5=2+3 oppure 5=5), compaiono i gruppi evidenziati in colori diversi — tocca una carta colorata per scegliere quale gruppo prendere.\n• Se non ci sono prese possibili, la carta resta sul tavolo."
+        )
+        GuideSection(
+            title = "La scopa",
+            content = "Se dopo la presa il tavolo rimane vuoto, si segna una scopa. Nell'ultima presa di ogni mano il tavolo si svuota: anche questa vale scopa (a differenza della Scopa tradizionale)."
+        )
+        GuideSection(
+            title = "Fine mano e punteggio",
+            content = "Quando tutti hanno esaurito le carte, si contano i punti per squadra combinando le carte di entrambi i compagni:\n• Carte: la squadra con più di 20 carte prende 1 punto\n• Denari: la squadra con più carte di Denari prende 1 punto\n• Settebello: chi ha il 7 di Denari prende 1 punto\n• Primiera: vince chi ha il punteggio più alto (7=21, 6=18, A=16, 5=15, 4=14, 3=13, 2=12, figure=10) contando la carta migliore per ogni seme\n• Scope: 1 punto per ogni scopa fatta"
+        )
+        GuideSection(
+            title = "Modalità Bluetooth",
+            content = "• 2 Umani vs 2 PC: tu e il tuo compagno BT giocate insieme contro 2 AI\n• Umano+AI vs Umano+AI: tu con un AI vs il tuo avversario BT con un AI\n\nUno dei due fa Host, l'altro trova la partita con Find game."
+        )
     }
 }
