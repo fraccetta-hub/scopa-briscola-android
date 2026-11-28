@@ -1,9 +1,11 @@
 package com.fraccetta.scopabriscola.ui.game.scopone
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
+import kotlinx.coroutines.launch
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -114,6 +116,7 @@ private fun ScoponeTableContent(
     val rightPlayer = when (localPlayer) { 0 -> 1; 1 -> 2; 2 -> 3; else -> 0 }
 
     val myHand = state.hands[localPlayer]
+    val displayHand = myHand.sortedBy { it.rank.numericValue }
     val isMyTurn = state.currentPlayer == localPlayer
     val phase = state.phase
     val myTeam = ScoponeGame.teamOf(localPlayer)
@@ -130,6 +133,55 @@ private fun ScoponeTableContent(
 
     // Capture replay dialog
     var showReplayDialog by remember { mutableStateOf(false) }
+
+    // Played card animation (slide from player position to center)
+    val playCardOffsetX = remember { Animatable(0f) }
+    val playCardOffsetY = remember { Animatable(0f) }
+    LaunchedEffect(uiState.opponentLastCard) {
+        if (uiState.opponentLastCard != null) {
+            val startX = when (state.currentPlayer) {
+                leftPlayer -> -250f
+                rightPlayer -> 250f
+                else -> 0f
+            }
+            val startY = when (state.currentPlayer) {
+                partnerPlayer -> -300f
+                else -> 0f
+            }
+            playCardOffsetX.snapTo(startX)
+            playCardOffsetY.snapTo(startY)
+            launch { playCardOffsetX.animateTo(0f, tween(350)) }
+            playCardOffsetY.animateTo(0f, tween(350))
+        }
+    }
+
+    // Capture overlay animation (cards fly toward capturer)
+    var captureOverlayCards by remember { mutableStateOf<List<Card>?>(null) }
+    val captureOffsetX = remember { Animatable(0f) }
+    val captureOffsetY = remember { Animatable(0f) }
+    val captureAlpha = remember { Animatable(0f) }
+    LaunchedEffect(state.lastCapture) {
+        val cap = state.lastCapture ?: return@LaunchedEffect
+        if (cap.cards.size < 2) return@LaunchedEffect
+        captureOverlayCards = cap.cards
+        val targetX = when (cap.playerWho) {
+            leftPlayer -> -280f
+            rightPlayer -> 280f
+            else -> 0f
+        }
+        val targetY = when (cap.playerWho) {
+            partnerPlayer -> -350f
+            localPlayer -> 350f
+            else -> 0f
+        }
+        captureOffsetX.snapTo(0f)
+        captureOffsetY.snapTo(0f)
+        captureAlpha.snapTo(1f)
+        launch { captureOffsetX.animateTo(targetX, tween(500)) }
+        launch { captureOffsetY.animateTo(targetY, tween(500)) }
+        captureAlpha.animateTo(0f, tween(500))
+        captureOverlayCards = null
+    }
 
     // Capture toast
     var captureToast by remember { mutableStateOf<String?>(null) }
@@ -235,6 +287,10 @@ private fun ScoponeTableContent(
                                 else -> "AI ${state.currentPlayer + 1}"
                             }
                             Column(
+                                modifier = Modifier.graphicsLayer {
+                                    translationX = playCardOffsetX.value
+                                    translationY = playCardOffsetY.value
+                                },
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
@@ -363,7 +419,7 @@ private fun ScoponeTableContent(
                         horizontalArrangement = Arrangement.spacedBy((-28).dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        itemsIndexed(myHand) { index, card ->
+                        itemsIndexed(displayHand) { index, card ->
                             val dealt = index < dealtCount
                             val dealScale by animateFloatAsState(if (dealt) 1f else 0.3f, if (dealt) tween(180) else snap(), label = "")
                             val dealAlpha by animateFloatAsState(if (dealt) 1f else 0f, if (dealt) tween(180) else snap(), label = "")
@@ -380,6 +436,26 @@ private fun ScoponeTableContent(
                                 CardImage(card = card, modifier = Modifier.fillMaxSize())
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        // Capture overlay animation
+        captureOverlayCards?.let { cards ->
+            Row(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .graphicsLayer {
+                        translationX = captureOffsetX.value
+                        translationY = captureOffsetY.value
+                        alpha = captureAlpha.value
+                    },
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                cards.take(6).forEach { card ->
+                    Box(modifier = Modifier.size(48.dp, 72.dp)) {
+                        CardImage(card = card, modifier = Modifier.fillMaxSize())
                     }
                 }
             }
