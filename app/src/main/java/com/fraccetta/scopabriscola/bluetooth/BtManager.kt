@@ -31,7 +31,7 @@ sealed class ConnectionEvent {
     object Lost : ConnectionEvent()
 }
 
-class BtManager(@androidx.annotation.NonNull context: Context) {
+class BtManager(@androidx.annotation.NonNull context: Context) : GameTransport {
     private val appContext: Context = context.applicationContext
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -42,7 +42,7 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
     private val _tagged = MutableSharedFlow<Tagged>(replay = 1, extraBufferCapacity = 64)
     private val generation = AtomicInteger(0)
 
-    val events: Flow<ConnectionEvent> get() {
+    override val events: Flow<ConnectionEvent> get() {
         val gen = generation.get()
         return _tagged.filter { it.gen == gen }.map { it.event }
     }
@@ -115,7 +115,7 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
         }
     }
 
-    fun send(msg: BtMessage) {
+    override fun send(msg: BtMessage) {
         val line = BtProtocol.encode(msg)
         scope.launch(Dispatchers.IO) {
             btServer?.send(line)
@@ -123,7 +123,7 @@ class BtManager(@androidx.annotation.NonNull context: Context) {
         }
     }
 
-    fun disconnect() {
+    override fun disconnect() {
         btServer?.stop()
         btClient?.disconnect()
         btServer = null

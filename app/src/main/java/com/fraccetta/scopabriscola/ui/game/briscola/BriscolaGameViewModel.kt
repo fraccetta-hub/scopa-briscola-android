@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.fraccetta.scopabriscola.bluetooth.BtManager
 import com.fraccetta.scopabriscola.bluetooth.BtMessage
 import com.fraccetta.scopabriscola.bluetooth.ConnectionEvent
+import com.fraccetta.scopabriscola.bluetooth.GameTransport
+import com.fraccetta.scopabriscola.online.OnlineManager
 import com.fraccetta.scopabriscola.data.GameSession
 import com.fraccetta.scopabriscola.data.prefs.UserPreferences
 import com.fraccetta.scopabriscola.data.repository.StatsRepository
@@ -58,9 +60,11 @@ data class BriscolaUiState(
 @HiltViewModel
 class BriscolaGameViewModel @Inject constructor(
     private val btManager: BtManager,
+    private val onlineManager: OnlineManager,
     private val userPreferences: UserPreferences,
     private val statsRepository: StatsRepository
 ) : ViewModel() {
+    private val transport: GameTransport get() = if (GameSession.isOnline) onlineManager else btManager
 
     private val briscolaGame = BriscolaGame()
     private val isServer: Boolean = GameSession.isServer
@@ -104,11 +108,11 @@ class BriscolaGameViewModel @Inject constructor(
     private fun subscribeToEvents() {
         eventsJob?.cancel()
         eventsJob = viewModelScope.launch {
-            btManager.events.collect { event ->
+            transport.events.collect { event ->
                 when (event) {
                     is ConnectionEvent.MessageReceived -> handleMessage(event.msg)
                     is ConnectionEvent.Lost -> {
-                        if (autoRetryCount < 1) {
+                        if (!GameSession.isOnline && autoRetryCount < 1) {
                             autoRetryCount++
                             if (isServer) btManager.startHosting() else GameSession.lastDevice?.let { btManager.connect(it) }
                             subscribeToEvents()
@@ -128,7 +132,9 @@ class BriscolaGameViewModel @Inject constructor(
     }
 
     fun onDisconnectionRetry() {
-        if (isServer) btManager.startHosting() else GameSession.lastDevice?.let { btManager.connect(it) }
+        if (!GameSession.isOnline) {
+            if (isServer) btManager.startHosting() else GameSession.lastDevice?.let { btManager.connect(it) }
+        }
         subscribeToEvents()
     }
 
@@ -148,30 +154,30 @@ class BriscolaGameViewModel @Inject constructor(
         SoundManager.playCard()
         _uiState.update { it.copy(opponentLastCard = null) }
         // Server broadcasts its own card to client so client can display it
-        if (isServer && !isSolo) btManager.send(BtMessage.OpponentCard(card.assetName))
+        if (isServer && !isSolo) transport.send(BtMessage.OpponentCard(card.assetName))
         if (isServer || isSolo) {
             if (!isSolo) viewModelScope.launch { delay(700); applyAndBroadcast(BriscolaAction.PlayCard(card)) }
             else applyAndBroadcast(BriscolaAction.PlayCard(card))
-        } else btManager.send(BtMessage.PlayCard(card.assetName))
+        } else transport.send(BtMessage.PlayCard(card.assetName))
     }
 
     fun setArena(name: String) {
         _uiState.update { it.copy(arenaName = name) }
-        if (!isSolo) btManager.send(BtMessage.SetArena(name))
+        if (!isSolo) transport.send(BtMessage.SetArena(name))
     }
 
     fun onNextMatch() {
         val state = _uiState.value.state
         if (state.phase != BriscolaPhase.MATCH_END) return
         if (isServer || isSolo) applyAndBroadcast(BriscolaAction.NextMatch)
-        else btManager.send(BtMessage.NextRound)
+        else transport.send(BtMessage.NextRound)
     }
 
     fun onNextGame() {
         val state = _uiState.value.state
         if (state.phase != BriscolaPhase.GAME_END) return
         if (isServer || isSolo) applyAndBroadcast(BriscolaAction.NextGame)
-        else btManager.send(BtMessage.NextRound)
+        else transport.send(BtMessage.NextRound)
     }
 
     private fun applyAndBroadcast(action: BriscolaAction) {
@@ -239,7 +245,7 @@ class BriscolaGameViewModel @Inject constructor(
             player1Hand = emptyList(),
             deckCards = List(state.deckCards.size) { Card(Rank.ASSO, Suit.DENARI) }
         )
-        btManager.send(BtMessage.GameState(json.encodeToString(BriscolaState.serializer(), masked)))
+        transport.send(BtMessage.GameState(json.encodeToString(BriscolaState.serializer(), masked)))
     }
 
     private fun handleMessage(msg: BtMessage) {
@@ -336,7 +342,7 @@ class BriscolaGameViewModel @Inject constructor(
     }
 
     fun sendChat(text: String) {
-        btManager.send(BtMessage.Chat(text))
+        transport.send(BtMessage.Chat(text))
         receiveChat(text, isMine = true)
     }
 

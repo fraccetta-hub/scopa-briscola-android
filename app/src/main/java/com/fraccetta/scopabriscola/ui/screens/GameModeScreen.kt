@@ -97,7 +97,7 @@ fun GameModeScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = "Host game", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Host game (BT)", style = MaterialTheme.typography.titleMedium)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -110,7 +110,33 @@ fun GameModeScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = "Find game", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Find game (BT)", style = MaterialTheme.typography.titleMedium)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { navController.navigate("online-lobby/${gameType.uppercase()}/HOST") },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF1B6B3A),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = "Host online", style = MaterialTheme.typography.titleMedium)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { navController.navigate("online-lobby/${gameType.uppercase()}/JOIN") },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF1B6B3A),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = "Join online", style = MaterialTheme.typography.titleMedium)
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

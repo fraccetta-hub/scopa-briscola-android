@@ -17,8 +17,8 @@ android {
         applicationId = "com.fraccetta.scopabriscola"
         minSdk = 26
         targetSdk = 35
-        versionCode = 38
-        versionName = "2.0.3"
+        versionCode = 39
+        versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -83,6 +83,10 @@ dependencies {
 
     // DataStore
     implementation(libs.datastore.preferences)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.database)
 
     // Serialization
     implementation(libs.kotlinx.serialization.json)

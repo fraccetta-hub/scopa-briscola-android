@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.fraccetta.scopabriscola.bluetooth.BtManager
 import com.fraccetta.scopabriscola.bluetooth.BtMessage
 import com.fraccetta.scopabriscola.bluetooth.ConnectionEvent
+import com.fraccetta.scopabriscola.bluetooth.GameTransport
+import com.fraccetta.scopabriscola.online.OnlineManager
 import com.fraccetta.scopabriscola.data.GameSession
 import com.fraccetta.scopabriscola.data.prefs.UserPreferences
 import com.fraccetta.scopabriscola.data.repository.StatsRepository
@@ -54,9 +56,11 @@ data class ScoponeUiState(
 @HiltViewModel
 class ScoponeGameViewModel @Inject constructor(
     private val btManager: BtManager,
+    private val onlineManager: OnlineManager,
     private val userPreferences: UserPreferences,
     private val statsRepository: StatsRepository
 ) : ViewModel() {
+    private val transport: GameTransport get() = if (GameSession.isOnline) onlineManager else btManager
 
     private val scoponeGame = ScoponeGame()
     private val localPlayer: Int = GameSession.scoponeLocalPlayer
@@ -115,11 +119,11 @@ class ScoponeGameViewModel @Inject constructor(
     private fun subscribeToEvents() {
         eventsJob?.cancel()
         eventsJob = viewModelScope.launch {
-            btManager.events.collect { event ->
+            transport.events.collect { event ->
                 when (event) {
                     is ConnectionEvent.MessageReceived -> handleMessage(event.msg)
                     is ConnectionEvent.Lost -> {
-                        if (autoRetryCount < 1) {
+                        if (!GameSession.isOnline && autoRetryCount < 1) {
                             autoRetryCount++
                             if (isServer) btManager.startHosting() else GameSession.lastDevice?.let { btManager.connect(it) }
                             subscribeToEvents()
@@ -139,7 +143,9 @@ class ScoponeGameViewModel @Inject constructor(
     }
 
     fun onDisconnectionRetry() {
-        if (isServer) btManager.startHosting() else GameSession.lastDevice?.let { btManager.connect(it) }
+        if (!GameSession.isOnline) {
+            if (isServer) btManager.startHosting() else GameSession.lastDevice?.let { btManager.connect(it) }
+        }
         subscribeToEvents()
     }
 
@@ -157,11 +163,11 @@ class ScoponeGameViewModel @Inject constructor(
         cardPlayPending = true
         SoundManager.playCard()
         _uiState.update { it.copy(opponentLastCard = null) }
-        if (isServer && !isSolo) btManager.send(BtMessage.OpponentCard(card.assetName))
+        if (isServer && !isSolo) transport.send(BtMessage.OpponentCard(card.assetName))
         if (isServer || isSolo) {
             if (!isSolo) viewModelScope.launch { delay(700); applyAndBroadcast(ScoponeAction.PlayCard(card)) }
             else applyAndBroadcast(ScoponeAction.PlayCard(card))
-        } else btManager.send(BtMessage.PlayCard(card.assetName))
+        } else transport.send(BtMessage.PlayCard(card.assetName))
     }
 
     fun onCaptureChosen(group: List<Card>) {
@@ -171,21 +177,21 @@ class ScoponeGameViewModel @Inject constructor(
         if (group !in current.pendingCaptures) return
         SoundManager.playCapture()
         if (isServer) applyAndBroadcast(ScoponeAction.ChooseCapture(group))
-        else btManager.send(BtMessage.ChooseCapture(group.map { it.assetName }))
+        else transport.send(BtMessage.ChooseCapture(group.map { it.assetName }))
     }
 
     fun onNextMatch() {
         val state = _uiState.value.state
         if (state.phase != ScoponePhase.MATCH_END) return
         if (isServer || isSolo) applyAndBroadcast(ScoponeAction.NextMatch)
-        else btManager.send(BtMessage.NextRound)
+        else transport.send(BtMessage.NextRound)
     }
 
     fun onNextGame() {
         val state = _uiState.value.state
         if (state.phase != ScoponePhase.GAME_END) return
         if (isServer || isSolo) applyAndBroadcast(ScoponeAction.NextGame)
-        else btManager.send(BtMessage.NextRound)
+        else transport.send(BtMessage.NextRound)
     }
 
     private fun applyAndBroadcast(action: ScoponeAction) {
@@ -313,7 +319,7 @@ class ScoponeGameViewModel @Inject constructor(
             if (idx == clientPlayer) hand else emptyList()
         }
         val masked = state.copy(hands = maskedHands)
-        btManager.send(BtMessage.GameState(json.encodeToString(ScoponeState.serializer(), masked)))
+        transport.send(BtMessage.GameState(json.encodeToString(ScoponeState.serializer(), masked)))
     }
 
     private fun handleMessage(msg: BtMessage) {

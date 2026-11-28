@@ -81,7 +81,7 @@ fun ScoponeGameModeScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "4 giocatori • 2 squadre",
+                    text = "4 players • 2 teams",
                     color = CardCream.copy(alpha = 0.6f),
                     fontSize = 14.sp
                 )
@@ -104,12 +104,12 @@ fun ScoponeGameModeScreen(
                 ) {
                     Text("Vs CPU", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 }
-                Text("Tu + Captain vs 2 AI", color = CardCream.copy(alpha = 0.5f), fontSize = 11.sp)
+                Text("You + Captain vs 2 AI", color = CardCream.copy(alpha = 0.5f), fontSize = 11.sp)
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // BT Mode 1: 2 umani vs 2 AI
-                ModeSection(title = "2 Umani vs 2 PC", subtitle = "Tu + compagno BT vs 2 AI") {
+                ModeSection(title = "2 Humans vs 2 AI (BT)", subtitle = "You + BT partner vs 2 AI") {
                     Button(
                         onClick = {
                             GameSession.isSolo = false
@@ -135,8 +135,35 @@ fun ScoponeGameModeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Online Mode
+                ModeSection(title = "Online (Internet)", subtitle = "2 umani vs 2 AI su internet") {
+                    Button(
+                        onClick = {
+                            GameSession.isSolo = false
+                            GameSession.scoponeBtMode = 1
+                            GameSession.localPlayerName = playerName.ifBlank { null }
+                            navController.navigate("online-lobby/SCOPONE_TEAM/HOST")
+                        },
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B6B3A), contentColor = Color.White)
+                    ) { Text("Host online") }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            GameSession.isSolo = false
+                            GameSession.scoponeBtMode = 1
+                            GameSession.localPlayerName = playerName.ifBlank { null }
+                            navController.navigate("online-lobby/SCOPONE_TEAM/JOIN")
+                        },
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B6B3A), contentColor = Color.White)
+                    ) { Text("Join online") }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // BT Mode 2: umano+AI vs umano+AI
-                ModeSection(title = "Umano+AI vs Umano+AI", subtitle = "Tu + AI vs compagno BT + AI") {
+                ModeSection(title = "Human+AI vs Human+AI (BT)", subtitle = "You + AI vs BT partner + AI") {
                     Button(
                         onClick = {
                             GameSession.isSolo = false

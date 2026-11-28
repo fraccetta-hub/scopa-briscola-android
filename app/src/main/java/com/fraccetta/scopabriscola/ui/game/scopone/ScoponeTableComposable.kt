@@ -121,6 +121,19 @@ private fun ScoponeTableContent(
     val phase = state.phase
     val myTeam = ScoponeGame.teamOf(localPlayer)
 
+    // Human opponent seat for btMode=2
+    val btOpponentPlayer = when {
+        uiState.btMode == 2 && localPlayer == 0 -> 1
+        uiState.btMode == 2 && localPlayer == 1 -> 0
+        else -> -1
+    }
+    fun nameOf(p: Int): String = when {
+        p == localPlayer -> uiState.localPlayerName ?: "You"
+        uiState.btMode == 1 && p == partnerPlayer -> uiState.partnerName ?: "Partner"
+        uiState.btMode == 2 && p == btOpponentPlayer -> uiState.opponentName ?: "Opponent"
+        else -> "Captain"
+    }
+
     // Deal animation
     var dealtCount by remember { mutableIntStateOf(0) }
     LaunchedEffect(uiState.matchId) {
@@ -188,13 +201,9 @@ private fun ScoponeTableContent(
     LaunchedEffect(state.lastCapture) {
         val cap = state.lastCapture ?: return@LaunchedEffect
         if (cap.cards.size < 2) return@LaunchedEffect
-        val name = when (cap.playerWho) {
-            localPlayer -> uiState.localPlayerName ?: "Tu"
-            partnerPlayer -> if (uiState.btMode == 1) uiState.partnerName ?: "Partner" else "Captain"
-            else -> "AI ${cap.playerWho + 1}"
-        }
+        val name = nameOf(cap.playerWho)
         val n = cap.cards.size
-        captureToast = "$name ha preso $n ${if (n == 1) "carta" else "carte"}"
+        captureToast = "$name took $n ${if (n == 1) "card" else "cards"}"
         delay(1800L)
         captureToast = null
     }
@@ -237,7 +246,7 @@ private fun ScoponeTableContent(
                     capturedCount = state.captured[partnerPlayer].size,
                     scopeCount = state.scope[partnerPlayer],
                     isActive = state.currentPlayer == partnerPlayer,
-                    name = if (uiState.btMode == 1) uiState.partnerName ?: "Partner" else "Captain"
+                    name = nameOf(partnerPlayer)
                 )
             }
 
@@ -257,7 +266,7 @@ private fun ScoponeTableContent(
                         scopeCount = state.scope[leftPlayer],
                         isActive = state.currentPlayer == leftPlayer,
                         isLeft = true,
-                        name = "AI ${leftPlayer + 1}"
+                        name = nameOf(leftPlayer)
                     )
                 }
 
@@ -276,16 +285,13 @@ private fun ScoponeTableContent(
                     ) {
                         // Team scores
                         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            TeamScoreChip(label = "Noi", score = state.teamGameScore[myTeam], highlight = true)
-                            TeamScoreChip(label = "Loro", score = state.teamGameScore[1 - myTeam], highlight = false)
+                            TeamScoreChip(label = "Us", score = state.teamGameScore[myTeam], highlight = true)
+                            TeamScoreChip(label = "Them", score = state.teamGameScore[1 - myTeam], highlight = false)
                         }
 
                         // Currently played card by AI/partner
                         if (uiState.opponentLastCard != null) {
-                            val playingName = when (state.currentPlayer) {
-                                partnerPlayer -> if (uiState.btMode == 1) uiState.partnerName ?: "Partner" else "Captain"
-                                else -> "AI ${state.currentPlayer + 1}"
-                            }
+                            val playingName = nameOf(state.currentPlayer)
                             Column(
                                 modifier = Modifier.graphicsLayer {
                                     translationX = playCardOffsetX.value
@@ -294,7 +300,7 @@ private fun ScoponeTableContent(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
-                                Text("$playingName gioca:", color = AccentGold, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text("$playingName plays:", color = AccentGold, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                 Box(modifier = Modifier.size(48.dp, 72.dp)) {
                                     CardImage(card = uiState.opponentLastCard, modifier = Modifier.fillMaxSize())
                                 }
@@ -309,7 +315,7 @@ private fun ScoponeTableContent(
                                     .background(Color(0x22FFFFFF), RoundedCornerShape(8.dp)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("Tavolo\nvuoto", color = CardCream.copy(alpha = 0.5f), fontSize = 11.sp, textAlign = TextAlign.Center)
+                                Text("Empty\ntable", color = CardCream.copy(alpha = 0.5f), fontSize = 11.sp, textAlign = TextAlign.Center)
                             }
                         } else {
                             val isChoosingCapture = phase == ScoponePhase.WAITING_CAPTURE_CHOICE && state.currentPlayer == localPlayer
@@ -317,7 +323,7 @@ private fun ScoponeTableContent(
                             val groupColors = listOf(AccentGold, Color(0xFF00BCD4), Color(0xFF66BB6A), Color(0xFFFF7043))
                             if (multiGroup) {
                                 Text(
-                                    "Scegli quale gruppo prendere",
+                                    "Choose which group to take",
                                     color = AccentGold,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold
@@ -352,19 +358,15 @@ private fun ScoponeTableContent(
                         }
 
                         // Turn indicator
-                        val currentName = when (state.currentPlayer) {
-                            localPlayer -> uiState.localPlayerName ?: "Tu"
-                            partnerPlayer -> if (uiState.btMode == 1) uiState.partnerName ?: "Partner" else "Captain"
-                            else -> "AI ${state.currentPlayer + 1}"
-                        }
+                        val currentName = nameOf(state.currentPlayer)
                         Text(
                             text = when {
-                                phase == ScoponePhase.MATCH_END -> "Fine mano"
-                                phase == ScoponePhase.GAME_END -> "Fine partita"
-                                phase == ScoponePhase.WAITING_CAPTURE_CHOICE && isMyTurn -> "→ tocca una carta colorata"
-                                phase == ScoponePhase.WAITING_CAPTURE_CHOICE -> "Sceglie $currentName…"
-                                isMyTurn -> "Tocca a te"
-                                else -> "Gioca $currentName…"
+                                phase == ScoponePhase.MATCH_END -> "End of hand"
+                                phase == ScoponePhase.GAME_END -> "End of game"
+                                phase == ScoponePhase.WAITING_CAPTURE_CHOICE && isMyTurn -> "→ tap a colored card"
+                                phase == ScoponePhase.WAITING_CAPTURE_CHOICE -> "$currentName choosing…"
+                                isMyTurn -> "Your turn"
+                                else -> "$currentName playing…"
                             },
                             color = if (isMyTurn) AccentGold else CardCream.copy(alpha = 0.6f),
                             fontSize = 12.sp,
@@ -382,7 +384,7 @@ private fun ScoponeTableContent(
                         scopeCount = state.scope[rightPlayer],
                         isActive = state.currentPlayer == rightPlayer,
                         isLeft = false,
-                        name = "AI ${rightPlayer + 1}"
+                        name = nameOf(rightPlayer)
                     )
                 }
             }
@@ -399,7 +401,7 @@ private fun ScoponeTableContent(
                     // Player name + scope
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            text = uiState.localPlayerName ?: "Tu",
+                            text = uiState.localPlayerName ?: "You",
                             color = CardCream,
                             fontSize = 12.sp
                         )
@@ -515,7 +517,7 @@ private fun ScoponeTableContent(
             val result = uiState.lastCaptureDisplay
             AlertDialog(
                 onDismissRequest = { showReplayDialog = false },
-                title = { Text(if (result.localWon) "La tua squadra ha preso" else "Avversari hanno preso") },
+                title = { Text(if (result.localWon) "Your team took" else "Opponents took") },
                 text = {
                     val cardSize = if (result.cards.size <= 3) 56.dp to 84.dp else 44.dp to 66.dp
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -633,30 +635,30 @@ private fun ScoponeResultOverlay(
         ) {
             when (state.phase) {
                 ScoponePhase.MATCH_END -> {
-                    Text("Fine Mano", color = AccentGold, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text("End of Hand", color = AccentGold, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     uiState.lastMatchScores?.let { (s0, s1) ->
                         val myMatchScore = if (myTeam == 0) s0 else s1
                         val oppMatchScore = if (myTeam == 0) s1 else s0
-                        Text("Noi: +${myMatchScore.total}pt  Loro: +${oppMatchScore.total}pt", color = CardCream, fontSize = 14.sp)
+                        Text("Us: +${myMatchScore.total}pt  Them: +${oppMatchScore.total}pt", color = CardCream, fontSize = 14.sp)
                         ScoponeScoreDetail(myMatchScore, oppMatchScore)
                     }
-                    Text("Totale — Noi: $myScore  Loro: $oppScore", color = CardCream, fontSize = 13.sp)
+                    Text("Total — Us: $myScore  Them: $oppScore", color = CardCream, fontSize = 13.sp)
                     Button(onClick = onNextMatch, colors = ButtonDefaults.buttonColors(containerColor = AccentGold)) {
-                        Text("Prossima mano", color = Color(0xFF0D1F33), fontWeight = FontWeight.Bold)
+                        Text("Next Hand", color = Color(0xFF0D1F33), fontWeight = FontWeight.Bold)
                     }
                 }
                 ScoponePhase.GAME_END -> {
                     val weWon = myScore > oppScore
-                    Text(if (weWon) "Avete vinto! 🏆" else "Avete perso", color = if (weWon) AccentGold else CardCream, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                    Text("Noi: $myScore  Loro: $oppScore", color = CardCream, fontSize = 15.sp)
+                    Text(if (weWon) "You won! 🏆" else "You lost", color = if (weWon) AccentGold else CardCream, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text("Us: $myScore  Them: $oppScore", color = CardCream, fontSize = 15.sp)
                     Button(onClick = onNextGame, colors = ButtonDefaults.buttonColors(containerColor = AccentGold)) {
-                        Text("Nuova partita", color = Color(0xFF0D1F33), fontWeight = FontWeight.Bold)
+                        Text("New Game", color = Color(0xFF0D1F33), fontWeight = FontWeight.Bold)
                     }
                 }
                 ScoponePhase.SESSION_END -> {
                     val weWon = state.teamSessionWins[myTeam] > state.teamSessionWins[1 - myTeam]
-                    Text(if (weWon) "Sessione vinta! 🏆" else "Sessione persa", color = if (weWon) AccentGold else CardCream, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                    Text("Wins — Noi: ${state.teamSessionWins[myTeam]}  Loro: ${state.teamSessionWins[1 - myTeam]}", color = CardCream, fontSize = 14.sp)
+                    Text(if (weWon) "Session won! 🏆" else "Session lost", color = if (weWon) AccentGold else CardCream, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text("Wins — Us: ${state.teamSessionWins[myTeam]}  Them: ${state.teamSessionWins[1 - myTeam]}", color = CardCream, fontSize = 14.sp)
                 }
                 else -> {}
             }

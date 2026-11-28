@@ -16,6 +16,7 @@ import com.fraccetta.scopabriscola.ui.game.scopone.ScoponeGameScreen
 import com.fraccetta.scopabriscola.ui.stats.StatsScreen
 import com.fraccetta.scopabriscola.ui.screens.guide.GuideScreen
 import com.fraccetta.scopabriscola.ui.screens.settings.SettingsScreen
+import com.fraccetta.scopabriscola.ui.screens.online.OnlineLobbyScreen
 
 @Composable
 fun AppNavGraph(
@@ -59,6 +60,11 @@ fun AppNavGraph(
         }
         composable("guide") {
             GuideScreen(navController = navController)
+        }
+        composable("online-lobby/{gameType}/{role}") { backStackEntry ->
+            val gameType = backStackEntry.arguments?.getString("gameType") ?: ""
+            val role = backStackEntry.arguments?.getString("role") ?: "HOST"
+            OnlineLobbyScreen(gameType = gameType, role = role, navController = navController)
         }
     }
 }

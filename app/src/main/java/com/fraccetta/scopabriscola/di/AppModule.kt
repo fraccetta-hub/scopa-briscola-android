@@ -3,6 +3,7 @@ package com.fraccetta.scopabriscola.di
 import android.content.Context
 import androidx.room.Room
 import com.fraccetta.scopabriscola.bluetooth.BtManager
+import com.fraccetta.scopabriscola.online.OnlineManager
 import com.fraccetta.scopabriscola.data.db.AppDatabase
 import com.fraccetta.scopabriscola.data.db.GameResultDao
 import com.fraccetta.scopabriscola.data.db.StatisticsDao
@@ -47,4 +48,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideBtManager(@ApplicationContext ctx: Context) = BtManager(ctx)
+
+    @Provides
+    @Singleton
+    fun provideOnlineManager() = OnlineManager()
 }

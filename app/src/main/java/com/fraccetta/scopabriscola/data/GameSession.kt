@@ -14,4 +14,5 @@ object GameSession {
     @Volatile var scoponeLocalPlayer: Int = 0  // 0-3, which player this device controls
     @Volatile var scoponeBtMode: Int = 0       // 0=offline, 1=humans+AI, 2=user+AI vs BT+AI
     @Volatile var partnerName: String? = null  // BT partner name (mode 1)
+    @Volatile var isOnline: Boolean = false    // true when using Firebase online mode
 }
